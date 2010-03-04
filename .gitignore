@@ -9,8 +9,10 @@
 *.cache
 *.bak
 *.swp
-/bin/*
-/Bin/*
+Bin/
+bin/
+Debug/
+debug/
 Thumbs.db
 *.FileListAbsolute.txt
 *.Cache
