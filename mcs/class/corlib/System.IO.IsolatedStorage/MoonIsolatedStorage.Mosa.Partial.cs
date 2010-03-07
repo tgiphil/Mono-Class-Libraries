@@ -7,7 +7,7 @@ using System.Text;
 
 namespace System.IO.IsolatedStorage
 {
-	 partial class IsolatedStorage
+	partial class IsolatedStorage
 	{
 		static long isolated_storage_get_current_usage (string root)
 		{

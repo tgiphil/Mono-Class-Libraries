@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Policy;
 
+#if NET_2_1 && !MONOTOUCH
 namespace System.Security
 {
 	 partial class SecurityManager
@@ -16,3 +17,4 @@ namespace System.Security
 
 	}
 }
+#endif

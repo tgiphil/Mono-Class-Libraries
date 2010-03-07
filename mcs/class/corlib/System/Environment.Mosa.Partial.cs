@@ -21,6 +21,9 @@ namespace System
 				throw new System.NotImplementedException();
 			}
 		}
+#if NET_1_1
+		static
+#endif
 		public bool HasShutdownStarted
 		{
 			get

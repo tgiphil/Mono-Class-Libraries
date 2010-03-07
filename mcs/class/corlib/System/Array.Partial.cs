@@ -21,7 +21,6 @@ namespace System
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		public extern int GetLength (int dimension);
-#endif
 		
 #if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
@@ -34,10 +33,12 @@ namespace System
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		public extern void SetValue (object value, params int[] indices);
-		
+
+		// CAUTION! No bounds checking!
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal extern object GetValueImpl (int pos);
-		
+
+		// CAUTION! No bounds checking!
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal extern void SetValueImpl (object value, int pos);
 		

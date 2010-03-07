@@ -9,6 +9,8 @@ using System.Security.Policy;
 using System.Text;
 using Mono.Xml;
 
+#if !NET_2_1 || MONOTOUCH
+
 namespace System.Security
 {
 	public partial class SecurityManager
@@ -40,3 +42,5 @@ namespace System.Security
 
 	}
 }
+
+#endif

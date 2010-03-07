@@ -51,7 +51,7 @@ namespace System.IO.IsolatedStorage {
 #endif
 	// FIXME: Further limit the assertion when imperative Assert is implemented
 	[FileIOPermission (SecurityAction.Assert, Unrestricted = true)]
-	public sealed class IsolatedStorageFile : IsolatedStorage, IDisposable {
+	public sealed partial class IsolatedStorageFile : IsolatedStorage, IDisposable {
 
 		private bool _resolved;
 		private ulong _maxSize;

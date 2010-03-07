@@ -11,25 +11,30 @@ using Mono.Xml;
 
 namespace Mono.Security.Cryptography
 {
-	public partial class KeyPairPersistence
+#if INSIDE_CORLIB
+	internal
+#else
+	public 
+#endif
+	partial class KeyPairPersistence
 	{
-		internal static bool _CanSecure (string root)
+		internal static bool _CanSecure(string root)
 		{
 			throw new System.NotImplementedException();
 		}
-		internal static bool _ProtectUser (string path)
+		internal static bool _ProtectUser(string path)
 		{
 			throw new System.NotImplementedException();
 		}
-		internal static bool _ProtectMachine (string path)
+		internal static bool _ProtectMachine(string path)
 		{
 			throw new System.NotImplementedException();
 		}
-		internal static bool _IsUserProtected (string path)
+		internal static bool _IsUserProtected(string path)
 		{
 			throw new System.NotImplementedException();
 		}
-		internal static bool _IsMachineProtected (string path)
+		internal static bool _IsMachineProtected(string path)
 		{
 			throw new System.NotImplementedException();
 		}

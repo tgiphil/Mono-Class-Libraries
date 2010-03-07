@@ -41,7 +41,7 @@ namespace System.IO.IsolatedStorage {
 #if NET_2_0
 	[ComVisible (true)]
 #endif
-	public abstract class IsolatedStorage : MarshalByRefObject {
+	public abstract partial class IsolatedStorage : MarshalByRefObject {
 
 		// Constructor
 		protected IsolatedStorage ()

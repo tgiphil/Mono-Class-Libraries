@@ -9,55 +9,62 @@ namespace System
 {
 	public partial class Array
 	{
-		internal void GetGenericValueImpl<T> (int pos, out T value)
+		internal void GetGenericValueImpl<T>(int pos, out T value)
 		{
 			throw new System.NotImplementedException();
 		}
-		internal void SetGenericValueImpl<T> (int pos, ref T value)
+		internal void SetGenericValueImpl<T>(int pos, ref T value)
 		{
 			throw new System.NotImplementedException();
 		}
-		int GetRank ()
+		int GetRank()
 		{
 			throw new System.NotImplementedException();
 		}
-		public int GetLength (int dimension)
+		public int GetLength(int dimension)
 		{
 			throw new System.NotImplementedException();
 		}
-		public int GetLowerBound (int dimension)
+		public int GetLowerBound(int dimension)
 		{
 			throw new System.NotImplementedException();
 		}
-		public object GetValue (params int[] indices)
+		public object GetValue(params int[] indices)
 		{
 			throw new System.NotImplementedException();
 		}
-		public void SetValue (object value, params int[] indices)
+		public void SetValue(object value, params int[] indices)
 		{
 			throw new System.NotImplementedException();
 		}
-		internal object GetValueImpl (int pos)
+		// CAUTION! No bounds checking!
+		internal object GetValueImpl(int pos)
 		{
 			throw new System.NotImplementedException();
 		}
-		internal void SetValueImpl (object value, int pos)
+		// CAUTION! No bounds checking!
+		internal void SetValueImpl(object value, int pos)
 		{
 			throw new System.NotImplementedException();
 		}
-		internal static bool FastCopy (Array source, int source_idx, Array dest, int dest_idx, int length)
+		internal static bool FastCopy(Array source, int source_idx, Array dest, int dest_idx, int length)
 		{
 			throw new System.NotImplementedException();
 		}
-		internal static Array CreateInstanceImpl (Type elementType, int[] lengths, int[] bounds)
+		internal static Array CreateInstanceImpl(Type elementType, int[] lengths, int[] bounds)
 		{
 			throw new System.NotImplementedException();
 		}
-		static void ClearInternal (Array a, int index, int count)
+		static void ClearInternal(Array a, int index, int count)
 		{
 			throw new System.NotImplementedException();
 		}
-		object Clone ()
+#if INSIDE_CORLIB
+		public
+#else
+		internal
+#endif
+		object Clone()
 		{
 			throw new System.NotImplementedException();
 		}

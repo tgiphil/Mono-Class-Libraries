@@ -200,10 +200,6 @@ namespace System
 			SetGenericValueImpl (index, ref item);
 		}
 
-		// CAUTION! No bounds checking!
-
-		// CAUTION! No bounds checking!
-
 		internal struct InternalEnumerator<T> : IEnumerator<T>
 		{
 			const int NOT_STARTED = -2;
