@@ -48,7 +48,7 @@ namespace System
 #endif
 	// FIXME: We are doing way to many double/triple exception checks for the overloaded functions"
 	// FIXME: Sort overloads parameter checks are VERY inconsistent"
-	public abstract class Array : ICloneable, ICollection, IList, IEnumerable
+	public abstract partial class Array : ICloneable, ICollection, IList, IEnumerable
 	{
 		// Constructor
 		private Array ()
@@ -201,12 +201,8 @@ namespace System
 		}
 
 		// CAUTION! No bounds checking!
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern void GetGenericValueImpl<T> (int pos, out T value);
 
 		// CAUTION! No bounds checking!
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern void SetGenericValueImpl<T> (int pos, ref T value);
 
 		internal struct InternalEnumerator<T> : IEnumerator<T>
 		{
@@ -375,11 +371,6 @@ namespace System
 		}
 
 		// InternalCall Methods
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern int GetRank ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern int GetLength (int dimension);
 
 #if NET_1_1
 		[ComVisible (false)]
@@ -389,31 +380,9 @@ namespace System
 		}
 #endif
 
-#if NET_2_0
-		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern int GetLowerBound (int dimension);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern object GetValue (params int[] indices);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern void SetValue (object value, params int[] indices);
+		// CAUTION! No bounds checking!
 
 		// CAUTION! No bounds checking!
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern object GetValueImpl (int pos);
-
-		// CAUTION! No bounds checking!
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern void SetValueImpl (object value, int pos);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern static bool FastCopy (Array source, int source_idx, Array dest, int dest_idx, int length);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern static Array CreateInstanceImpl (Type elementType, int[] lengths, int[] bounds);
 
 		// Properties
 		int ICollection.Count {
@@ -910,16 +879,6 @@ namespace System
 			ClearInternal (array, index, length);
 		}
 		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		static extern void ClearInternal (Array a, int index, int count);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public
-#if !NET_2_0
-		virtual
-#endif
-		extern object Clone ();
-
 #if NET_2_0
 		[ReliabilityContractAttribute (Consistency.MayCorruptInstance, Cer.MayFail)]
 #endif

@@ -159,7 +159,6 @@ namespace System {
 					} else 
 						val = val * 10 + d;
 					
-					
 					digits_seen = true;
 				} else if (!Int32.ProcessTrailingWhitespace (tryParse, s, i, ref exc))
 					return false;
@@ -434,7 +433,6 @@ namespace System {
 				return false;
 			}
 
-			
 			if (!negative && !AllowHexSpecifier){
 				try {
 					number = checked (-number);

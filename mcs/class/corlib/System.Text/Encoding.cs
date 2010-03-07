@@ -38,7 +38,7 @@ using System.Runtime.InteropServices;
 #if NET_2_0
 [ComVisible (true)]
 #endif
-public abstract class Encoding
+public abstract partial class Encoding
 #if NET_2_0
 	: ICloneable
 #endif
@@ -692,7 +692,6 @@ public abstract class Encoding
 		// Build a web encoding class name.
 		String encName = "System.Text.ENC" + converted;
 						 
-
 		// Look for a code page converter in this assembly.
 		Assembly assembly = Assembly.GetExecutingAssembly ();
 		Type type = assembly.GetType (encName);
@@ -897,9 +896,6 @@ public abstract class Encoding
 		}
 	}
 
-	[MethodImpl (MethodImplOptions.InternalCall)]
-	extern internal static string InternalCodePage (ref int code_page);
-	
 	// Get the default encoding object.
 	public static Encoding Default
 	{

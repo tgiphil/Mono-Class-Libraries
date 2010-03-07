@@ -101,9 +101,9 @@ namespace System {
   
 //	[CLSCompliant(false)]
 #if NET_2_0
-	public static class Convert {
+	public static partial class Convert {
 #else
-	public sealed class Convert {
+	public sealed partial class Convert {
 		private Convert ()
 		{
 		}
@@ -113,12 +113,6 @@ namespace System {
 		public static readonly object DBNull = System.DBNull.Value;
 		static ToBase64Transform toBase64Transform = new ToBase64Transform();
 	
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern static byte [] InternalFromBase64String (string str, bool allowWhitespaceOnly);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern static byte [] InternalFromBase64CharArray (char [] arr, int offset, int length);
-
 		public static byte[] FromBase64CharArray (char[] inArray, int offset, int length)
 		{
 			if (inArray == null)
@@ -292,8 +286,6 @@ namespace System {
 		}
 #endif
 
-
-		
 		// ========== Boolean Conversions ========== //
 	
 		public static bool ToBoolean (bool value) 
@@ -905,7 +897,6 @@ namespace System {
 			return ((IConvertible) value).ToDecimal (provider);
 		}
 						 
-
 		// ========== Double Conversions ========== //
 	
 		public static double ToDouble (bool value) 
@@ -1261,7 +1252,6 @@ namespace System {
 			return Int32.Parse (value, provider);
 		}
 
-		
 		public static int ToInt32 (string value, int fromBase)
 		{
 			return ConvertFromBase (value, fromBase, false);
@@ -2300,7 +2290,6 @@ namespace System {
 			return ((IConvertible) value).ToUInt32 (provider);
 		}		
 		
-
 		// ========== UInt64 Conversions ========== //
 
 		[CLSCompliant (false)]
@@ -2456,7 +2445,6 @@ namespace System {
 			return ((IConvertible) value).ToUInt64 (provider);
 		}		
 		
-
 		// ========== Conversion / Helper Functions ========== //
 
 		public static object ChangeType (object value, Type conversionType)

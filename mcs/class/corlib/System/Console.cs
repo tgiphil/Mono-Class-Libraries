@@ -48,15 +48,11 @@ namespace System
 #else
 	sealed
 #endif
-	class Console
+	partial class Console
 	{
 #if !NET_2_1
-		private class WindowsConsole
+		private partial class WindowsConsole
 		{
-			[DllImport ("kernel32.dll", CharSet=CharSet.Auto, ExactSpelling=true)]
-			private static extern int GetConsoleCP ();
-			[DllImport ("kernel32.dll", CharSet=CharSet.Auto, ExactSpelling=true)]
-			private static extern int GetConsoleOutputCP ();
 
 			[MethodImpl (MethodImplOptions.NoInlining)]
 			public static int GetInputCodePage ()

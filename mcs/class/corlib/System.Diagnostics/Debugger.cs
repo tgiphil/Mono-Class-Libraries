@@ -45,7 +45,7 @@ namespace System.Diagnostics
 	[ComVisible (true)]
 #endif
 	[MonoTODO ("The Debugger class is not functional")]
-	public sealed class Debugger
+	public sealed partial class Debugger
 	{
 
 		/// <summary>
@@ -66,9 +66,6 @@ namespace System.Diagnostics
 				return IsAttached_internal ();
 			}
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static bool IsAttached_internal ();
 
 		/// <summary>
 		/// Causes a breakpoint to be signaled to an attached debugger.

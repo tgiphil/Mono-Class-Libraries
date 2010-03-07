@@ -55,7 +55,6 @@ namespace System.Security.Permissions {
 			}
 		}
 
-
 		public int Count {
 			get { return _list.Count; }
 		}
@@ -71,7 +70,6 @@ namespace System.Security.Permissions {
 		public object SyncRoot {
 			get { return this; }	// as documented
 		}
-
 
 		public int Add (KeyContainerPermissionAccessEntry accessEntry)
 		{

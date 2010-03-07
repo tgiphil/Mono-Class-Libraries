@@ -57,9 +57,9 @@ namespace System
 	[Serializable]
 #if NET_2_0
 	[ComVisible (true)]
-	public sealed class String : IConvertible, ICloneable, IEnumerable, IComparable, IComparable<String>, IEquatable <String>, IEnumerable<char>
+	public sealed partial class String : IConvertible, ICloneable, IEnumerable, IComparable, IComparable<String>, IEquatable <String>, IEnumerable<char>
 #else
-	public sealed class String : IConvertible, ICloneable, IEnumerable, IComparable
+	public sealed partial class String : IConvertible, ICloneable, IEnumerable, IComparable
 #endif
 	{
 		[NonSerialized] private int length;
@@ -880,7 +880,6 @@ namespace System
 			}
 			return -1;
 		}
-
 
 #if NET_2_0
 		public int IndexOf (string value, StringComparison comparisonType)
@@ -3009,40 +3008,5 @@ namespace System
 				CharCopyReverse (dest + targetIndex, src + sourceIndex, count);
 		}
 
-		[CLSCompliant (false), MethodImplAttribute (MethodImplOptions.InternalCall)]
-		unsafe public extern String (char *value);
-
-		[CLSCompliant (false), MethodImplAttribute (MethodImplOptions.InternalCall)]
-		unsafe public extern String (char *value, int startIndex, int length);
-
-		[CLSCompliant (false), MethodImplAttribute (MethodImplOptions.InternalCall)]
-		unsafe public extern String (sbyte *value);
-
-		[CLSCompliant (false), MethodImplAttribute (MethodImplOptions.InternalCall)]
-		unsafe public extern String (sbyte *value, int startIndex, int length);
-
-		[CLSCompliant (false), MethodImplAttribute (MethodImplOptions.InternalCall)]
-		unsafe public extern String (sbyte *value, int startIndex, int length, Encoding enc);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern String (char [] value, int startIndex, int length);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern String (char [] value);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern String (char c, int count);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern String[] InternalSplit (char[] separator, int count, int options);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern static String InternalAllocateStr (int length);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static string InternalIntern (string str);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static string InternalIsInterned (string str);
 	}
 }

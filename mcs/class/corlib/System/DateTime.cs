@@ -44,7 +44,7 @@ namespace System
 	/// 
 	[Serializable]
 	[StructLayout (LayoutKind.Auto)]
-	public struct DateTime : IFormattable, IConvertible, IComparable
+	public partial struct DateTime : IFormattable, IConvertible, IComparable
 #if NET_2_0
 		, IComparable<DateTime>, IEquatable <DateTime>
 #endif
@@ -284,7 +284,6 @@ namespace System
 			return totaldays +1; 
 		}
 
-
 		// Constructors
 		
 		/// <summary>
@@ -477,12 +476,6 @@ namespace System
 			}
 		}
 		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal static extern long GetTimeMonotonic ();
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal static extern long GetNow ();
-
 		//
 		// To reduce the time consumed by DateTime.Now, we keep
 		// the difference to map the system time into a local

@@ -45,7 +45,6 @@ namespace System.Security.Permissions {
 		private string _providerName;
 		private int _type;
 
-
 		public KeyContainerPermissionAccessEntry (CspParameters parameters, KeyContainerPermissionFlags flags)
 		{
 			if (parameters == null)
@@ -74,7 +73,6 @@ namespace System.Security.Permissions {
 			KeySpec = keySpec;
 			Flags = flags;
 		}
-
 
 		public KeyContainerPermissionFlags Flags {
 			get { return _flags; }
@@ -111,7 +109,6 @@ namespace System.Security.Permissions {
 			get { return _type; }
 			set { _type = value; }
 		}
-
 
 		public override bool Equals (object o)
 		{

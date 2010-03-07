@@ -36,7 +36,7 @@ using System.Runtime.CompilerServices;
 namespace System.Reflection
 {
 	[Serializable]
-	internal class MonoGenericMethod : MonoMethod
+	internal partial class MonoGenericMethod : MonoMethod
 	{
 		internal MonoGenericMethod ()
 		{
@@ -44,14 +44,10 @@ namespace System.Reflection
 			throw new InvalidOperationException ();
 		}
 
-		public override extern Type ReflectedType {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
-		}
 	}
 
 	[Serializable]
-	internal class MonoGenericCMethod : MonoCMethod
+	internal partial class MonoGenericCMethod : MonoCMethod
 	{
 		internal MonoGenericCMethod ()
 		{
@@ -59,9 +55,5 @@ namespace System.Reflection
 			throw new InvalidOperationException ();
 		}
 
-		public override extern Type ReflectedType {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
-		}
 	}
 }

@@ -55,7 +55,7 @@ namespace System.Reflection {
 #endif
 	[Serializable]
 	[ClassInterfaceAttribute (ClassInterfaceType.None)]
-	public sealed class AssemblyName  : ICloneable, ISerializable, IDeserializationCallback, _AssemblyName {
+	public sealed partial class AssemblyName  : ICloneable, ISerializable, IDeserializationCallback, _AssemblyName {
 
 #pragma warning disable 169
 		#region Synch with object-internals.h
@@ -85,8 +85,6 @@ namespace System.Reflection {
 		}
 
 #if NET_2_0 || BOOTSTRAP_NET_2_0
-		[MethodImpl (MethodImplOptions.InternalCall)]
-		static extern bool ParseName (AssemblyName aname, string assemblyName);
 		
 		public AssemblyName (string assemblyName)
 		{

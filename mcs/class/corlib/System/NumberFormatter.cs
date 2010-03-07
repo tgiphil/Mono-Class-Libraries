@@ -85,11 +85,6 @@ namespace System
 		// digits hexadecimal representation (e.g. DecHexDigits [34] = 0x34).
 		private static readonly unsafe int* DecHexDigits;
 
-		[MethodImplAttribute(System.Runtime.CompilerServices.MethodImplOptions.InternalCall)]
-		private unsafe static extern void GetFormatterTables (out ulong* MantissaBitsTable, out int* TensExponentTable,
-				out char* DigitLowerTable, out char* DigitUpperTable,
-				out long* TenPowersList, out int* DecHexDigits);
-
 		unsafe static NumberFormatter()
 		{
 			GetFormatterTables (out MantissaBitsTable, out TensExponentTable,

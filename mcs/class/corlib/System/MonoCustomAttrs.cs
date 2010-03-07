@@ -43,7 +43,7 @@ using System.Collections.Generic;
 
 namespace System
 {
-	internal class MonoCustomAttrs
+	internal partial class MonoCustomAttrs
 	{
 		static Assembly corlib;
 
@@ -60,9 +60,6 @@ namespace System
 			return obj.GetType ().Assembly != corlib;
 		}
 	
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern object[] GetCustomAttributesInternal (ICustomAttributeProvider obj, Type attributeType, bool pseudoAttrs);
-
 		internal static object[] GetPseudoCustomAttributes (ICustomAttributeProvider obj, Type attributeType) {
 #if NET_2_0 || BOOTSTRAP_NET_2_0
 			object[] pseudoAttrs = null;
@@ -268,8 +265,6 @@ namespace System
 		}
 
 #if NET_2_0
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		static extern CustomAttributeData [] GetCustomAttributesDataInternal (ICustomAttributeProvider obj);
 
 		internal static IList<CustomAttributeData> GetCustomAttributesData (ICustomAttributeProvider obj)
 		{
@@ -324,9 +319,6 @@ namespace System
 
 			return false;
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern bool IsDefinedInternal (ICustomAttributeProvider obj, Type AttributeType);
 
 		static PropertyInfo GetBasePropertyDefinition (PropertyInfo property)
 		{

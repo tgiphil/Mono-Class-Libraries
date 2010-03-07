@@ -70,7 +70,6 @@ namespace System.Runtime.Serialization {
 		const BindingFlags DefaultBindingFlags = BindingFlags.Public | BindingFlags.NonPublic |
 			BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
-
 		static ArrayList GetMethodsByAttribute (Type type, Type attr)
 		{
 			ArrayList list = new ArrayList ();

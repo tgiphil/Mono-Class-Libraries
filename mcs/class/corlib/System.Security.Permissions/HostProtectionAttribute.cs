@@ -55,7 +55,6 @@ namespace System.Security.Permissions {
 			}
 		}
 
-
 		public bool ExternalProcessMgmt {
 			get { return ((_resources & HostProtectionResource.ExternalProcessMgmt) != 0); }
 			set {
@@ -169,7 +168,6 @@ namespace System.Security.Permissions {
 			get { return _resources; }
 			set { _resources = value; }
 		}
-
 
 		public override IPermission CreatePermission ()
 		{

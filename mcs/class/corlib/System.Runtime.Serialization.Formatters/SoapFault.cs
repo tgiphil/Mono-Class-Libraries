@@ -73,7 +73,6 @@ namespace System.Runtime.Serialization.Formatters {
 			this.detail = serverFault;
 		}
 		
-
 		public object Detail {
 			get { return detail; }
 			set { detail = value; }

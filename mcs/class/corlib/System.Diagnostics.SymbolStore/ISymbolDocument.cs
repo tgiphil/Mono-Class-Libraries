@@ -48,7 +48,6 @@ namespace System.Diagnostics.SymbolStore
 		int SourceLength {get; }
 		string URL {get; }
 	
-
 		int FindClosestLine (int line);
 		byte[] GetCheckSum ();
 		byte[] GetSourceRange (int startLine, int startColumn, int endLine, int endColumn);

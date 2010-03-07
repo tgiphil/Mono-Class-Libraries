@@ -573,7 +573,6 @@ namespace System {
 			AppendByte (res, _j);
 			AppendByte (res, _k);
 
-	
 			if (p) {
 				res.Append (')');
 			} else if (b) {

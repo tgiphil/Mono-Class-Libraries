@@ -42,10 +42,10 @@ namespace System.Threading
 {
 #if NET_2_0
 	[ComVisible (true)]
-	public static class Monitor
+	public static partial class Monitor
 	{
 #else
-	public sealed class Monitor
+	public sealed partial class Monitor
 	{
 		private Monitor () {}
 #endif
@@ -53,30 +53,17 @@ namespace System.Threading
 		// Grabs the mutex on object 'obj', with a maximum
 		// wait time 'ms' but doesn't block - if it can't get
 		// the lock it returns false, true if it can
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static bool Monitor_try_enter(object obj, int ms);
 
 		// Enter/Exit are implemented directly as icalls for performance reasons
 
 		// Acquires the mutex on object 'obj'
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static void Enter(object obj);
 
 		// Releases the mutex on object 'obj'
-#if NET_2_0
-		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static void Exit(object obj);
 
 		// Signals one of potentially many objects waiting on
 		// object 'obj'
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static void Monitor_pulse(object obj);
 
 		// Checks whether object 'obj' is currently synchronised
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static bool Monitor_test_synchronised(object obj);
 
 		public static void Pulse(object obj) {
 			if(obj==null) {
@@ -91,8 +78,6 @@ namespace System.Threading
 
 		// Signals all of potentially many objects waiting on
 		// object 'obj'
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static void Monitor_pulse_all(object obj);
 
 		public static void PulseAll(object obj) {
 			if(obj==null) {
@@ -138,8 +123,6 @@ namespace System.Threading
 		// Waits for a signal on object 'obj' with maximum
 		// wait time 'ms'. Returns true if the object was
 		// signalled, false if it timed out
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static bool Monitor_wait(object obj, int ms);
 
 		public static bool Wait (object obj)
 		{

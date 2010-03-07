@@ -469,7 +469,6 @@ namespace System.Reflection.Emit {
 			return DeclareLocal (localType, false);
 		}
 
-
 #if NET_2_0
 		public
 #else

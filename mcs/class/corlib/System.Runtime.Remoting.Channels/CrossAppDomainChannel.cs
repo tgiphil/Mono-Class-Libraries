@@ -151,7 +151,6 @@ namespace System.Runtime.Remoting.Channels
 		private static MethodInfo processMessageMethod =
 			typeof (CrossAppDomainSink).GetMethod ("ProcessMessageInDomain", BindingFlags.NonPublic|BindingFlags.Static);
 
-
 		private int _domainID;
 
 		internal CrossAppDomainSink(int domainID) 
@@ -238,7 +237,6 @@ namespace System.Runtime.Remoting.Channels
 					AppDomain.InternalSetContext (currentContext);
 				}					
 
-				
 				if (null != arrResponse) {
 					// Time to deserialize the message
 					MemoryStream respMsgStream = new MemoryStream(arrResponse);

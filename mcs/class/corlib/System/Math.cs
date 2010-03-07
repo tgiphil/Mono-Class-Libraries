@@ -40,10 +40,10 @@ using System.Runtime.ConstrainedExecution;
 namespace System
 {
 #if NET_2_0
-	public static class Math
+	public static partial class Math
 	{
 #else
-	public sealed class Math
+	public sealed partial class Math
 	{
 		private Math ()
 		{
@@ -138,9 +138,6 @@ namespace System
 			return (long)(a / b);
 		}
 #endif
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Floor (double d);
 
 		public static double IEEERemainder (double x, double y)
 		{
@@ -404,9 +401,6 @@ namespace System
 		}
 #endif
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Round (double a);
-
 		public static double Round (double value, int digits)
 		{
 			if (digits < 0 || digits > 15)
@@ -414,10 +408,6 @@ namespace System
 
 			return Round2(value, digits, false);
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static double Round2 (double value, int digits, bool away_from_zero);
-
 
 #if NET_2_0
 		public static double Round (double value, MidpointRounding mode)
@@ -513,52 +503,6 @@ namespace System
 		}
 
 		// internal calls
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Sin (double a);
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Cos (double d);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Tan (double a);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Sinh (double value);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Cosh (double value);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Tanh (double value);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Acos (double d);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Asin (double d);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Atan (double d);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Atan2 (double y, double x);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Exp (double d);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Log (double d);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Log10 (double d);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static double Pow (double x, double y);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-#if NET_2_0
-		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
-		public extern static double Sqrt (double d);
 	}
 }

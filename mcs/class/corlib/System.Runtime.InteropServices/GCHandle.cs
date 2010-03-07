@@ -40,7 +40,7 @@ namespace System.Runtime.InteropServices
 	[ComVisible(true)]
 #endif
 	[MonoTODO("Struct should be [StructLayout(LayoutKind.Sequential)] but will need to be reordered for that.")]
-	public struct GCHandle 
+	public partial struct GCHandle 
 	{
 		// fields
 		private int handle;
@@ -127,21 +127,6 @@ namespace System.Runtime.InteropServices
 				throw new ArgumentException ("GCHandle value belongs to a different domain");
 			return new GCHandle (value);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static bool CheckCurrentDomain (int handle);
-		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static object GetTarget(int handle);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static int GetTargetHandle(object obj, int handle, GCHandleType type);
-		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static void FreeHandle(int handle);
-		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static IntPtr GetAddrOfPinnedObject(int handle);
 
 #if NET_2_0
 		public static bool operator ==(GCHandle a, GCHandle b)

@@ -47,9 +47,9 @@ namespace System
 	[Serializable]
 #if NET_2_0
 	[ComVisible (true)]
-	public struct Char : IComparable, IConvertible, IComparable <char>, IEquatable <char>
+	public partial struct Char : IComparable, IConvertible, IComparable <char>, IEquatable <char>
 #else
-	public struct Char : IComparable, IConvertible
+	public partial struct Char : IComparable, IConvertible
 #endif
 	{
 		public const char MaxValue = (char) 0xffff;
@@ -72,12 +72,6 @@ namespace System
 		private readonly unsafe static ushort *to_lower_data_high;
 		private readonly unsafe static ushort *to_upper_data_low;
 		private readonly unsafe static ushort *to_upper_data_high;
-
-		[MethodImplAttribute(System.Runtime.CompilerServices.MethodImplOptions.InternalCall)]
-		private unsafe static extern void GetDataTablePointers (out byte *category_data,
-				out byte *numeric_data, out double *numeric_data_values,
-				out ushort *to_lower_data_low, out ushort *to_lower_data_high,
-				out ushort *to_upper_data_low, out ushort *to_upper_data_high);
 
 		public int CompareTo (object value)
 		{

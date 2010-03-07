@@ -27,7 +27,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
 #if NET_2_0 // Introduced by .NET 3.5 for 2.0 mscorlib
 
 using System.Globalization;

@@ -52,7 +52,7 @@ namespace System
 	[System.Runtime.InteropServices.ComVisible (true)]
 	[Serializable]
 #endif
-	public abstract class Delegate : ICloneable, ISerializable
+	public abstract partial class Delegate : ICloneable, ISerializable
 	{
 		#region Sync with object-internals.h
 #pragma warning disable 169, 414, 649
@@ -120,12 +120,6 @@ namespace System
 		//
 		// Methods
 		//
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern Delegate CreateDelegate_internal (Type type, object target, MethodInfo info, bool throwOnBindFailure);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern void SetMulticastInvoke ();
 
 #if NET_2_0
 		private static bool arg_type_match (Type delArgType, Type argType) {

@@ -40,7 +40,7 @@ namespace System.Reflection {
 #endif
 	[Serializable]
 	[ClassInterface(ClassInterfaceType.None)]
-	public abstract class FieldInfo : MemberInfo, _FieldInfo {
+	public abstract partial class FieldInfo : MemberInfo, _FieldInfo {
 
 		public abstract FieldAttributes Attributes {get;}
 		public abstract RuntimeFieldHandle FieldHandle {get;}
@@ -148,9 +148,6 @@ namespace System.Reflection {
 			SetValue (obj, value, 0, null, null);
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern FieldInfo internal_from_handle_type (IntPtr field_handle, IntPtr type_handle);
-
 		public static FieldInfo GetFieldFromHandle (RuntimeFieldHandle handle)
 		{
 			if (handle.Value == IntPtr.Zero)
@@ -200,9 +197,6 @@ namespace System.Reflection {
 			throw new NotImplementedException ();
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern UnmanagedMarshal GetUnmanagedMarshal ();
-
 		internal virtual UnmanagedMarshal UMarshal {
 			get {
 				return GetUnmanagedMarshal ();
@@ -239,8 +233,6 @@ namespace System.Reflection {
 		}
 
 #if NET_2_0 || BOOTSTRAP_NET_2_0
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern Type[] GetTypeModifiers (bool optional);
 
 		public virtual Type[] GetOptionalCustomModifiers () {
 			Type[] types = GetTypeModifiers (true);

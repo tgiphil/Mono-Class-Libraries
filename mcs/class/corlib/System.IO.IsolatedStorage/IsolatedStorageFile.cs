@@ -46,7 +46,6 @@ namespace System.IO.IsolatedStorage {
 	// This is a terribly named class.  It doesn't actually represent a file as
 	// much as a directory
 
-
 #if NET_2_0
 	[ComVisible (true)]
 #endif
@@ -573,7 +572,6 @@ namespace System.IO.IsolatedStorage {
 		{
 			directory.Delete (true);
 		}
-
 
 		protected override IsolatedStoragePermission GetPermission (PermissionSet ps)
 		{

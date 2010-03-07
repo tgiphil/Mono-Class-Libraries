@@ -254,7 +254,7 @@ namespace System
 	}
 
 	[Serializable]
-	internal class CurrentSystemTimeZone : TimeZone, IDeserializationCallback {
+	internal partial class CurrentSystemTimeZone : TimeZone, IDeserializationCallback {
 
 		// Fields
 		private string m_standardName;
@@ -295,8 +295,6 @@ namespace System
 		//    data[3]:  additional offset when daylight saving (in TimeSpan ticks).
 		//    name[0]:  name of this timezone when not daylight saving.
 		//    name[1]:  name of this timezone when daylight saving.
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern bool GetTimeZoneData (int year, out Int64[] data, out string[] names);
 
 		// Constructor
 		internal CurrentSystemTimeZone ()

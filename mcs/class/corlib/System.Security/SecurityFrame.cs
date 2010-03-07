@@ -54,19 +54,13 @@ namespace System.Security {
 #pragma warning restore 649	
 
 #if !NET_2_1 || MONOTOUCH
-	internal struct SecurityFrame {
+	internal partial struct SecurityFrame {
 
 		private AppDomain _domain;
 		private MethodInfo _method;
 		private PermissionSet _assert;
 		private PermissionSet _deny;
 		private PermissionSet _permitonly;
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern static RuntimeSecurityFrame _GetSecurityFrame (int skip);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern static Array _GetSecurityStack (int skip);
 
 		internal SecurityFrame (RuntimeSecurityFrame frame)
 		{

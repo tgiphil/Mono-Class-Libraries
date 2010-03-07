@@ -31,11 +31,8 @@ using System.Runtime.CompilerServices;
 
 namespace Mono {
 
-	internal class Runtime
+	internal partial class Runtime
 	{
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private static extern void mono_runtime_install_handlers ();
 		
 		static internal void InstallSignalHandlers ()
 		{
@@ -45,8 +42,6 @@ namespace Mono {
 		// Should not be removed intended for external use
 		// Safe to be called using reflection
 		// Format is undefined only for use as a string for reporting
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern string GetDisplayName ();
 	}
 	
 }

@@ -41,7 +41,7 @@ namespace System.Globalization
 	[System.Runtime.InteropServices.ComVisible (true)]
 #endif
 	[Serializable]
-	public class CultureInfo : ICloneable, IFormatProvider
+	public partial class CultureInfo : ICloneable, IFormatProvider
 	{
 		static volatile CultureInfo invariant_culture_info;
 #if NET_2_0		
@@ -605,7 +605,6 @@ namespace System.Globalization
 			}
 		}
 		
-
 		// 
 		// IFormatProvider implementation
 		//
@@ -671,31 +670,7 @@ namespace System.Globalization
 			return true;
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern bool construct_internal_locale_from_lcid (int lcid);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern bool construct_internal_locale_from_name (string name);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static bool construct_internal_locale_from_specific_name (CultureInfo ci,
-				string name);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static bool construct_internal_locale_from_current_locale (CultureInfo ci);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static CultureInfo [] internal_get_cultures (bool neutral, bool specific, bool installed);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern void construct_datetime_format ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern void construct_number_format ();
-
 		// Returns false if the culture can not be found, sets is_neutral if it is
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static bool internal_is_lcid_neutral (int lcid, out bool is_neutral);
 
 		private void ConstructInvariant (bool read_only)
 		{

@@ -44,7 +44,7 @@ namespace System.Reflection.Emit {
 	[ComDefaultInterface (typeof (_SignatureHelper))]
 #endif
 	[ClassInterface (ClassInterfaceType.None)]
-	public sealed class SignatureHelper : _SignatureHelper {
+	public sealed partial class SignatureHelper : _SignatureHelper {
 		internal enum SignatureHelperType {
 			HELPER_FIELD,
 			HELPER_LOCAL,
@@ -342,12 +342,6 @@ namespace System.Reflection.Emit {
 			// you will only need a few of these.
 			return 0;
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern byte[] get_signature_local ();
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern byte[] get_signature_field ();
 
 		public byte[] GetSignature ()
 		{

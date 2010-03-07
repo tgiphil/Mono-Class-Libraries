@@ -224,7 +224,6 @@ public abstract class Calendar
 	[NonSerialized]
 	internal int twoDigitYearMax;
 	
-
 	/// <summary>
 	/// Private field containing the maximum year for the calendar.
 	/// </summary>
@@ -908,7 +907,6 @@ public abstract class Calendar
 		return ToDateTime (year, month, day, hour, minute, second, 
 			millisecond, CurrentEra);
 	}
-
 
 	/// <summary>
 	/// When overridden creates the

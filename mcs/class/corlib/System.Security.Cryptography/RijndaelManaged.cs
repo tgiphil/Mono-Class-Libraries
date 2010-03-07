@@ -82,7 +82,6 @@ namespace System.Security.Cryptography {
 		}
 	}
 	
-	
 	internal class RijndaelTransform : SymmetricTransform
 	{
 		private uint[] expandedKey;

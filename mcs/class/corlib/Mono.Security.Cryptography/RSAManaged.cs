@@ -252,8 +252,6 @@ namespace Mono.Security.Cryptography {
 			return result;
 		}
 
-
-
 		public override RSAParameters ExportParameters (bool includePrivateParameters) 
 		{
 			if (m_disposed)

@@ -38,7 +38,6 @@ using System.Runtime.InteropServices;
 
 namespace System.Runtime.Serialization.Formatters {
 
-
 	/// <summary>
 	/// </summary>
 #if NET_2_0

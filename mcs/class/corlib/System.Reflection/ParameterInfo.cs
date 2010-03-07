@@ -37,7 +37,7 @@ namespace System.Reflection
 #endif
 	[Serializable]
 	[ClassInterfaceAttribute (ClassInterfaceType.None)]
-	public class ParameterInfo : ICustomAttributeProvider, _ParameterInfo {
+	public partial class ParameterInfo : ICustomAttributeProvider, _ParameterInfo {
 
 		protected Type ClassImpl;
 		protected object DefaultValueImpl;
@@ -172,16 +172,6 @@ namespace System.Reflection
 			get {return PositionImpl;}
 		}
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-		public
-#else
-		internal
-#endif
-		extern int MetadataToken {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
-
 		public virtual object[] GetCustomAttributes (bool inherit)
 		{
 			return MonoCustomAttrs.GetCustomAttributes (this, inherit);
@@ -227,9 +217,6 @@ namespace System.Reflection
 		}			
 
 #if NET_2_0 || BOOTSTRAP_NET_2_0
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern Type[] GetTypeModifiers (bool optional);
 
 		public virtual Type[] GetOptionalCustomModifiers () {
 			Type[] types = GetTypeModifiers (true);

@@ -59,11 +59,9 @@ namespace System.Security.Principal {
 				_value = domainName.ToUpper () + "\\" + domainName.ToUpper ();
 		}
 
-
 		public override string Value { 
 			get { return _value; }
 		}
-
 
 		public override bool Equals (object o)
 		{

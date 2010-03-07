@@ -35,7 +35,6 @@ namespace System.Security.Policy {
 
 		private static readonly string XmlTag = "IMembershipCondition";
 
-
 		internal static int CheckSecurityElement (SecurityElement se, string parameterName, int minimumVersion, int maximumVersion) 
 		{
 			if (se == null)

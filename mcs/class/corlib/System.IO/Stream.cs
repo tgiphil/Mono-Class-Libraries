@@ -90,7 +90,6 @@ namespace System.IO
 			set;
 		}
 
-
 #if NET_2_0
 		// 2.0 version of Dispose.
 		public void Dispose ()

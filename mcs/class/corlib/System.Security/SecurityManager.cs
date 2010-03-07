@@ -54,9 +54,9 @@ namespace System.Security {
 
 #if NET_2_0
 	[ComVisible (true)]
-	public static class SecurityManager {
+	public static partial class SecurityManager {
 #else
-	public sealed class SecurityManager {
+	public sealed partial class SecurityManager {
 
 		private SecurityManager ()
 		{
@@ -76,27 +76,6 @@ namespace System.Security {
 		}
 
 		// properties
-
-		extern public static bool CheckExecutionRights {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			[SecurityPermission (SecurityAction.Demand, ControlPolicy = true)]
-			set;
-		}
-
-#if NET_2_0
-		[Obsolete ("The security manager cannot be turned off on MS runtime")]
-#endif
-		extern public static bool SecurityEnabled {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			[SecurityPermission (SecurityAction.Demand, ControlPolicy = true)]
-			set;
-		}
 
 		// methods
 
@@ -564,9 +543,6 @@ namespace System.Security {
 		}
 
 		//  security check when using reflection
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static unsafe extern bool GetLinkDemandSecurity (MethodBase method, RuntimeDeclSecurityActions *cdecl, RuntimeDeclSecurityActions *mdecl);
 
 		// When using reflection LinkDemand are promoted to full Demand (i.e. stack walk)
 		internal unsafe static void ReflectedLinkDemandInvoke (MethodBase mb)

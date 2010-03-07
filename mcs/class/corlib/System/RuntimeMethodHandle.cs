@@ -45,7 +45,7 @@ namespace System
 #endif
 	[MonoTODO ("Serialization needs tests")]
 	[Serializable]
-	public struct RuntimeMethodHandle : ISerializable
+	public partial struct RuntimeMethodHandle : ISerializable
 	{
 		IntPtr value;
 
@@ -82,9 +82,6 @@ namespace System
 
 			info.AddValue ("MethodObj", (MonoMethod) MethodBase.GetMethodFromHandle (this), typeof (MonoMethod));
 		}
-
-		[MethodImpl (MethodImplOptions.InternalCall)]
-		static extern IntPtr GetFunctionPointer (IntPtr m);
 
 		[SecurityPermission (SecurityAction.Demand, UnmanagedCode = true)]
 		public IntPtr GetFunctionPointer ()

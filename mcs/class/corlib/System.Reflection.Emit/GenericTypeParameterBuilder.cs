@@ -41,7 +41,7 @@ using System.Runtime.Serialization;
 namespace System.Reflection.Emit
 {
 	[ComVisible (true)]
-	public sealed class GenericTypeParameterBuilder : Type
+	public sealed partial class GenericTypeParameterBuilder : Type
 	{
 	#region Sync with reflection.h
 		private TypeBuilder tbuilder;
@@ -81,9 +81,6 @@ namespace System.Reflection.Emit
 
 			initialize ();
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void initialize ();
 
 		[ComVisible (true)]
 		public override bool IsSubclassOf (Type c)

@@ -635,7 +635,6 @@ namespace System.IO
 			}
 		}
 
-
 		[MonoLimitation ("File encryption isn't supported (even on NTFS).")]
 		public static void Encrypt (string path)
 		{

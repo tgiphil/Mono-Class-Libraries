@@ -41,10 +41,7 @@ namespace System.Reflection {
 #endif
 	[Serializable]
 	[ClassInterface(ClassInterfaceType.None)]
-	public abstract class MethodBase: MemberInfo, _MethodBase {
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static MethodBase GetCurrentMethod ();
+	public abstract partial class MethodBase: MemberInfo, _MethodBase {
 
 		internal static MethodBase GetMethodFromHandleNoGenericCheck (RuntimeMethodHandle handle)
 		{
@@ -71,9 +68,6 @@ namespace System.Reflection {
 #endif
 			return res;
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static MethodBase GetMethodFromHandleInternalType (IntPtr method_handle, IntPtr type_handle);
 
 #if NET_2_0 || BOOTSTRAP_NET_2_0
 		[ComVisible (false)]
@@ -231,8 +225,6 @@ namespace System.Reflection {
 #endif
 
 #if NET_2_0
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern static MethodBody GetMethodBodyInternal (IntPtr handle);
 
 		internal static MethodBody GetMethodBody (IntPtr handle) {
 			return GetMethodBodyInternal (handle);

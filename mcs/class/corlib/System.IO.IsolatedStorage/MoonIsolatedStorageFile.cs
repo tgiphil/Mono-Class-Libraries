@@ -48,7 +48,7 @@ namespace System.IO.IsolatedStorage {
 	// * quota seems computed in (disk) blocks, i.e. a small file will have a (non-small) size
 	// e.g. every files and directories entries takes 1KB
 
-	public sealed class IsolatedStorageFile : IDisposable {
+	public sealed partial class IsolatedStorageFile : IDisposable {
 
 		static object locker = new object ();
 	
@@ -296,10 +296,6 @@ namespace System.IO.IsolatedStorage {
 				return IsolatedStorage.Quota;
 			}
 		}
-
-		[DllImport ("moon")]
-		[return: MarshalAs (UnmanagedType.Bool)]
-		extern static bool isolated_storage_increase_quota_to (string primary_text, string secondary_text);
 
 		const long mb = 1024 * 1024;
 

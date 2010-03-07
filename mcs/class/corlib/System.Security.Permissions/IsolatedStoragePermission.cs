@@ -81,7 +81,6 @@ namespace System.Security.Permissions {
 			}
 		}
 
-
 		public bool IsUnrestricted ()
 		{
 			return IsolatedStorageContainment.UnrestrictedIsolatedStorage == m_allowed;

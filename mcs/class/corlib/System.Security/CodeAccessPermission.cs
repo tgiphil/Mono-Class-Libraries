@@ -49,7 +49,6 @@ namespace System.Security {
 	[MonoTODO ("CAS support is experimental (and unsupported).")]
 	public abstract class CodeAccessPermission : IPermission, ISecurityEncodable, IStackWalk {
 
-
 		protected CodeAccessPermission ()
 		{
 		}

@@ -250,7 +250,6 @@ namespace System.Security.Policy {
                         return pl;
                 }
 
-
 		public void FromXml (SecurityElement e)
 		{
 			if (e == null)

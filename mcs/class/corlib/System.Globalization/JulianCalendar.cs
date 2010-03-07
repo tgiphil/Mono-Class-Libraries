@@ -308,7 +308,6 @@ public class JulianCalendar : Calendar {
 		return rd2 - rd1;
 	}
 		
-
 	/// <summary>
 	/// Overridden. Gives the era of the specified date.
 	/// </summary>

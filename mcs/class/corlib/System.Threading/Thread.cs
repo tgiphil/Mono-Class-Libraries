@@ -50,9 +50,9 @@ namespace System.Threading {
 #if NET_2_0
 	[ComVisible (true)]
 	[ComDefaultInterface (typeof (_Thread))]
-	public sealed class Thread : CriticalFinalizerObject, _Thread {
+	public sealed partial class Thread : CriticalFinalizerObject, _Thread {
 #else
-	public sealed class Thread : _Thread {
+	public sealed partial class Thread : _Thread {
 #endif
 
 #pragma warning disable 169, 414, 649
@@ -176,8 +176,6 @@ namespace System.Threading {
 #endif
 
 		// Looks up the object associated with the current thread
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static Thread CurrentThread_internal();
 		
 		public static Thread CurrentThread {
 #if NET_2_0
@@ -267,9 +265,6 @@ namespace System.Threading {
 			slots [slot.slot] = data;
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern static void FreeLocalSlotValues (int slot, bool thread_local);
-
 		public static LocalDataStoreSlot GetNamedDataSlot(string name) {
 			lock (datastore_lock) {
 				if (datastorehash == null)
@@ -288,20 +283,11 @@ namespace System.Threading {
 			return AppDomain.CurrentDomain;
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static int GetDomainID();
-		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static void ResetAbort_internal();
-
 		[SecurityPermission (SecurityAction.Demand, ControlThread=true)]
 		public static void ResetAbort ()
 		{
 			ResetAbort_internal ();
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static void Sleep_internal(int ms);
 
 		public static void Sleep (int millisecondsTimeout)
 		{
@@ -321,11 +307,6 @@ namespace System.Threading {
 		}
 
 		// Returns the system thread handle
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern IntPtr Thread_internal (MulticastDelegate start);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void Thread_init ();
 
 		public Thread(ThreadStart start) {
 			if(start==null) {
@@ -372,30 +353,6 @@ namespace System.Threading {
 
 		//[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		//private static extern int current_lcid ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern CultureInfo GetCachedCurrentCulture ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern byte[] GetSerializedCurrentCulture ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern void SetCachedCurrentCulture (CultureInfo culture);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern void SetSerializedCurrentCulture (byte[] culture);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern CultureInfo GetCachedCurrentUICulture ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern byte[] GetSerializedCurrentUICulture ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern void SetCachedCurrentUICulture (CultureInfo culture);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern void SetSerializedCurrentUICulture (byte[] culture);
 
 		/* If the current_lcid() isn't known by CultureInfo,
 		 * it will throw an exception which may cause
@@ -627,12 +584,6 @@ namespace System.Threading {
 			}
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern string GetName_internal ();
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void SetName_internal (String name);
-
 		/* 
 		 * The thread name must be shared by appdomains, so it is stored in
 		 * unmanaged code.
@@ -666,9 +617,6 @@ namespace System.Threading {
 			}
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void Abort_internal (object stateInfo);
-
 		[SecurityPermission (SecurityAction.Demand, ControlThread=true)]
 		public void Abort () 
 		{
@@ -682,12 +630,6 @@ namespace System.Threading {
 			Abort_internal (stateInfo);
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern object GetAbortExceptionState ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern void Interrupt_internal ();
-		
 		[SecurityPermission (SecurityAction.Demand, ControlThread=true)]
 		public void Interrupt ()
 		{
@@ -697,8 +639,6 @@ namespace System.Threading {
 
 		// The current thread joins with 'this'. Set ms to 0 to block
 		// until this actually exits.
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern bool Join_internal(int ms, IntPtr handle);
 		
 		public void Join()
 		{
@@ -725,13 +665,9 @@ namespace System.Threading {
 #endif
 
 #if NET_1_1
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static void MemoryBarrier ();
 #endif
 
 #if !NET_2_1 || MONOTOUCH
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void Resume_internal();
 
 #if NET_2_0
 		[Obsolete ("")]
@@ -742,10 +678,6 @@ namespace System.Threading {
 			Resume_internal ();
 		}
 #endif // !NET_2_1
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static void SpinWait_nop ();
-
 
 #if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
@@ -822,8 +754,6 @@ namespace System.Threading {
 		}
 
 #if !NET_2_1 || MONOTOUCH
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void Suspend_internal();
 
 #if NET_2_0
 		[Obsolete ("")]
@@ -836,8 +766,6 @@ namespace System.Threading {
 #endif // !NET_2_1
 
 		// Closes the system thread handle
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void Thread_free_internal(IntPtr handle);
 
 #if NET_2_0
 		[ReliabilityContract (Consistency.WillNotCorruptState, Cer.Success)]
@@ -846,104 +774,7 @@ namespace System.Threading {
 				Thread_free_internal(system_thread_handle);
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern private void SetState (ThreadState set);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern private void ClrState (ThreadState clr);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern private ThreadState GetState ();
-
 #if NET_1_1
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static byte VolatileRead (ref byte address);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static double VolatileRead (ref double address);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static short VolatileRead (ref short address);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static int VolatileRead (ref int address);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static long VolatileRead (ref long address);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static IntPtr VolatileRead (ref IntPtr address);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static object VolatileRead (ref object address);
-
-		[CLSCompliant(false)]
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static sbyte VolatileRead (ref sbyte address);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static float VolatileRead (ref float address);
-
-		[CLSCompliant (false)]
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static ushort VolatileRead (ref ushort address);
-
-		[CLSCompliant (false)]
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static uint VolatileRead (ref uint address);
-
-		[CLSCompliant (false)]
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static ulong VolatileRead (ref ulong address);
-
-		[CLSCompliant (false)]
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static UIntPtr VolatileRead (ref UIntPtr address);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static void VolatileWrite (ref byte address, byte value);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static void VolatileWrite (ref double address, double value);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static void VolatileWrite (ref short address, short value);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static void VolatileWrite (ref int address, int value);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static void VolatileWrite (ref long address, long value);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static void VolatileWrite (ref IntPtr address, IntPtr value);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static void VolatileWrite (ref object address, object value);
-
-		[CLSCompliant(false)]
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static void VolatileWrite (ref sbyte address, sbyte value);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static void VolatileWrite (ref float address, float value);
-
-		[CLSCompliant (false)]
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static void VolatileWrite (ref ushort address, ushort value);
-
-		[CLSCompliant (false)]
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static void VolatileWrite (ref uint address, uint value);
-
-		[CLSCompliant (false)]
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static void VolatileWrite (ref ulong address, ulong value);
-
-		[CLSCompliant (false)]
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern public static void VolatileWrite (ref UIntPtr address, UIntPtr value);
 		
 #endif
 

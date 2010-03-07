@@ -50,7 +50,7 @@ namespace System.Security.Policy {
 #if NET_2_0
 	[ComVisible (true)]
 #endif
-	public sealed class Evidence : ICollection, IEnumerable {
+	public sealed partial class Evidence : ICollection, IEnumerable {
 	
 		private bool _locked;
 		private ArrayList hostEvidenceList;	
@@ -300,8 +300,6 @@ namespace System.Security.Policy {
 
 		// Use an icall to avoid multiple file i/o to detect the 
 		// "possible" presence of an Authenticode signature
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		static extern bool IsAuthenticodePresent (Assembly a);
 #if NET_2_1
 		static internal Evidence GetDefaultHostEvidence (Assembly a)
 		{

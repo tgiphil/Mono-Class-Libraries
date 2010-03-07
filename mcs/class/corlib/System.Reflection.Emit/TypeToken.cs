@@ -29,7 +29,6 @@ using System.Runtime.InteropServices;
 
 namespace System.Reflection.Emit {
 
-
 	/// <summary>
 	///  Represents the Token returned by the metadata to represent a Type.
 	/// </summary>
@@ -43,12 +42,10 @@ namespace System.Reflection.Emit {
 
 		public static readonly TypeToken Empty;
 
-
 		static TypeToken ()
 		{
 			Empty = new TypeToken ();
 		}
-
 
 		internal TypeToken (int val)
 		{
@@ -94,7 +91,6 @@ namespace System.Reflection.Emit {
 		{
 			return tokValue;
 		}
-
 
 		/// <summary>
 		///  Returns the metadata token for this Type.

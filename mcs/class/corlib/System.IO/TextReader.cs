@@ -85,7 +85,6 @@ namespace System.IO {
 			return -1;
 		}
 		
-
 		public virtual int Read ([In, Out] char[] buffer, int index, int count)
 		{
 			int c, i;

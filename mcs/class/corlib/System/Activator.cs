@@ -49,7 +49,7 @@ namespace System
 	[ComVisible (true)]
 	[ComDefaultInterface (typeof (_Activator))]
 #endif
-	public sealed class Activator : _Activator
+	public sealed partial class Activator : _Activator
 	{
 		const BindingFlags _flags = BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance;
 		const BindingFlags _accessFlags = BindingFlags.DeclaredOnly | BindingFlags.FlattenHierarchy | BindingFlags.IgnoreCase | 
@@ -380,8 +380,6 @@ namespace System
 			return RemotingServices.Connect (type, url, state);
 		}
 #endif
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern object CreateInstanceInternal (Type type);
 
 #if NET_1_1
 		void _Activator.GetIDsOfNames ([In] ref Guid riid, IntPtr rgszNames, uint cNames, uint lcid, IntPtr rgDispId)

@@ -39,7 +39,7 @@ namespace System
 #if NET_2_0
 	[ComVisible (true)]
 #endif
-	public struct TypedReference 
+	public partial struct TypedReference 
 	{
 #pragma warning disable 169
 		RuntimeTypeHandle type;
@@ -97,7 +97,5 @@ namespace System
 			return value.type;
 		}
 
-		[MethodImpl (MethodImplOptions.InternalCall)]
-		public extern static object ToObject (TypedReference value);
 	}
 }

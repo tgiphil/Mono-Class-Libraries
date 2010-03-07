@@ -44,7 +44,7 @@ namespace System.Reflection.Emit {
 	[ComDefaultInterface (typeof (_EnumBuilder))]
 #endif
 	[ClassInterface (ClassInterfaceType.None)]
-	public sealed class EnumBuilder : Type, _EnumBuilder {
+	public sealed partial class EnumBuilder : Type, _EnumBuilder {
 		private TypeBuilder _tb;
 		private FieldBuilder _underlyingField;
 		private Type _underlyingType;
@@ -153,9 +153,6 @@ namespace System.Reflection.Emit {
 			Type res = _tb.CreateType ();
 			return res;
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void setup_enum_type (Type t);
 
 		public FieldBuilder DefineLiteral (string literalName, object literalValue)
 		{

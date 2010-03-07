@@ -40,7 +40,7 @@ using System.IO.IsolatedStorage;
 
 namespace System.IO
 {
-	unsafe internal sealed class MonoIO {
+	unsafe internal sealed partial class MonoIO {
 		public static readonly FileAttributes
 			InvalidFileAttributes = (FileAttributes)(-1);
 
@@ -164,51 +164,7 @@ namespace System.IO
 
 		// directory methods
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool CreateDirectory (string path, out MonoIOError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool RemoveDirectory (string path, out MonoIOError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static string [] GetFileSystemEntries (string path, string path_with_pattern, int attrs, int mask, out MonoIOError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static string GetCurrentDirectory (out MonoIOError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool SetCurrentDirectory (string path, out MonoIOError error);
-
 		// file methods
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool MoveFile (string path, string dest,
-						    out MonoIOError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool CopyFile (string path, string dest,
-						    bool overwrite,
-						    out MonoIOError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool DeleteFile (string path,
-						      out MonoIOError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool ReplaceFile (string sourceFileName, 
-						       string destinationFileName, 
-						       string destinationBackupFileName, 
-						       bool ignoreMetadataErrors,
-						       out MonoIOError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static FileAttributes GetFileAttributes (string path, out MonoIOError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool SetFileAttributes (string path, FileAttributes attrs, out MonoIOError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static MonoFileType GetFileType (IntPtr handle, out MonoIOError error);
 
 		public static bool Exists (string path, out MonoIOError error)
 		{
@@ -267,59 +223,7 @@ namespace System.IO
 			return true;
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool GetFileStat (string path,
-						       out MonoIOStat stat,
-						       out MonoIOError error);
-
 		// handle methods
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static IntPtr Open (string filename,
-						  FileMode mode,
-						  FileAccess access,
-						  FileShare share,
-						  FileOptions options,
-						  out MonoIOError error);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool Close (IntPtr handle,
-						 out MonoIOError error);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static int Read (IntPtr handle, byte [] dest,
-					       int dest_offset, int count,
-					       out MonoIOError error);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static int Write (IntPtr handle, [In] byte [] src,
-						int src_offset, int count,
-						out MonoIOError error);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static long Seek (IntPtr handle, long offset,
-						SeekOrigin origin,
-						out MonoIOError error);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool Flush (IntPtr handle,
-						 out MonoIOError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static long GetLength (IntPtr handle,
-						     out MonoIOError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool SetLength (IntPtr handle,
-						     long length,
-						     out MonoIOError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool SetFileTime (IntPtr handle,
-						       long creation_time,
-						       long last_access_time,
-						       long last_write_time,
-						       out MonoIOError error);
 
 		public static bool SetFileTime (string path,
 						long creation_time,
@@ -396,66 +300,12 @@ namespace System.IO
 			return result;
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static void Lock (IntPtr handle,
-						long position, long length,
-						out MonoIOError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static void Unlock (IntPtr handle,
-						  long position, long length,
-						  out MonoIOError error);
-
 		// console handles
-
-		public extern static IntPtr ConsoleOutput {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
-
-		public extern static IntPtr ConsoleInput {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
-
-		public extern static IntPtr ConsoleError {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
 
 		// pipe handles
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool CreatePipe (out IntPtr read_handle, out IntPtr write_handle);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool DuplicateHandle (IntPtr source_process_handle, IntPtr source_handle,
-			IntPtr target_process_handle, out IntPtr target_handle, int access, int inherit, int options);
-
 		// path characters
 
-		public extern static char VolumeSeparatorChar {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
-
-		public extern static char DirectorySeparatorChar {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
-
-		public extern static char AltDirectorySeparatorChar {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
-
-		public extern static char PathSeparator {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static int GetTempPath(out string path);
 	}
 }
 

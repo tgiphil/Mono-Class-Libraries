@@ -58,7 +58,7 @@ namespace System.Runtime.Remoting.Proxies
 #if NET_2_0
 	[ComVisible (true)]
 #endif
-	public abstract class RealProxy {
+	public abstract partial class RealProxy {
 		// other classes visible to the runtime 
 		// derive from this class so keep these locals
 		// in sync with the definition RealProxy 
@@ -101,9 +101,6 @@ namespace System.Runtime.Remoting.Proxies
 				throw new NotSupportedException ("stub is not used in Mono");
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern static Type InternalGetProxyType (object transparentProxy);
-		
 		public Type GetProxiedType() 
 		{
 			if (_objTP == null) {
@@ -248,9 +245,6 @@ namespace System.Runtime.Remoting.Proxies
 			return res_msg.ReturnValue;
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern virtual object InternalGetTransparentProxy (string className);
-
 		public virtual object GetTransparentProxy () 
 		{
 			if (_objTP == null) 
@@ -323,7 +317,6 @@ namespace System.Runtime.Remoting.Proxies
 
 			// Check out parameters
 
-			
 			int no;
 			
 			if (call.NeedsOutProcessing (out no))

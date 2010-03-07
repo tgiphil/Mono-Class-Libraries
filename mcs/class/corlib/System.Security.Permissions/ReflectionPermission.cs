@@ -44,7 +44,6 @@ namespace System.Security.Permissions {
 
 		ReflectionPermissionFlag flags;
 
-
 		public ReflectionPermission (PermissionState state)
 		{
 			if (CheckPermissionState (state, true) == PermissionState.Unrestricted)
@@ -58,7 +57,6 @@ namespace System.Security.Permissions {
 			// reuse validation by the Flags property
 			Flags = flag;
 		}
-
 
 		public ReflectionPermissionFlag Flags {
 			get { return flags; }
@@ -77,7 +75,6 @@ namespace System.Security.Permissions {
 				flags = value;
 			}
 		}
-
 
 		public override IPermission Copy ()
 		{

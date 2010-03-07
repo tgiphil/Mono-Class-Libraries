@@ -47,7 +47,7 @@ namespace System.Reflection.Emit
 	[ComDefaultInterface (typeof (_MethodBuilder))]
 #endif
 	[ClassInterface (ClassInterfaceType.None)]
-	public sealed class MethodBuilder : MethodInfo, _MethodBuilder
+	public sealed partial class MethodBuilder : MethodInfo, _MethodBuilder
 	{
 #pragma warning disable 169, 414
 		private RuntimeMethodHandle mhandle;
@@ -554,8 +554,6 @@ namespace System.Reflection.Emit
 		}
 
 #if NET_2_0 || BOOTSTRAP_NET_2_0
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public override extern MethodInfo MakeGenericMethod (params Type [] typeArguments);
 
 		public override bool IsGenericMethodDefinition {
 			get {

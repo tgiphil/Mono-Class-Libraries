@@ -38,7 +38,6 @@ namespace System.Threading
 
 		int state;
 
-		
 		public ManualResetEventSlim () : this(false, 20)
 		{
 		}

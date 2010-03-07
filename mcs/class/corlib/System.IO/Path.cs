@@ -50,12 +50,12 @@ namespace System.IO {
 
 #if NET_2_0
 	[ComVisible (true)]
-	public static class Path {
+	public static partial class Path {
 
 		[Obsolete ("see GetInvalidPathChars and GetInvalidFileNameChars methods.")]
 		public static readonly char[] InvalidPathChars;
 #else
-	public sealed class Path {
+	public sealed partial class Path {
 
 		private Path ()
 		{
@@ -467,9 +467,6 @@ namespace System.IO {
 
 			return p;
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern string get_temp_path ();
 
 		public static bool HasExtension (string path)
 		{

@@ -47,7 +47,7 @@ namespace System.Reflection.Emit {
 	[ComDefaultInterface (typeof (_ModuleBuilder))]
 #endif
 	[ClassInterface (ClassInterfaceType.None)]
-	public class ModuleBuilder : Module, _ModuleBuilder {
+	public partial class ModuleBuilder : Module, _ModuleBuilder {
 
 #pragma warning disable 169, 414
 		#region Sync with object-internals.h
@@ -74,12 +74,6 @@ namespace System.Reflection.Emit {
 		ModuleBuilderTokenGenerator token_gen;
 		Hashtable resource_writers;
 		ISymbolWriter symbolWriter;
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern void basic_init (ModuleBuilder ab);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern void set_wrappers_type (ModuleBuilder mb, Type ab);
 
 		internal ModuleBuilder (AssemblyBuilder assb, string name, string fullyqname, bool emitSymbolInfo, bool transient) {
 			this.name = this.scopename = name;
@@ -355,9 +349,6 @@ namespace System.Reflection.Emit {
 			}
 			return null;
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern Type create_modified_type (TypeBuilder tb, string modifiers);
 
 		static readonly char [] type_modifiers = {'&', '[', '*'};
 
@@ -667,16 +658,6 @@ namespace System.Reflection.Emit {
 			return GetTypeToken (GetType (name));
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern int getUSIndex (ModuleBuilder mb, string str);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern int getToken (ModuleBuilder mb, object obj);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern int getMethodToken (ModuleBuilder mb, MethodInfo method,
-							  Type[] opt_param_types);
-
 		internal int GetToken (string str) {
 			if (us_string_cache.Contains (str))
 				return (int)us_string_cache [str];
@@ -697,24 +678,11 @@ namespace System.Reflection.Emit {
 			return getToken (this, helper);
 		}
 
-		/*
-		 * Register the token->obj mapping with the runtime so the Module.Resolve... 
-		 * methods will work for obj.
-		 */
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern void RegisterToken (object obj, int token);
-
 		internal TokenGenerator GetTokenGenerator () {
 			if (token_gen == null)
 				token_gen = new ModuleBuilderTokenGenerator (this);
 			return token_gen;
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern void build_metadata (ModuleBuilder mb);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void WriteToFile (IntPtr handle);
 
 		internal void Save ()
 		{

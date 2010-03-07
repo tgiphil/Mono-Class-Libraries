@@ -82,7 +82,6 @@ namespace System
 		}
 #endif
 
-
 		[CLSCompliant (false)]
 		public static ushort Parse (string s, IFormatProvider provider)
 		{

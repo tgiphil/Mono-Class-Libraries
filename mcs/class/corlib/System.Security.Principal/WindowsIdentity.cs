@@ -38,12 +38,12 @@ namespace System.Security.Principal {
 
 	[Serializable]
 #if NET_1_0
-	public class WindowsIdentity : IIdentity, IDeserializationCallback {
+	public partial class WindowsIdentity : IIdentity, IDeserializationCallback {
 #elif NET_2_0
 	[ComVisible (true)]
-	public class WindowsIdentity : IIdentity, IDeserializationCallback, ISerializable, IDisposable {
+	public partial class WindowsIdentity : IIdentity, IDeserializationCallback, ISerializable, IDisposable {
 #else
-	public class WindowsIdentity : IIdentity, IDeserializationCallback, ISerializable {
+	public partial class WindowsIdentity : IIdentity, IDeserializationCallback, ISerializable {
 #endif
 		private IntPtr _token;
 		private string _type;
@@ -322,16 +322,6 @@ namespace System.Security.Principal {
 		// that's it's hard to say it's an "undocumented" feature -
 		// so we also implement it in Mono :-/
 		// http://www.dotnet247.com/247reference/msgs/39/195403.aspx
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern static string[] _GetRoles (IntPtr token);
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern static IntPtr GetCurrentToken ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static string GetTokenName (IntPtr token);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static IntPtr GetUserToken (string username);
 	}
 }

@@ -50,7 +50,7 @@ namespace System
 	// many times that obj.GetType().FullName == "System.__ComObject" and
 	// Type.GetType("System.__ComObject") may be used.
 
-	internal class __ComObject : MarshalByRefObject
+	internal partial class __ComObject : MarshalByRefObject
 	{
 #pragma warning disable 169	
 		#region Sync with object-internals.h
@@ -58,12 +58,6 @@ namespace System
 		IntPtr hash_table;
 		#endregion
 #pragma warning restore 169
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern __ComObject CreateRCW (Type t);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern void ReleaseInterfaces ();
 
 		~__ComObject ()
 		{
@@ -118,9 +112,6 @@ namespace System
 			}
 			throw new COMException ("Could not find base COM type for type " + t.ToString());
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern IntPtr GetInterfaceInternal (Type t, bool throwException);
 
 		internal IntPtr GetInterface (Type t, bool throwException) {
 			CheckIUnknown ();
@@ -195,12 +186,5 @@ namespace System
 			return iunknown.ToInt32 ();
 		}
 
-		[DllImport ("ole32.dll", CallingConvention = CallingConvention.StdCall, ExactSpelling = true, PreserveSig = true)]
-		static extern int CoCreateInstance (
-		   [In, MarshalAs (UnmanagedType.LPStruct)] Guid rclsid,
-		   IntPtr pUnkOuter,
-		   uint dwClsContext,
-		  [In, MarshalAs (UnmanagedType.LPStruct)] Guid riid,
-			out IntPtr pUnk);
 	}
 }

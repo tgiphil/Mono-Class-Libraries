@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 namespace System.IO {
 	[SerializableAttribute] 
 	[ComVisibleAttribute(true)] 
-	public sealed class DriveInfo : ISerializable {
+	public sealed partial class DriveInfo : ISerializable {
 		_DriveType _drive_type;
 		string drive_format;
 		string path;
@@ -242,13 +242,6 @@ namespace System.IO {
 			return(Name);
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern static bool GetDiskFreeSpaceInternal (string pathName, out ulong freeBytesAvail,
-							     out ulong totalNumberOfBytes, out ulong totalNumberOfFreeBytes,
-							     out MonoIOError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern static uint GetDriveTypeInternal (string rootPathName);
 	}
 }
 

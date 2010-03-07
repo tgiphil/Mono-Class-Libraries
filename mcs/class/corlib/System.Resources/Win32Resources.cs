@@ -40,7 +40,6 @@ using System.Text;
 
 namespace System.Resources {
 
-
 internal enum Win32ResourceType {
 	RT_CURSOR = 1,
 	RT_FONT = 8,

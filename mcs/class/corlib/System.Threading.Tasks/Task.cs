@@ -62,7 +62,6 @@ namespace System.Threading.Tasks
 		
 		CancellationTokenSource src = new CancellationTokenSource ();
 			
-		
 		public Task (Action action) : this (action, TaskCreationOptions.None)
 		{
 			
@@ -486,7 +485,6 @@ namespace System.Threading.Tasks
 			bool result = scheduler.ParticipateUntil (this, delegate { 
 				if (token.HasValue && token.Value.IsCancellationRequested)
 					throw new OperationCanceledException ("The CancellationToken has had cancellation requested.");
-				
 				
 				return (stopFunc != null) ? stopFunc () : false;
 			});

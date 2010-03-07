@@ -186,7 +186,6 @@ namespace System.Security.Policy {
 			}
 		}
 
-
 		public static PermissionSet Nothing {
 			get {
 				if (_nothing == null)

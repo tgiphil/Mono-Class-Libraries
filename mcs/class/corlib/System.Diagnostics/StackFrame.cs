@@ -46,7 +46,7 @@ namespace System.Diagnostics {
 	[ComVisible (true)]
 #endif
 	[MonoTODO ("Serialized objects are not compatible with MS.NET")]
-        public class StackFrame {
+        public partial class StackFrame {
 
                 public const int OFFSET_UNKNOWN = -1;
 
@@ -61,11 +61,6 @@ namespace System.Diagnostics {
 		private string internalMethodName;
 		#pragma warning restore 649
 		#endregion
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern static bool get_frame_info (int skip, bool needFileInfo, out MethodBase method,
-						   out int iloffset, out int native_offset,
-						   out string file, out int line, out int column);
 
                 public StackFrame ()
 		{

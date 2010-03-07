@@ -42,7 +42,6 @@ namespace System.Collections.Generic {
 				_default = new DefaultComparer ();
 		}
 		
-		
 		public abstract int GetHashCode (T obj);
 		public abstract bool Equals (T x, T y);
 	

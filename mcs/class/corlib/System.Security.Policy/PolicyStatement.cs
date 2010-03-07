@@ -119,7 +119,6 @@ namespace System.Security.Policy {
 			if (et.Tag != "PolicyStatement")
 				throw new ArgumentException (Locale.GetText ("Invalid tag."));
 
-
 			string attributes = et.Attribute ("Attributes");
 			if (attributes != null) {
 				attrs = (PolicyStatementAttribute) Enum.Parse (

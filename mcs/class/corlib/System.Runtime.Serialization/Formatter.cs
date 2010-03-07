@@ -165,10 +165,8 @@ public abstract class Formatter : IFormatter
 
 	protected abstract void WriteObjectRef (object obj, string name, Type memberType);
 
-
         [CLSCompliant (false)]
 	protected abstract void WriteSByte (sbyte val, string name);
-
 
 	protected abstract void WriteSingle (float val, string name);
 	

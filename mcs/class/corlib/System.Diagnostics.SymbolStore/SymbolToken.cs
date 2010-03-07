@@ -64,7 +64,6 @@ namespace System.Diagnostics.SymbolStore
 			return(obj.GetToken () == _val);
 		}
 		
-
 		public static bool operator == (SymbolToken a, SymbolToken b)
 		{
 			return a.Equals (b);

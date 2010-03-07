@@ -37,22 +37,15 @@ using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
 using System.Runtime.InteropServices;
 
-
 namespace Mono.Interop
 {
-	internal class ComInteropProxy : RealProxy, IRemotingTypeInfo
+	internal partial class ComInteropProxy : RealProxy, IRemotingTypeInfo
     {
         #region Sync with object-internals.h
 		private __ComObject com_object;
 		int ref_count = 1; // wrapper ref count
         #endregion
 		private string type_name;
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static void AddProxy (IntPtr pItf, ComInteropProxy proxy);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern static ComInteropProxy FindProxy (IntPtr pItf);
 
 		// Private. Objects must be created with CreateProxy.
 		ComInteropProxy (Type t)

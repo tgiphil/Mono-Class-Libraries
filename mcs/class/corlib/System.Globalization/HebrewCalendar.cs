@@ -224,7 +224,6 @@ public class HebrewCalendar : Calendar {
 			era));
 	}
 
-	
 	/// <summary>
 	/// Overrideden. Adds months to a given date.
 	/// </summary>
@@ -483,7 +482,6 @@ public class HebrewCalendar : Calendar {
 		return rd2 - rd1;
 	}
 		
-
 	/// <summary>
 	/// Overridden. Gives the era of the specified date.
 	/// </summary>

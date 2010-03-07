@@ -51,9 +51,9 @@ namespace System.Reflection {
 	[Serializable]
 	[ClassInterface(ClassInterfaceType.None)]
 #if NET_2_1
-	public class Assembly : ICustomAttributeProvider, _Assembly {
+	public partial class Assembly : ICustomAttributeProvider, _Assembly {
 #else
-	public class Assembly : ICustomAttributeProvider, _Assembly, IEvidenceFactory, ISerializable {
+	public partial class Assembly : ICustomAttributeProvider, _Assembly, IEvidenceFactory, ISerializable {
 #endif
 
 		internal class ResolveEventHolder {
@@ -95,18 +95,6 @@ namespace System.Reflection {
 			}
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern string get_code_base (bool escaped);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern string get_fullname ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern string get_location ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern string InternalImageRuntimeVersion ();
-
 		// SECURITY: this should be the only caller to icall get_code_base
 		private string GetCodeBase (bool escaped)
 		{
@@ -141,10 +129,6 @@ namespace System.Reflection {
 			}
 		}
 
-		public virtual extern MethodInfo EntryPoint {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
 #if !NET_2_1 || MONOTOUCH
 		public virtual Evidence Evidence {
 			[SecurityPermission (SecurityAction.Demand, ControlEvidence = true)]
@@ -163,9 +147,6 @@ namespace System.Reflection {
 			}
 			return _evidence;
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern bool get_global_assembly_cache ();
 
 		public bool GlobalAssemblyCache {
 			get {
@@ -233,9 +214,6 @@ namespace System.Reflection {
 			return MonoCustomAttrs.GetCustomAttributes (this, attributeType, inherit);
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern object GetFilesInternal (String name, bool getResourceModules);
-
 		public virtual FileStream[] GetFiles ()
 		{
 			return GetFiles (false);
@@ -276,9 +254,6 @@ namespace System.Reflection {
 			else
 				return null;
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern IntPtr GetManifestResourceInternal (String name, out int size, out Module module);
 
 		public virtual Stream GetManifestResourceStream (String name)
 		{
@@ -351,9 +326,6 @@ namespace System.Reflection {
 				return GetManifestResourceStream (ns + "." + name);
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal virtual extern Type[] GetTypes (bool exportedOnly);
-		
 		public virtual Type[] GetTypes ()
 		{
 			return GetTypes (false);
@@ -373,9 +345,6 @@ namespace System.Reflection {
 			return GetType (name, false, false);
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern Type InternalGetType (Module module, String name, Boolean throwOnError, Boolean ignoreCase);
-
 		public Type GetType (string name, bool throwOnError, bool ignoreCase)
 		{
 			if (name == null)
@@ -385,12 +354,6 @@ namespace System.Reflection {
 
 			return InternalGetType (null, name, throwOnError, ignoreCase);
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern static void InternalGetAssemblyName (string assemblyFile, AssemblyName aname);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		static extern void FillName (Assembly ass, AssemblyName aname);
 
 		[MonoTODO ("copiedName == true is not supported")]
 		public virtual AssemblyName GetName (Boolean copiedName)
@@ -437,10 +400,6 @@ namespace System.Reflection {
 				return type.Assembly;
 			throw new ArgumentNullException ("type");
 		}
-
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public static extern Assembly GetEntryAssembly();
 
 		public Assembly GetSatelliteAssembly (CultureInfo culture)
 		{
@@ -497,9 +456,6 @@ namespace System.Reflection {
 			return LoadFrom (fullName);
 		}
 		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static Assembly LoadFrom (String assemblyFile, bool refonly);
-
 		public static Assembly LoadFrom (String assemblyFile)
 		{
 			return LoadFrom (assemblyFile, false);
@@ -622,9 +578,6 @@ namespace System.Reflection {
 			throw new NotImplementedException ();
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private static extern Assembly load_with_partial_name (string name, Evidence e);
-
 #if NET_2_0
 		[Obsolete ("")]
 #endif
@@ -718,9 +671,6 @@ namespace System.Reflection {
 			return null;
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal virtual extern Module[] GetModulesInternal ();
-
 		public Module[] GetModules (bool getResourceModules) {
 			Module[] modules = GetModulesInternal ();
 
@@ -734,24 +684,6 @@ namespace System.Reflection {
 			else
 				return modules;
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern string[] GetNamespaces ();
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern virtual String[] GetManifestResourceNames ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static Assembly GetExecutingAssembly ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static Assembly GetCallingAssembly ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern AssemblyName[] GetReferencedAssemblies ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern bool GetManifestResourceInfoInternal (String name, ManifestResourceInfo info);
 
 		public virtual ManifestResourceInfo GetManifestResourceInfo (String resourceName)
 		{
@@ -786,9 +718,6 @@ namespace System.Reflection {
 		// The following functions are only for the Mono Debugger.
 		//
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern int MonoDebugger_GetMethodToken (MethodBase method);
-
 #if NET_2_0 || BOOTSTRAP_NET_2_0
 		[MonoTODO ("Always returns zero")]
 		[ComVisible (false)]
@@ -807,14 +736,6 @@ namespace System.Reflection {
 			return GetManifestModuleInternal ();
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern Module GetManifestModuleInternal ();
-
-		[ComVisible (false)]
-		public virtual extern bool ReflectionOnly {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
 #endif
 
 #if !NET_2_1 || MONOTOUCH
@@ -864,12 +785,6 @@ namespace System.Reflection {
 				return _denied;
 			}
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern internal static bool LoadPermissions (Assembly a, 
-			ref IntPtr minimum, ref int minLength,
-			ref IntPtr optional, ref int optLength,
-			ref IntPtr refused, ref int refLength);
 
 		// Support for SecurityAction.RequestMinimum, RequestOptional and RequestRefuse
 		private void LoadAssemblyPermissions ()

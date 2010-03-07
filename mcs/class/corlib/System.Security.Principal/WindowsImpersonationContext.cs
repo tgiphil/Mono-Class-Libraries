@@ -36,9 +36,9 @@ namespace System.Security.Principal {
 
 #if NET_2_0
 	[ComVisible (true)]
-	public class WindowsImpersonationContext : IDisposable {
+	public partial class WindowsImpersonationContext : IDisposable {
 #else
-	public class WindowsImpersonationContext {
+	public partial class WindowsImpersonationContext {
 #endif
 
 		private IntPtr _token;
@@ -94,16 +94,5 @@ namespace System.Security.Principal {
 
 		// see mono/mono/metadata/security.c for implementation
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static bool CloseToken (IntPtr token);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static IntPtr DuplicateToken (IntPtr token);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static bool SetCurrentToken (IntPtr token);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static bool RevertToSelf ();
 	}
 }

@@ -41,12 +41,12 @@ using System.Text;
 namespace System.Security.Cryptography {
 	
 #if NET_1_0
-	public class RNGCryptoServiceProvider : RandomNumberGenerator {
+	public partial class RNGCryptoServiceProvider : RandomNumberGenerator {
 #else
 	#if NET_2_0 && !NET_2_1
 	[ComVisible (true)]
 	#endif
-	public sealed class RNGCryptoServiceProvider : RandomNumberGenerator {
+	public sealed partial class RNGCryptoServiceProvider : RandomNumberGenerator {
 #endif
 		private static object _lock;
 		private IntPtr _handle;
@@ -94,18 +94,6 @@ namespace System.Security.Cryptography {
 			}
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern bool RngOpen ();
-		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern IntPtr RngInitialize (byte[] seed);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern IntPtr RngGetBytes (IntPtr handle, byte[] data);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern void RngClose (IntPtr handle);
-		
 		public override void GetBytes (byte[] data) 
 		{
 			if (data == null)

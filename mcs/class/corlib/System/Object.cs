@@ -45,7 +45,7 @@ namespace System {
 #if NET_2_0
 	[ComVisible (true)]
 #endif
-	public class Object {
+	public partial class Object {
 
 		// <summary>
 		//   Compares this object to the specified object.
@@ -102,14 +102,10 @@ namespace System {
 		// <summary>
 		//   Returns the Type associated with the object.
 		// </summary>
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern Type GetType ();
 
 		// <summary>
 		//   Shallow copy of the object.
 		// </summary>
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		protected extern object MemberwiseClone ();
 
 		// <summary>
 		//   Returns a stringified representation of the object.
@@ -135,12 +131,6 @@ namespace System {
 			return (objA == objB);
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal static extern int InternalGetHashCode (object o);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern IntPtr obj_address ();
- 
 #pragma warning disable 169
 		void FieldGetter (string typeName, string fieldName, ref object val)
 		{

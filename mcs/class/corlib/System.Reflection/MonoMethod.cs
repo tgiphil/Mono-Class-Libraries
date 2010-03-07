@@ -37,10 +37,9 @@ using System.Security;
 using System.Threading;
 using System.Text;
 
-
 namespace System.Reflection {
 	
-	internal struct MonoMethodInfo 
+	internal partial struct MonoMethodInfo 
 	{
 		private Type parent;
 		private Type ret;
@@ -48,9 +47,6 @@ namespace System.Reflection {
 		internal MethodImplAttributes iattrs;
 		private CallingConventions callconv;
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		static extern void get_method_info (IntPtr handle, out MonoMethodInfo info);
-		
 		internal static MonoMethodInfo GetMethodInfo (IntPtr handle)
 		{
 			MonoMethodInfo info;
@@ -83,16 +79,10 @@ namespace System.Reflection {
 			return GetMethodInfo (handle).iattrs;
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		static extern ParameterInfo[] get_parameter_info (IntPtr handle, MemberInfo member);
-
 		static internal ParameterInfo[] GetParametersInfo (IntPtr handle, MemberInfo member)
 		{
 			return get_parameter_info (handle, member);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		static extern UnmanagedMarshal get_retval_marshal (IntPtr handle);
 
 		static internal ParameterInfo GetReturnParameterInfo (MonoMethod method)
 		{
@@ -105,7 +95,7 @@ namespace System.Reflection {
 	 * the .NET reflection class hierarchy is so broken.
 	 */
 	[Serializable()]
-	internal class MonoMethod : MethodInfo, ISerializable
+	internal partial class MonoMethod : MethodInfo, ISerializable
 	{
 #pragma warning disable 649
 		internal IntPtr mhandle;
@@ -120,12 +110,6 @@ namespace System.Reflection {
 			this.mhandle = mhandle.Value;
 		}
 		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal static extern string get_name (MethodBase method);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal static extern MonoMethod get_base_definition (MonoMethod method);
-
 		public override MethodInfo GetBaseDefinition ()
 		{
 			return get_base_definition (this);
@@ -159,13 +143,6 @@ namespace System.Reflection {
 		{
 			return MonoMethodInfo.GetParametersInfo (mhandle, this);
 		}
-
-		/*
-		 * InternalInvoke() receives the parameters correctly converted by the 
-		 * binder to match the types of the method signature.
-		 */
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern Object InternalInvoke (Object obj, Object[] parameters, out Exception exc);
 
 		public override Object Invoke (Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture) 
 		{
@@ -268,9 +245,6 @@ namespace System.Reflection {
 			return MonoCustomAttrs.GetCustomAttributes (this, attributeType, inherit);
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal static extern DllImportAttribute GetDllImportAttribute (IntPtr mhandle);
-
 		internal object[] GetPseudoCustomAttributes ()
 		{
 			int count = 0;
@@ -356,7 +330,6 @@ namespace System.Reflection {
 			return sb.ToString ();
 		}
 
-	
 		// ISerializable
 		public void GetObjectData(SerializationInfo info, StreamingContext context) 
 		{
@@ -384,15 +357,6 @@ namespace System.Reflection {
 			return ret;
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern MethodInfo MakeGenericMethod_impl (Type [] types);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public override extern Type [] GetGenericArguments ();
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern MethodInfo GetGenericMethodDefinition_impl ();
-
 		public override MethodInfo GetGenericMethodDefinition ()
 		{
 			MethodInfo res = GetGenericMethodDefinition_impl ();
@@ -400,16 +364,6 @@ namespace System.Reflection {
 				throw new InvalidOperationException ();
 
 			return res;
-		}
-
-		public override extern bool IsGenericMethodDefinition {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
-		}
-
-		public override extern bool IsGenericMethod {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
 		}
 
 		public override bool ContainsGenericParameters {
@@ -431,7 +385,7 @@ namespace System.Reflection {
 #endif
 	}
 	
-	internal class MonoCMethod : ConstructorInfo, ISerializable
+	internal partial class MonoCMethod : ConstructorInfo, ISerializable
 	{
 #pragma warning disable 649		
 		internal IntPtr mhandle;
@@ -448,13 +402,6 @@ namespace System.Reflection {
 		{
 			return MonoMethodInfo.GetParametersInfo (mhandle, this);
 		}
-
-		/*
-		 * InternalInvoke() receives the parameters corretcly converted by the binder
-		 * to match the types of the method signature.
-		 */
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern Object InternalInvoke (Object obj, Object[] parameters, out Exception exc);
 
 		public override Object Invoke (Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture) 
 		{

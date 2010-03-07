@@ -48,7 +48,7 @@ namespace Microsoft.Win32
 	///	Function stubs, constants and helper functions for
 	///	the Win32 registry manipulation utilities.
 	/// </summary>
-	internal class Win32RegistryApi : IRegistryApi
+	internal partial class Win32RegistryApi : IRegistryApi
 	{
 		// bit masks for registry key open access permissions
 		const int OpenRegKeyRead = 0x00020019; 
@@ -60,73 +60,10 @@ namespace Microsoft.Win32
 		// FIXME this is hard coded on Mono, can it be determined dynamically? 
 		readonly int NativeBytesPerCharacter = Marshal.SystemDefaultCharSize;
 
-		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode, EntryPoint="RegCreateKey")]
-		static extern int RegCreateKey (IntPtr keyBase, string keyName, out IntPtr keyHandle);
-	       
-		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode, EntryPoint="RegCloseKey")]
-		static extern int RegCloseKey (IntPtr keyHandle);
-
-		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode)]
-		static extern int RegConnectRegistry (string machineName, IntPtr hKey,
-				out IntPtr keyHandle);
-
-		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode, EntryPoint="RegFlushKey")]
-		private static extern int RegFlushKey (IntPtr keyHandle);
-
-		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode, EntryPoint="RegOpenKeyEx")]
-		private static extern int RegOpenKeyEx (IntPtr keyBase,
-				string keyName, IntPtr reserved, int access,
-				out IntPtr keyHandle);
-
-		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode, EntryPoint="RegDeleteKey")]
-		private static extern int RegDeleteKey (IntPtr keyHandle, string valueName);
-
-		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode, EntryPoint="RegDeleteValue")]
-		private static extern int RegDeleteValue (IntPtr keyHandle, string valueName);
-
-		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode, EntryPoint="RegEnumKey")]
-		private static extern int RegEnumKey (IntPtr keyBase, int index, StringBuilder nameBuffer, int bufferLength);
-
-		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode, EntryPoint="RegEnumValue")]
-		private static extern int RegEnumValue (IntPtr keyBase, 
-				int index, StringBuilder nameBuffer, 
-				ref int nameLength, IntPtr reserved, 
-				ref RegistryValueKind type, IntPtr data, IntPtr dataLength);
-
 //		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode, EntryPoint="RegSetValueEx")]
 //		private static extern int RegSetValueEx (IntPtr keyBase, 
 //				string valueName, IntPtr reserved, RegistryValueKind type,
 //				StringBuilder data, int rawDataLength);
-
-		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode, EntryPoint="RegSetValueEx")]
-		private static extern int RegSetValueEx (IntPtr keyBase, 
-				string valueName, IntPtr reserved, RegistryValueKind type,
-				string data, int rawDataLength);
-
-		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode, EntryPoint="RegSetValueEx")]
-		private static extern int RegSetValueEx (IntPtr keyBase, 
-				string valueName, IntPtr reserved, RegistryValueKind type,
-				byte[] rawData, int rawDataLength);
-
-		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode, EntryPoint="RegSetValueEx")]
-		private static extern int RegSetValueEx (IntPtr keyBase, 
-				string valueName, IntPtr reserved, RegistryValueKind type,
-				ref int data, int rawDataLength);
-
-		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode, EntryPoint="RegQueryValueEx")]
-		private static extern int RegQueryValueEx (IntPtr keyBase,
-				string valueName, IntPtr reserved, ref RegistryValueKind type,
-				IntPtr zero, ref int dataSize);
-
-		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode, EntryPoint="RegQueryValueEx")]
-		private static extern int RegQueryValueEx (IntPtr keyBase,
-				string valueName, IntPtr reserved, ref RegistryValueKind type,
-				[Out] byte[] data, ref int dataSize);
-
-		[DllImport ("advapi32.dll", CharSet=CharSet.Unicode, EntryPoint="RegQueryValueEx")]
-		private static extern int RegQueryValueEx (IntPtr keyBase,
-				string valueName, IntPtr reserved, ref RegistryValueKind type,
-				ref int data, ref int dataSize);
 
 		// Returns our handle from the RegistryKey
 		static IntPtr GetHandle (RegistryKey key)
@@ -195,7 +132,6 @@ namespace Microsoft.Win32
 				GenerateException (result);
 			}
 			
-
 			return obj;
 		}
 
@@ -304,7 +240,6 @@ namespace Microsoft.Win32
 			return result;
 		}
 
-		
 		// Arbitrary max size for key/values names that can be fetched.
 		// .NET framework SDK docs say that the max name length that can 
 		// be used is 255 characters, we'll allow for a bit more.
@@ -484,7 +419,6 @@ namespace Microsoft.Win32
 			}
 			return (string []) keys.ToArray (typeof(String));
 		}
-
 
 		public string [] GetValueNames (RegistryKey rkey)
 		{

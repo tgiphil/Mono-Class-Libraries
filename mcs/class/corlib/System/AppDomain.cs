@@ -66,9 +66,9 @@ namespace System {
 #endif
 	[ClassInterface(ClassInterfaceType.None)]
 #if NET_2_1
-	public sealed class AppDomain : MarshalByRefObject {
+	public sealed partial class AppDomain : MarshalByRefObject {
 #else
-	public sealed class AppDomain : MarshalByRefObject, _AppDomain, IEvidenceFactory {
+	public sealed partial class AppDomain : MarshalByRefObject, _AppDomain, IEvidenceFactory {
 #endif
         #pragma warning disable 169
         #region Sync with object-internals.h
@@ -101,9 +101,6 @@ namespace System {
 		private AppDomain ()
 		{
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern AppDomainSetup getSetup ();
 
 		AppDomainSetup SetupInformationNoCopy {
 			get { return getSetup (); }
@@ -167,9 +164,6 @@ namespace System {
 		}
 #endif
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern string getFriendlyName ();
-
 		public string FriendlyName {
 			get {
 				return getFriendlyName ();
@@ -224,17 +218,12 @@ namespace System {
 			get { return _granted; }
 		}
 #endif
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private static extern AppDomain getCurDomain ();
 		
 		public static AppDomain CurrentDomain {
 			get {
 				return getCurDomain ();
 			}
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private static extern AppDomain getRootDomain ();
 
 		internal static AppDomain DefaultDomain {
 			get {
@@ -553,19 +542,10 @@ namespace System {
 			return ExecuteAssembly (a, args);
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern int ExecuteAssembly (Assembly a, string[] args);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern Assembly [] GetAssemblies (bool refOnly);
-
 		public Assembly [] GetAssemblies ()
 		{
 			return GetAssemblies (false);
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern object GetData (string name);
 
 		public new Type GetType()
 		{
@@ -576,9 +556,6 @@ namespace System {
 		{
 			return null;
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern Assembly LoadAssembly (string assemblyRef, Evidence securityEvidence, bool refOnly);
 
 		public Assembly Load (AssemblyName assemblyRef)
 		{
@@ -681,9 +658,6 @@ namespace System {
 			return Load (rawAssembly, rawSymbolStore, null);
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern Assembly LoadAssemblyRaw (byte[] rawAssembly, byte[] rawSymbolStore, Evidence securityEvidence, bool refonly);
-
 		public Assembly Load (byte[] rawAssembly, byte[] rawSymbolStore, Evidence securityEvidence)
 		{
 			return Load (rawAssembly, rawSymbolStore, securityEvidence, false);
@@ -765,38 +739,18 @@ namespace System {
 			_principal = principal;
 		}
 #endif
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private static extern AppDomain InternalSetDomainByID (int domain_id);
  
 		// Changes the active domain and returns the old domain
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private static extern AppDomain InternalSetDomain (AppDomain context);
 
 		// Notifies the runtime that this thread references 'domain'.
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern void InternalPushDomainRef (AppDomain domain);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern void InternalPushDomainRefByID (int domain_id);
 
 		// Undoes the effect of the last PushDomainRef call
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern void InternalPopDomainRef ();
 
 		// Changes the active context and returns the old context
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern Context InternalSetContext (Context context);
 
 		// Returns the current context
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern Context InternalGetContext ();
 
 		// Returns the current context
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern Context InternalGetDefaultContext ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern string InternalGetProcessGuid (string newguid);
 
 		// This method is handled specially by the runtime
 		// It is the only managed method which is allowed to set the current
@@ -864,9 +818,6 @@ namespace System {
 		{
 			return CreateDomain (friendlyName, securityInfo, null);
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private static extern AppDomain createDomain (string friendlyName, AppDomainSetup info);
 
 		[MonoLimitationAttribute ("Currently it does not allow the setup in the other domain")]
 		[SecurityPermission (SecurityAction.Demand, ControlAppDomain = true)]
@@ -998,21 +949,14 @@ namespace System {
 				info.ShadowCopyFiles = null;
 #endif
 
-
 			return info;
 		}
 #endif // !NET_2_1
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private static extern bool InternalIsFinalizingForUnload (int domain_id);
 
 		public bool IsFinalizingForUnload()
 		{
 			return InternalIsFinalizingForUnload (getDomainID ());
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		static extern void InternalUnload (int domain_id);
 
 		// We do this because if the domain is a transparant proxy this
 		// will still return the correct domain id.
@@ -1032,10 +976,6 @@ namespace System {
 
 			InternalUnload (domain.getDomainID());
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		[SecurityPermission (SecurityAction.LinkDemand, ControlAppDomain = true)]
-		public extern void SetData (string name, object data);
 
 #if NET_2_0
 		[MonoTODO]

@@ -42,11 +42,9 @@ namespace System.Security.Principal {
 		{
 		}
 
-
 		public abstract string Value { 
 			get;
 		}
-
 
 		public abstract override bool Equals (object o);
 
@@ -57,7 +55,6 @@ namespace System.Security.Principal {
 		public abstract override string ToString ();
 
 		public abstract IdentityReference Translate (Type targetType);
-
 
 		public static bool operator== (IdentityReference left, IdentityReference right)
 		{

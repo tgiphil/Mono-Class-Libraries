@@ -728,7 +728,6 @@ namespace System
 						else
 							dateEnd = new DateTime (dst_end.Year, 6, 30);
 
-						
 						TransitionTime transition_start = TransitionTime.CreateFixedDateRule (new DateTime (1, 1, 1) + dst_start.TimeOfDay, dst_start.Month, dst_start.Day);
 						TransitionTime transition_end = TransitionTime.CreateFixedDateRule (new DateTime (1, 1, 1) + dst_end.TimeOfDay, dst_end.Month, dst_end.Day);
 						if  (transition_start != transition_end) //y, that happened in Argentina in 1943-1946

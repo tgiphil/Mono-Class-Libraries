@@ -51,7 +51,6 @@ namespace System.Runtime.Versioning {
 			consumption = consumptionScope;
 		}
 
-
 		public ResourceScope ConsumptionScope {
 			get { return consumption; }
 		}

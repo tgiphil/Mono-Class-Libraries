@@ -95,7 +95,7 @@ namespace System.Reflection.Emit
 	[ComDefaultInterface (typeof (_AssemblyBuilder))]
 #endif
 	[ClassInterface (ClassInterfaceType.None)]
-	public sealed class AssemblyBuilder : Assembly, _AssemblyBuilder {
+	public sealed partial class AssemblyBuilder : Assembly, _AssemblyBuilder {
 #pragma warning disable 169, 414
 		#region Sync with object-internals.h
 		private UIntPtr dynamic_assembly; /* GC-tracked */
@@ -138,9 +138,6 @@ namespace System.Reflection.Emit
 		NativeResourceType native_resource;
 		readonly bool is_compiler_context;
 		string versioninfo_culture;
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern void basic_init (AssemblyBuilder ab);
 
 		/* Keep this in sync with codegen.cs in mcs */
 		private const AssemblyBuilderAccess COMPILER_ACCESS = (AssemblyBuilderAccess) 0x800;
@@ -433,9 +430,6 @@ namespace System.Reflection.Emit
 			modules [modules.Length - 1] = r;
 			return r;
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern Module InternalAddModule (string fileName);
 
 		/*
 		 * Mono extension to support /addmodule in mcs.

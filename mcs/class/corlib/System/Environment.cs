@@ -46,9 +46,9 @@ namespace System {
 	[ComVisible (true)]
 #endif
 #if NET_2_0
-	public static class Environment {
+	public static partial class Environment {
 #else
-	public sealed class Environment {
+	public sealed partial class Environment {
 
 		private Environment ()
 		{
@@ -130,54 +130,19 @@ namespace System {
 		/// <summary>
 		/// Gets or sets the exit code of this process
 		/// </summary>
-		public extern static int ExitCode
-		{	
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			set;
-		}
-
-#if NET_1_1
-		static
-#endif
-		public extern bool HasShutdownStarted
-		{
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
-		
 
 		/// <summary>
 		/// Gets the name of the local computer
 		/// </summary>
-		public extern static string MachineName {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			[EnvironmentPermission (SecurityAction.Demand, Read="COMPUTERNAME")]
-			[SecurityPermission (SecurityAction.Demand, UnmanagedCode=true)]
-			get;
-		}
 
 		/// <summary>
 		/// Gets the standard new line value
 		/// </summary>
-		public extern static string NewLine {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
 
 		//
 		// Support methods and fields for OSVersion property
 		//
 		static OperatingSystem os;
-
-		internal static extern PlatformID Platform {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern string GetOSVersionString ();
 
 		/// <summary>
 		/// Gets the current OS version information
@@ -216,10 +181,6 @@ namespace System {
 		/// <summary>
 		/// Get the number of milliseconds that have elapsed since the system was booted
 		/// </summary>
-		public extern static int TickCount {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
 
 		/// <summary>
 		/// Get UserDomainName
@@ -245,11 +206,6 @@ namespace System {
 		/// <summary>
 		/// Get the user name of current process is running under
 		/// </summary>
-		public extern static string UserName {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			[EnvironmentPermission (SecurityAction.Demand, Read="USERNAME;USER")]
-			get;
-		}
 
 		/// <summary>
 		/// Get the version of the common language runtime 
@@ -268,10 +224,6 @@ namespace System {
 			[EnvironmentPermission (SecurityAction.Demand, Unrestricted=true)]
 			get { return 0; }
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		[SecurityPermission (SecurityAction.Demand, UnmanagedCode=true)]
-		public extern static void Exit (int exitCode);
 
 		/// <summary>
 		/// Substitute environment variables in the argument "name"
@@ -342,12 +294,6 @@ namespace System {
 		/// <summary>
 		/// Return an array of the command line arguments of the current process
 		/// </summary>
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		[EnvironmentPermissionAttribute (SecurityAction.Demand, Read = "PATH")]
-		public extern static string[] GetCommandLineArgs ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern static string internalGetEnvironmentVariable (string variable);
 
 		/// <summary>
 		/// Return a string containing the value of the environment
@@ -415,9 +361,6 @@ namespace System {
 		}
 #endif
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static string GetWindowsFolderPath (int folder);
-
 		/// <summary>
 		/// Returns the fully qualified path of the
 		/// folder specified by the "folder" parameter
@@ -479,7 +422,6 @@ namespace System {
 
 			return Path.Combine (home_dir, fallback);
 		}
-
 
 		// the security runtime (and maybe other parts of corlib) needs the
 		// information to initialize themselves before permissions can be checked
@@ -565,8 +507,6 @@ namespace System {
 		}
 
 #if NET_2_0 && !NET_2_1
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private static extern void internalBroadcastSettingChange ();
 
 		public static string GetEnvironmentVariable (string variable, EnvironmentVariableTarget target)
 		{
@@ -676,9 +616,6 @@ namespace System {
 			}
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern void InternalSetEnvironmentVariable (string variable, string value);
-
 		[MonoTODO ("Not implemented")]
 		[SecurityPermission (SecurityAction.LinkDemand, UnmanagedCode=true)]
 		public static void FailFast (string message)
@@ -687,11 +624,6 @@ namespace System {
 		}
 #endif
 #if NET_2_0
-		public static extern int ProcessorCount {
-			[EnvironmentPermission (SecurityAction.Demand, Read="NUMBER_OF_PROCESSORS")]
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;			
-		}
 #endif
 		// private methods
 
@@ -715,20 +647,8 @@ namespace System {
 			}
 		}
 #pragma warning restore 169
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern static string internalGetGacPath ();
 #endif
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static string [] GetLogicalDrivesInternal ();
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static string [] GetEnvironmentVariableNames ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern static string GetMachineConfigPath ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern static string internalGetHome ();
 	}
 }
 

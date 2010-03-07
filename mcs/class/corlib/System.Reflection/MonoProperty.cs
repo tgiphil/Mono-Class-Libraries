@@ -37,20 +37,13 @@ using System.Security;
 
 namespace System.Reflection {
 	
-	internal struct MonoPropertyInfo {
+	internal partial struct MonoPropertyInfo {
 		public Type parent;
 		public String name;
 		public MethodInfo get_method;
 		public MethodInfo set_method;
 		public PropertyAttributes attrs;
 		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal static extern void get_property_info (MonoProperty prop, ref MonoPropertyInfo info,
-							       PInfo req_info);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern Type[] GetTypeModifiers (MonoProperty prop, bool optional);
-
 	}
 
 	[Flags]
@@ -210,7 +203,6 @@ namespace System.Reflection {
 		{
 			return MonoCustomAttrs.GetCustomAttributes (this, attributeType, false);
 		}
-
 
 #if NET_2_0
 		delegate object GetterAdapter (object _this);

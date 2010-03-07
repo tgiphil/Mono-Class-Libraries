@@ -40,7 +40,7 @@ using System.Runtime.InteropServices;
 
 namespace System
 {
-	internal struct MonoEnumInfo
+	internal partial struct MonoEnumInfo
 	{
 		internal Type utype;
 		internal Array values;
@@ -51,9 +51,6 @@ namespace System
 		static Hashtable global_cache;
 		static object global_cache_monitor;
 		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private static extern void get_enum_info (Type enumType, out MonoEnumInfo info);
-
 		//
 		// These comparers are needed because enumerations must be compared
 		// using unsigned values so that negative numbers can be looked up
@@ -226,7 +223,7 @@ namespace System
 #if NET_2_0
 	[ComVisible (true)]
 #endif
-	public abstract class Enum : ValueType, IComparable, IConvertible, IFormattable
+	public abstract partial class Enum : ValueType, IComparable, IConvertible, IFormattable
 	{
 		protected Enum ()
 		{
@@ -341,14 +338,6 @@ namespace System
 		{
 			return Convert.ToUInt64 (Value, provider);
 		}
-#if ONLY_1_1
-#pragma warning restore 3019
-#endif
-
-		// <-- End IConvertible methods
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern object get_value ();
 
 		// wrap the icall into a property so we don't hav to use the icall everywhere
 		private object Value {
@@ -501,9 +490,6 @@ namespace System
 					+ "of the Enum.");
 			}
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private static extern Type get_underlying_type (Type enumType);
 
 #if NET_2_0
 		[ComVisible (true)]
@@ -674,9 +660,6 @@ namespace System
 #endif
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern int compare_value_to (object other);
-
 		/// <summary>
 		///   Compares the enum value with another enum value of the same type.
 		/// </summary>
@@ -768,12 +751,6 @@ namespace System
 #if NET_2_0
 		[ComVisible (true)]
 #endif
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public static extern object ToObject (Type enumType, object value);
-
-#if NET_2_0
-		[ComVisible (true)]
-#endif
 		[CLSCompliant (false)]
 		public static object ToObject (Type enumType, sbyte value)
 		{
@@ -811,9 +788,6 @@ namespace System
 		{
 			return DefaultEquals (this, obj);
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern int get_hashcode ();
 
 		public override int GetHashCode ()
 		{

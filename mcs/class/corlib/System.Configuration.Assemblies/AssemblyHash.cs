@@ -54,7 +54,6 @@ namespace System.Configuration.Assemblies {
 			set { _algorithm = value; }
 		}
 
-
 #if NET_2_0
 		[Obsolete]
 #endif

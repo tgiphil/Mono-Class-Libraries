@@ -37,13 +37,12 @@ using System.Text;
 
 namespace System.IO.IsolatedStorage {
 
-	static class IsolatedStorage {
+	static partial class IsolatedStorage {
 
 		// NOTE: both the 'site' and 'application' share the same quota
 		internal const long DefaultQuota = 1024 * 1024;
 		// Since we can extend more than AvailableFreeSize we need to substract the "safety" value out of it
 		private const int SafetyZone = 1024;
-
 
 		static string site_root;
 		static string site_config;
@@ -203,9 +202,6 @@ namespace System.IO.IsolatedStorage {
 		static public long AvailableFreeSpace {
 			get { return Quota - Current - SafetyZone; }
 		}
-
-		[DllImport ("moon")]
-		extern static long isolated_storage_get_current_usage (string root);
 
 		static public long Current {
 			get { return isolated_storage_get_current_usage (site_root); }

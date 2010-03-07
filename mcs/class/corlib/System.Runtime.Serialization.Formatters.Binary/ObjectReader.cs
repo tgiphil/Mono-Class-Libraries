@@ -205,7 +205,6 @@ namespace System.Runtime.Serialization.Formatters.Binary
 					ReadGenericArray (reader, out objectId, out value);
 					break;
 
-
 				case BinaryElement.BoxedPrimitiveTypeValue:
 					value = ReadBoxedPrimitiveTypeValue (reader);
 					objectId = 0;
@@ -578,7 +577,6 @@ namespace System.Runtime.Serialization.Formatters.Binary
 			}
 		}
 		
-
 		private void ReadArrayOfObject (BinaryReader reader, out long objectId, out object array)
 		{
 			ReadSimpleArray (reader, typeof (object), out objectId, out array);
@@ -707,7 +705,6 @@ namespace System.Runtime.Serialization.Formatters.Binary
 
 			return metadata;
 		}
-
 
 		private void ReadValue (BinaryReader reader, object parentObject, long parentObjectId, SerializationInfo info, Type valueType, string fieldName, MemberInfo memberInfo, int[] indices)
 		{

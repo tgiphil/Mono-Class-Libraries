@@ -343,7 +343,6 @@ namespace System.Text {
 			return this;
 		}
 
-		      
 		/* The Append Methods */
 		public StringBuilder Append (char[] value) 
 		{

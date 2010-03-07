@@ -37,7 +37,7 @@ namespace System.Security.Principal {
 #if NET_2_0
 	[ComVisible (true)]
 #endif
-	public class WindowsPrincipal : IPrincipal {
+	public partial class WindowsPrincipal : IPrincipal {
 
 		private WindowsIdentity _identity;
 		// http://groups.google.ca/groups?q=WindowsPrincipal+m_roles&hl=en&lr=&ie=UTF-8&oe=UTF-8&selm=OghXf4OgCHA.4228%40tkmsftngp08&rnum=4
@@ -177,11 +177,7 @@ namespace System.Security.Principal {
 		// see mono/mono/metadata/security.c for implementation
 
 		// note: never called by Win32 code (i.e. always return false)
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static bool IsMemberOfGroupId (IntPtr user, IntPtr group);
 
 		// note: never called by Win32 code (i.e. always return false)
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static bool IsMemberOfGroupName (IntPtr user, string group);
 	}
 }

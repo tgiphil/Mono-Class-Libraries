@@ -37,7 +37,7 @@ using System.Runtime.InteropServices;
 namespace System 
 {
 	[StructLayout (LayoutKind.Auto)]
-	public struct ArgIterator
+	public partial struct ArgIterator
 	{
 #pragma warning disable 169, 414
 		IntPtr sig;
@@ -45,9 +45,6 @@ namespace System
 		int next_arg;
 		int num_args;
 #pragma warning restore 169, 414
-
-		[MethodImpl (MethodImplOptions.InternalCall)]
-		extern void Setup (IntPtr argsp, IntPtr start);
 
 		public ArgIterator (RuntimeArgumentHandle arglist)
 		{
@@ -89,9 +86,6 @@ namespace System
 			return IntGetNextArg ();
 		}
 
-		[MethodImpl (MethodImplOptions.InternalCall)]
-		extern TypedReference IntGetNextArg ();
-
 		[CLSCompliant (false)]
 		public TypedReference GetNextArg (RuntimeTypeHandle rth)
 		{
@@ -100,18 +94,12 @@ namespace System
 			return IntGetNextArg (rth.Value);
 		}
 
-		[MethodImpl (MethodImplOptions.InternalCall)]
-		extern TypedReference IntGetNextArg (IntPtr rth);
-
 		public RuntimeTypeHandle GetNextArgType ()
 		{
 			if (num_args == next_arg)
 				throw new InvalidOperationException (Locale.GetText ("Invalid iterator position."));
 			return new RuntimeTypeHandle (IntGetNextArgType ());
 		}
-
-		[MethodImpl (MethodImplOptions.InternalCall)]
-		extern IntPtr IntGetNextArgType ();
 
 		public int GetRemainingCount ()
 		{

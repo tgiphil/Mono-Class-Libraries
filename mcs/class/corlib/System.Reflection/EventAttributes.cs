@@ -36,7 +36,6 @@ using System.Runtime.InteropServices;
 
 namespace System.Reflection {
 
-
 	/// <summary>
 	/// </summary>
 #if NET_2_0

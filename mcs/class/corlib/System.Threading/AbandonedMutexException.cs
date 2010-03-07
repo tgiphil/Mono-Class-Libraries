@@ -61,7 +61,6 @@ namespace System.Threading
 			mutex = handle as Mutex;
 		}
 		
-
 		protected AbandonedMutexException (SerializationInfo info, StreamingContext context)
 			: base (info, context)
 		{

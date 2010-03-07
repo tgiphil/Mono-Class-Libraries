@@ -57,7 +57,7 @@ namespace System.Runtime.Remoting
 #if NET_2_0
 	[System.Runtime.InteropServices.ComVisible (true)]
 #endif
-	public sealed class RemotingServices 
+	public sealed partial class RemotingServices 
 	{
 		// Holds the identities of the objects, using uri as index
 		static Hashtable uri_hash = new Hashtable ();		
@@ -99,20 +99,8 @@ namespace System.Runtime.Remoting
 	
 		private RemotingServices () {}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern static object InternalExecute (MethodBase method, Object obj,
-							       Object[] parameters, out object [] out_args);
-
 		// Returns the actual implementation of @method in @type.
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern static MethodBase GetVirtualMethod (Type type, MethodBase method);
 
-#if NET_2_0
-		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static bool IsTransparentProxy (object proxy);
-		
 		internal static IMethodReturnMessage InternalExecuteMessage (
 		        MarshalByRefObject target, IMethodCallMessage reqMsg)
 		{

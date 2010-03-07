@@ -44,7 +44,7 @@ namespace System
 #else
 	sealed
 #endif
-	class GC
+	partial class GC
 	{
 
 #if !NET_2_0
@@ -53,14 +53,6 @@ namespace System
 		}
 #endif
 
-		public extern static int MaxGeneration {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
-		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern static void InternalCollect (int generation);
-		
 		public static void Collect () {
 			InternalCollect (MaxGeneration);
 		}
@@ -78,9 +70,6 @@ namespace System
 		}
 #endif
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static int GetGeneration (object obj);
-
 		public static int GetGeneration (WeakReference wo) {
 			object obj = wo.Target;
 			if (obj == null)
@@ -88,35 +77,7 @@ namespace System
 			return GetGeneration (obj);
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static long GetTotalMemory (bool forceFullCollection);
-
-		/* this icall has weird semantics check the docs... */
 #if NET_2_0
-		[ReliabilityContract (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static void KeepAlive (object obj);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static void ReRegisterForFinalize (object obj);
-
-#if NET_2_0
-		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static void SuppressFinalize (object obj);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static void WaitForPendingFinalizers ();
-
-#if NET_2_0
-		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static int CollectionCount (int generation);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static void RecordPressure (long bytesAllocated);
 
 		public static void AddMemoryPressure (long bytesAllocated) {
 			RecordPressure (bytesAllocated);

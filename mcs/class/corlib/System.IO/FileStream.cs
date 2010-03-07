@@ -326,7 +326,6 @@ namespace System.IO
 				this.async = false;
 			}
 
-
 			if (access == FileAccess.Read && canseek && (bufferSize == DefaultBufferSize)) {
 				/* Avoid allocating a large buffer for small files */
 				long len = Length;

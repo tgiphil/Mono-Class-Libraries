@@ -384,7 +384,6 @@ namespace System.Globalization {
 			}
 		}
 
-
 		public string CurrencyGroupSeparator {
 			get {
 				return currencyGroupSeparator;
@@ -530,8 +529,6 @@ namespace System.Globalization {
 			}
 		}
 
-
-
 		public string NaNSymbol {
 			get {
 				return nanSymbol;
@@ -648,7 +645,6 @@ namespace System.Globalization {
 				numberDecimalSeparator = value;
 			}
 		}
-
 
 		public string NumberGroupSeparator {
 			get {
@@ -768,7 +764,6 @@ namespace System.Globalization {
 				percentDecimalSeparator = value;
 			}
 		}
-
 
 		public string PercentGroupSeparator {
 			get {

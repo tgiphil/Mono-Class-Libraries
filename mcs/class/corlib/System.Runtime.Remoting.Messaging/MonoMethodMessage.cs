@@ -39,7 +39,7 @@ using System.Runtime.CompilerServices;
 namespace System.Runtime.Remoting.Messaging {
 	
 	[Serializable]
-	internal class MonoMethodMessage : IMethodCallMessage, IMethodReturnMessage, IInternalMessage {
+	internal partial class MonoMethodMessage : IMethodCallMessage, IMethodReturnMessage, IInternalMessage {
 
 #pragma warning disable 649
 		#region keep in sync with MonoMessage in object-internals.h
@@ -62,10 +62,6 @@ namespace System.Runtime.Remoting.Messaging {
 		Type[] methodSignature;
 
 		Identity identity;
-
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern void InitMessage (MonoMethod method, object [] out_args);
 
 		public MonoMethodMessage (MethodBase method, object [] out_args)
 		{

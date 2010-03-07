@@ -45,14 +45,11 @@ namespace System
 	}
 		
 	[Serializable]
-	internal class MonoType : Type, ISerializable
+	internal partial class MonoType : Type, ISerializable
 	{
 		[NonSerialized]
 		MonoTypeInfo type_info;
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern void type_from_obj (MonoType type, Object obj);
-		
 		internal MonoType (Object obj)
 		{
 			// this should not be used - lupus
@@ -60,9 +57,6 @@ namespace System
 			
 			throw new NotImplementedException ();
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern TypeAttributes get_attributes (Type type);
 
 		internal ConstructorInfo GetDefaultConstructor () {
 			ConstructorInfo ctor = null;
@@ -126,16 +120,10 @@ namespace System
 			return (ConstructorInfo) CheckMethodSecurity (binder.SelectMethod (bindingAttr, match, types, modifiers));
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern ConstructorInfo[] GetConstructors_internal (BindingFlags bindingAttr, Type reflected_type);
-
 		public override ConstructorInfo[] GetConstructors (BindingFlags bindingAttr)
 		{
 			return GetConstructors_internal (bindingAttr, this);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern EventInfo InternalGetEvent (string name, BindingFlags bindingAttr);
 
 		public override EventInfo GetEvent (string name, BindingFlags bindingAttr)
 		{
@@ -145,19 +133,10 @@ namespace System
 			return InternalGetEvent (name, bindingAttr);
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern EventInfo[] GetEvents_internal (BindingFlags bindingAttr, Type reflected_type);
-
 		public override EventInfo[] GetEvents (BindingFlags bindingAttr)
 		{
 			return GetEvents_internal (bindingAttr, this);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern override FieldInfo GetField (string name, BindingFlags bindingAttr);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern FieldInfo[] GetFields_internal (BindingFlags bindingAttr, Type reflected_type);
 
 		public override FieldInfo[] GetFields (BindingFlags bindingAttr)
 		{
@@ -181,16 +160,10 @@ namespace System
 			return null;
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern override Type[] GetInterfaces();
-		
 		public override MemberInfo[] GetMembers( BindingFlags bindingAttr)
 		{
 			return FindMembers (MemberTypes.All, bindingAttr, null, null);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern MethodInfo [] GetMethodsByName (string name, BindingFlags bindingAttr, bool ignoreCase, Type reflected_type);
 
 		public override MethodInfo [] GetMethods (BindingFlags bindingAttr)
 		{
@@ -243,12 +216,6 @@ namespace System
 			return (MethodInfo) CheckMethodSecurity (binder.SelectMethod (bindingAttr, match, types, modifiers));
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern MethodInfo GetCorrespondingInflatedMethod (MethodInfo generic);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern ConstructorInfo GetCorrespondingInflatedConstructor (ConstructorInfo generic);
-
 		internal override MethodInfo GetMethod (MethodInfo fromNoninstanciated)
                 {
 			if (fromNoninstanciated == null)
@@ -270,15 +237,6 @@ namespace System
 			flags |= fromNoninstanciated.IsPublic ? BindingFlags.Public : BindingFlags.NonPublic;
 			return GetField (fromNoninstanciated.Name, flags);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern override Type GetNestedType (string name, BindingFlags bindingAttr);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern override Type[] GetNestedTypes (BindingFlags bindingAttr);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern PropertyInfo[] GetPropertiesByName (string name, BindingFlags bindingAttr, bool icase, Type reflected_type);
 
 		public override PropertyInfo [] GetProperties (BindingFlags bindingAttr)
 		{
@@ -316,18 +274,6 @@ namespace System
 			return Type.IsArrayImpl (this);
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		protected extern override bool IsByRefImpl ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		protected extern override bool IsCOMObjectImpl ();
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		protected extern override bool IsPointerImpl ();
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		protected extern override bool IsPrimitiveImpl ();
-
 		public override bool IsSubclassOf (Type type)
 		{
 			if (type == null)
@@ -346,7 +292,6 @@ namespace System
 #else
 			const string bindingflags_arg = "invokeAttr";
 #endif
-
 
 			if ((invokeAttr & BindingFlags.CreateInstance) != 0) {
 				if ((invokeAttr & (BindingFlags.GetField |
@@ -517,9 +462,6 @@ namespace System
 			return null;
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern override Type GetElementType ();
-
 		public override Type UnderlyingSystemType {
 			get {
 				// This has _nothing_ to do with getting the base type of an enum etc.
@@ -527,23 +469,10 @@ namespace System
 			}
 		}
 
-		public extern override Assembly Assembly {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
-		}
-
 		public override string AssemblyQualifiedName {
 			get {
 				return getFullName (true, true);
 			}
-		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern string getFullName(bool full_name, bool assembly_qualified);
-
-		public extern override Type BaseType {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
 		}
 
 		public override string FullName {
@@ -597,26 +526,6 @@ namespace System
 			}
 		}
 
-		public extern override string Name {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
-		}
-
-		public extern override string Namespace {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
-		}
-
-		public extern override Module Module {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
-		}
-
-		public extern override Type DeclaringType {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
-		}
-
 		public override Type ReflectedType {
 			get {
 				return DeclaringType;
@@ -629,9 +538,6 @@ namespace System
 			}
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern override int GetArrayRank ();
-
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			UnitySerializationHolder.GetTypeData (this, info, context);
@@ -643,8 +549,6 @@ namespace System
 		}
 
 #if NET_2_0 || BOOTSTRAP_NET_2_0
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern override Type [] GetGenericArguments ();
 
 		public override bool ContainsGenericParameters {
 			get {
@@ -662,16 +566,6 @@ namespace System
 
 				return false;
 			}
-		}
-
-		public extern override bool IsGenericParameter {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
-		}
-
-		public extern override MethodBase DeclaringMethod {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
 		}
 
 		public override Type GetGenericTypeDefinition () {

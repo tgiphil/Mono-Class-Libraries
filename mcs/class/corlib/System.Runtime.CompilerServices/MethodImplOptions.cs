@@ -36,7 +36,6 @@ using System.Runtime.InteropServices;
 
 namespace System.Runtime.CompilerServices {
 
-
 	/// <summary>
 	/// </summary>
 #if !NET_2_0

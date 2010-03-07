@@ -43,7 +43,7 @@ namespace System.Reflection.Emit {
 	[ComDefaultInterface (typeof (_CustomAttributeBuilder))]
 #endif
 	[ClassInterface (ClassInterfaceType.None)]
-	public class CustomAttributeBuilder : _CustomAttributeBuilder {
+	public partial class CustomAttributeBuilder : _CustomAttributeBuilder {
 		ConstructorInfo ctor;
 		byte[] data;
 
@@ -54,9 +54,6 @@ namespace System.Reflection.Emit {
 		internal byte[] Data {
 			get {return data;}
 		}
-		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		static extern byte[] GetBlob(Assembly asmb, ConstructorInfo con, object[] constructorArgs, PropertyInfo[] namedProperties, object[] propertyValues, FieldInfo[] namedFields, object[] fieldValues);
 		
 		internal CustomAttributeBuilder( ConstructorInfo con, byte[] cdata) {
 			ctor = con;

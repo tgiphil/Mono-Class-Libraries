@@ -45,7 +45,7 @@ namespace System.Reflection.Emit {
 #if NET_2_0
 	[ComVisible (true)]
 #endif
-	public sealed class DynamicMethod : MethodInfo {
+	public sealed partial class DynamicMethod : MethodInfo {
 
 #pragma warning disable 169, 414
 		#region Sync with reflection.h
@@ -126,12 +126,6 @@ namespace System.Reflection.Emit {
 			this.module = m;
 			this.skipVisibility = skipVisibility;
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void create_dynamic_method (DynamicMethod m);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void destroy_dynamic_method (DynamicMethod m);
 
 		private void CreateDynMethod () {
 			if (mhandle.Value == IntPtr.Zero) {

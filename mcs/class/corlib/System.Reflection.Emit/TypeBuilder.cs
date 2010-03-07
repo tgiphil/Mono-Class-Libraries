@@ -50,7 +50,7 @@ namespace System.Reflection.Emit
 	[ComDefaultInterface (typeof (_TypeBuilder))]
 #endif
 	[ClassInterface (ClassInterfaceType.None)]
-	public sealed class TypeBuilder : Type, _TypeBuilder
+	public sealed partial class TypeBuilder : Type, _TypeBuilder
 	{
 #pragma warning disable 169		
 		#region Sync with reflection.h
@@ -95,22 +95,8 @@ namespace System.Reflection.Emit
 			return attrs;
 		}
 		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void setup_internal_class (TypeBuilder tb);
-		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void create_internal_class (TypeBuilder tb);
-		
 #if NET_2_0 || BOOTSTRAP_NET_2_0
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void setup_generic_class ();
 #endif
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void create_generic_class ();
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern EventInfo get_event_info (EventBuilder eb);
 
 		internal TypeBuilder (ModuleBuilder mb, TypeAttributes attr, int table_idx)
 		{
@@ -748,9 +734,6 @@ namespace System.Reflection.Emit
 				MethodAttributes.RTSpecialName, CallingConventions.Standard,
 				null);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern Type create_runtime_class (TypeBuilder tb);
 
 		private bool is_nested_in (Type t)
 		{
@@ -1792,11 +1775,6 @@ namespace System.Reflection.Emit
 			get {
 				return generic_params != null;
 			}
-		}
-
-		public extern override bool IsGenericParameter {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
 		}
 
 		public override GenericParameterAttributes GenericParameterAttributes {

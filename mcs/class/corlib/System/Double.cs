@@ -45,7 +45,7 @@ namespace System {
 #if NET_2_0
 	[System.Runtime.InteropServices.ComVisible (true)]
 #endif
-	public struct Double : IComparable, IFormattable, IConvertible
+	public partial struct Double : IComparable, IFormattable, IConvertible
 #if NET_2_0
 		, IComparable <double>, IEquatable <double>
 #endif
@@ -480,9 +480,6 @@ namespace System {
 			}
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		unsafe private static extern bool ParseImpl (byte *byte_ptr, out double value);
-		
 		public static bool TryParse (string s,
 					     NumberStyles style,
 					     IFormatProvider provider,

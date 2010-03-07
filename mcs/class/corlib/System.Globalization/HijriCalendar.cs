@@ -32,7 +32,6 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-
 /// <summary>
 /// This is the Hijri calendar which might be called Islamic calendar. 
 /// </summary>
@@ -738,7 +737,6 @@ public class HijriCalendar : Calendar {
 		return rd2 - rd1;
 	}
 		
-
 	/// <summary>
 	/// Overridden. Gives the era of the specified date.
 	/// </summary>

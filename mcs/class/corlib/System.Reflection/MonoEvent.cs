@@ -38,7 +38,7 @@ using System.Runtime.Serialization;
 
 namespace System.Reflection {
 
-	internal struct MonoEventInfo {
+	internal partial struct MonoEventInfo {
 		public Type declaring_type;
 		public Type reflected_type;
 		public String name;
@@ -48,9 +48,6 @@ namespace System.Reflection {
 		public EventAttributes attrs;
 		public MethodInfo[] other_methods;
 		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		static extern void get_event_info (MonoEvent ev, out MonoEventInfo info);
-
 		internal static MonoEventInfo GetEventInfo (MonoEvent ev)
 		{
 			MonoEventInfo mei;

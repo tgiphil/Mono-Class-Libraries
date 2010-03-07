@@ -29,7 +29,6 @@ using System.Runtime.InteropServices;
 
 namespace System.Reflection.Emit {
 
-
 	/// <summary>
 	///  Represents the Token returned by the metadata to represent a Field.
 	/// </summary>
@@ -43,12 +42,10 @@ namespace System.Reflection.Emit {
 
 		public static readonly FieldToken Empty;
 
-
 		static FieldToken ()
 		{
 			Empty = new FieldToken ();
 		}
-
 
 		internal FieldToken (int val)
 		{
@@ -68,7 +65,6 @@ namespace System.Reflection.Emit {
 
 			return res;
 		}
-
 
 #if NET_2_0
 		public bool Equals (FieldToken obj)
@@ -95,7 +91,6 @@ namespace System.Reflection.Emit {
 		{
 			return tokValue;
 		}
-
 
 		/// <summary>
 		///  Returns the metadata token for this Field.

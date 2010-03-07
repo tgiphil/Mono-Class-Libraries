@@ -129,7 +129,7 @@ namespace Mono.Globalization.Unicode
 
 	#endregion
 
-	unsafe internal class MSCompatUnicodeTable
+	unsafe internal partial class MSCompatUnicodeTable
 	{
 		public static int MaxExpansionLength = 3;
 
@@ -619,8 +619,6 @@ namespace Mono.Globalization.Unicode
 		const int CollationTableIdxCjkKO = 10;
 		const int CollationTableIdxCjkKOLv2 = 11;
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		static extern void load_collation_resource (int resource_index, byte** data);
 #else
 		static readonly string corlibPath = Assembly.GetExecutingAssembly ().Location;
 
@@ -632,8 +630,6 @@ namespace Mono.Globalization.Unicode
 		const int CollationResourceCJKKOlv2 = 5;
 		const int CollationResourceTailoring = 6;
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		static extern void load_collation_resource (string path, int resource_index, byte** data, int* size);
 #endif
 
 		static uint UInt32FromBytePtr (byte* raw, uint idx)
@@ -905,7 +901,6 @@ namespace Mono.Globalization.Unicode
 	}
 }
 #endif
-
 
 		// For "categories", 0 means no primary weight. 6 means 
 		// variable weight

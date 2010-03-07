@@ -48,7 +48,6 @@ namespace System.Collections {
 	public class SortedList : IDictionary, ICollection,
 	                          IEnumerable, ICloneable {
 
-
 		[Serializable]
 		internal struct Slot {
 			internal Object key;
@@ -98,7 +97,6 @@ namespace System.Collections {
 			InitTable (INITIAL_SIZE, true);
 		}
 
-
 		public SortedList (IDictionary d) : this (d, null)
 		{
 		}
@@ -143,7 +141,6 @@ namespace System.Collections {
 			}
 		}
 
-
 		// IDictionary
 
 		public virtual bool IsFixedSize {
@@ -151,7 +148,6 @@ namespace System.Collections {
 				return false;
 			}
 		}
-
 
 		public virtual bool IsReadOnly {
 			get {
@@ -170,8 +166,6 @@ namespace System.Collections {
 				return new ListValues (this);
 			}
 		}
-
-
 
 		public virtual Object this [Object key] {
 			get {
@@ -239,14 +233,12 @@ namespace System.Collections {
 			return new Enumerator (this, EnumeratorMode.ENTRY_MODE);
 		}
 
-
 		// IDictionary
 
 		public virtual void Add (object key, object value)
 		{
 			PutImpl (key, value, false);
 		}
-
 
 		public virtual void Clear () 
 		{
@@ -268,7 +260,6 @@ namespace System.Collections {
 			}
 		}
 
-
 		public virtual IDictionaryEnumerator GetEnumerator ()
 		{
 			return new Enumerator (this, EnumeratorMode.ENTRY_MODE);
@@ -279,7 +270,6 @@ namespace System.Collections {
 			int i = IndexOfKey (key);
 			if (i >= 0) RemoveAt (i);
 		}
-
 
 		// ICollection
 
@@ -306,8 +296,6 @@ namespace System.Collections {
 			}
 		}
 
-
-
 		// ICloneable
 
 		public virtual object Clone ()
@@ -316,9 +304,6 @@ namespace System.Collections {
 			sl.modificationCount = this.modificationCount;
 			return sl;
 		}
-
-
-
 
 		//
 		// SortedList
@@ -329,12 +314,10 @@ namespace System.Collections {
 			return new ListKeys (this);
 		}
 
-
 		public virtual IList GetValueList ()
 		{
 			return new ListValues (this);
 		}
-
 
 		public virtual void RemoveAt (int index)
 		{
@@ -369,7 +352,6 @@ namespace System.Collections {
 			return (indx | (indx >> 31));
 		}
 
-
 		public virtual int IndexOfValue (object value)
 		{
 			if (inUse == 0)
@@ -385,7 +367,6 @@ namespace System.Collections {
 			return -1;
 		}
 
-
 		public virtual bool ContainsKey (object key)
 		{
 			if (null == key)
@@ -398,12 +379,10 @@ namespace System.Collections {
 			}
 		}
 
-
 		public virtual bool ContainsValue (object value)
 		{
 			return IndexOfValue (value) >= 0;
 		}
-
 
 		public virtual object GetByIndex (int index)
 		{
@@ -414,7 +393,6 @@ namespace System.Collections {
 				throw new ArgumentOutOfRangeException("index out of range");
 		}
 
-
 		public virtual void SetByIndex (int index, object value)
 		{
 			if (index >= 0 && index < Count)
@@ -423,7 +401,6 @@ namespace System.Collections {
 			else
 				throw new ArgumentOutOfRangeException("index out of range");
 		}
-
 
 		public virtual object GetKey (int index)
 		{
@@ -454,11 +431,9 @@ namespace System.Collections {
                                 Resize (Count, true);
 		}
 
-
 		//
 		// Private methods
 		//
-
 
 		private void Resize (int n, bool copy)
 		{
@@ -467,7 +442,6 @@ namespace System.Collections {
 			if (copy) Array.Copy (table, 0, newTable, 0, n);
 			this.table = newTable;
 		}
-
 
 		private void EnsureCapacity (int n, int free)
 		{
@@ -500,7 +474,6 @@ namespace System.Collections {
 			}
 		}
 
-
 		private void PutImpl (object key, object value, bool overwrite)
 		{
 			if (key == null)
@@ -532,7 +505,6 @@ namespace System.Collections {
 			if (freeIndx > Capacity + 1)
 				throw new Exception ("SortedList::internal error ("+key+", "+value+") at ["+freeIndx+"]");
 
-
 			EnsureCapacity (Count+1, freeIndx);
 
 			table = this.table;
@@ -543,7 +515,6 @@ namespace System.Collections {
 			++modificationCount;
 
 		}
-
 
 		private object GetImpl (object key)
 		{
@@ -580,7 +551,6 @@ namespace System.Collections {
 			}
 		}
 
-
 		private int Find (object key)
 		{
 			Slot [] table = this.table;
@@ -608,12 +578,9 @@ namespace System.Collections {
 			return ~left;
 		}
 
-
-
 		//
 		// Inner classes
 		//
-
 
 		private sealed class Enumerator : ICloneable, IDictionaryEnumerator, IEnumerator {
 
@@ -740,7 +707,6 @@ namespace System.Collections {
 
 			private SortedList host;
 
-
 			public ListKeys (SortedList host)
 			{
 				if (host == null)
@@ -776,7 +742,6 @@ namespace System.Collections {
 				host.CopyToArray (array, arrayIndex, EnumeratorMode.KEY_MODE);
 			}
 
-
 			//
 			// IList
 			//
@@ -792,7 +757,6 @@ namespace System.Collections {
 					return true;
 				}
 			}
-
 
 			public virtual object this [int index] {
 				get {
@@ -818,30 +782,25 @@ namespace System.Collections {
 				return host.Contains (key);
 			}
 
-
 			public virtual int IndexOf (object key)
 			{
 				return host.IndexOfKey (key);
 			}
-
 
 			public virtual void Insert (int index, object value)
 			{
 				throw new NotSupportedException("IList::Insert not supported");
 			}
 
-
 			public virtual void Remove (object value)
 			{
 				throw new NotSupportedException("IList::Remove not supported");
 			}
 
-
 			public virtual void RemoveAt (int index)
 			{
 				throw new NotSupportedException("IList::RemoveAt not supported");
 			}
-
 
 			//
 			// IEnumerable
@@ -852,14 +811,12 @@ namespace System.Collections {
 				return new SortedList.Enumerator (host, EnumeratorMode.KEY_MODE);
 			}
 
-
 		}
 
 		[Serializable]
 		private class ListValues : IList, IEnumerable {
 
 			private SortedList host;
-
 
 			public ListValues (SortedList host)
 			{
@@ -896,7 +853,6 @@ namespace System.Collections {
 				host.CopyToArray (array, arrayIndex, EnumeratorMode.VALUE_MODE);
 			}
 
-
 			//
 			// IList
 			//
@@ -912,7 +868,6 @@ namespace System.Collections {
 					return true;
 				}
 			}
-
 
 			public virtual object this [int index] {
 				get {
@@ -938,30 +893,25 @@ namespace System.Collections {
 				return host.ContainsValue (value);
 			}
 
-
 			public virtual int IndexOf (object value)
 			{
 				return host.IndexOfValue (value);
 			}
-
 
 			public virtual void Insert (int index, object value)
 			{
 				throw new NotSupportedException("IList::Insert not supported");
 			}
 
-
 			public virtual void Remove (object value)
 			{
 				throw new NotSupportedException("IList::Remove not supported");
 			}
 
-
 			public virtual void RemoveAt (int index)
 			{
 				throw new NotSupportedException("IList::RemoveAt not supported");
 			}
-
 
 			//
 			// IEnumerable
@@ -1018,8 +968,6 @@ namespace System.Collections {
 				}
 			}
 
-
-
 			// IDictionary
 
 			public override bool IsFixedSize {
@@ -1027,7 +975,6 @@ namespace System.Collections {
 					return host.IsFixedSize;
 				}     
 			}
-
 
 			public override bool IsReadOnly {
 				get {
@@ -1055,8 +1002,6 @@ namespace System.Collections {
 				}
 			}
 
-
-
 			public override Object this [object key] {
 				get {
 					lock (host.SyncRoot) {
@@ -1070,8 +1015,6 @@ namespace System.Collections {
 				}
 			}
 
-
-
 			// ICollection
 
 			public override void CopyTo (Array array, int arrayIndex)
@@ -1080,7 +1023,6 @@ namespace System.Collections {
 					host.CopyTo (array, arrayIndex);
 				}
 			}
-
 
 			// IDictionary
 
@@ -1119,8 +1061,6 @@ namespace System.Collections {
 				}
 			}
 
-
-
 			public override bool ContainsKey (object key)
 			{
 				lock (host.SyncRoot) {
@@ -1135,7 +1075,6 @@ namespace System.Collections {
 				}
 			}
 
-
 			// ICloneable
 
 			public override object Clone ()
@@ -1144,8 +1083,6 @@ namespace System.Collections {
 					return (host.Clone () as SortedList);
 				}
 			}
-
-
 
 			//
 			// SortedList overrides
@@ -1171,7 +1108,6 @@ namespace System.Collections {
 					return new ListKeys (host);
 				}
 			}
-
 
 			public override IList GetValueList ()
 			{
@@ -1214,7 +1150,6 @@ namespace System.Collections {
 					host.TrimToSize();
 				}
 			}
-
 
 		} // SynchedSortedList
 

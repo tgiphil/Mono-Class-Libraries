@@ -74,7 +74,6 @@ namespace System.Collections
 			m_compareInfo = culture.CompareInfo;
 		}
 
-
 		// IComparer
 		public int Compare (object a, object b)
 		{

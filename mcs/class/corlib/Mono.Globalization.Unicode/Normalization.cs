@@ -13,7 +13,7 @@ namespace Mono.Globalization.Unicode
 		Maybe
 	}
 
-	internal unsafe class Normalization
+	internal unsafe partial class Normalization
 	{
 		public const int NoNfd = 1;
 		public const int NoNfkd = 2;
@@ -436,12 +436,6 @@ namespace Mono.Globalization.Unicode
 		public static bool IsReady {
 			get { return isReady; }
 		}
-
-		[MethodImpl (MethodImplOptions.InternalCall)]
-		static extern void load_normalization_resource (
-			out IntPtr props, out IntPtr mappedChars,
-			out IntPtr charMapIndex, out IntPtr helperIndex,
-			out IntPtr mapIdxToComposite, out IntPtr combiningClass);
 
 		static Normalization ()
 		{

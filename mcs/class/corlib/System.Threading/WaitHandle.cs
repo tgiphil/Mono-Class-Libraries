@@ -45,10 +45,8 @@ namespace System.Threading
 #if NET_2_0
 	[ComVisible (true)]
 #endif
-	public abstract class WaitHandle : MarshalByRefObject, IDisposable
+	public abstract partial class WaitHandle : MarshalByRefObject, IDisposable
 	{
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern bool WaitAll_internal(WaitHandle[] handles, int ms, bool exitContext);
 		
 		static void CheckArray (WaitHandle [] handles, bool waitAll)
 		{
@@ -142,9 +140,6 @@ namespace System.Threading
 				if (exitContext) SynchronizationAttribute.EnterContext ();
 			}
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern int WaitAny_internal(WaitHandle[] handles, int ms, bool exitContext);
 
 		// LAMESPEC: Doesn't specify how to signal failures
 #if NET_2_0
@@ -249,9 +244,6 @@ namespace System.Threading
 			}
 		}
 		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern bool WaitOne_internal(IntPtr handle, int ms, bool exitContext);
-
 		protected virtual void Dispose (bool explicitDisposing)
 		{
 			if (!disposed){
@@ -319,9 +311,6 @@ namespace System.Threading
 
 			return SignalAndWait (toSignal, toWaitOn, Convert.ToInt32 (ms), false);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		static extern bool SignalAndWait_Internal (IntPtr toSignal, IntPtr toWaitOn, int ms, bool exitContext);
 
 		public virtual bool WaitOne()
 		{
@@ -426,9 +415,6 @@ namespace System.Threading
 				throw new ObjectDisposedException (GetType ().FullName);
 		}
 		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern bool WaitOne_internal(IntPtr handle, int ms, bool exitContext);
-
 		protected virtual void Dispose(bool explicitDisposing) {
 			// Check to see if Dispose has already been called.
 			if (!disposed) {

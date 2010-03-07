@@ -41,7 +41,7 @@ using System.Runtime.Serialization;
 namespace System.Reflection {
 
 	[Serializable]
-	internal class MonoField : FieldInfo, ISerializable {
+	internal partial class MonoField : FieldInfo, ISerializable {
 		internal IntPtr klass;
 		internal RuntimeFieldHandle fhandle;
 		string name;
@@ -64,9 +64,6 @@ namespace System.Reflection {
 				return type;
 			}
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern Type GetParentType (bool declaring);
 
 		public override Type ReflectedType {
 			get {
@@ -95,12 +92,6 @@ namespace System.Reflection {
 			return MonoCustomAttrs.GetCustomAttributes (this, attributeType, inherit);
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal override extern int GetFieldOffset ();
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern object GetValueInternal (object obj);
-
 		public override object GetValue (object obj)
 		{
 			if (!IsStatic && obj == null)
@@ -113,9 +104,6 @@ namespace System.Reflection {
 		public override string ToString () {
 			return String.Format ("{0} {1}", type, name);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern void SetValueInternal (FieldInfo fi, object obj, object value);
 
 		public override void SetValue (object obj, object val, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
 		{
@@ -155,8 +143,6 @@ namespace System.Reflection {
 		}
 
 #if NET_2_0
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public override extern object GetRawConstantValue ();
 #endif
 
 		void CheckGeneric () {

@@ -48,7 +48,7 @@ namespace System.Reflection {
 #endif
 	[Serializable]
 	[ClassInterfaceAttribute (ClassInterfaceType.None)]
-	public class Module : ISerializable, ICustomAttributeProvider, _Module {
+	public partial class Module : ISerializable, ICustomAttributeProvider, _Module {
 	
 		public static readonly TypeFilter FilterTypeName;
 		public static readonly TypeFilter FilterTypeNameIgnoreCase;
@@ -106,11 +106,6 @@ namespace System.Reflection {
 			}
 		}
 
-		public extern int MetadataToken {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
-
 		public int MDStreamVersion {
 			get {
 				if (_impl == IntPtr.Zero)
@@ -119,8 +114,6 @@ namespace System.Reflection {
 			}
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern int GetMDStreamVersion (IntPtr module_handle);
 #endif
 	
 		public virtual Type[] FindTypes(TypeFilter filter, object filterCriteria) 
@@ -276,9 +269,6 @@ namespace System.Reflection {
 			return assembly.InternalGetType (this, className, throwOnError, ignoreCase);
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern Type[] InternalGetTypes ();
-	
 		public virtual Type[] GetTypes() 
 		{
 			return InternalGetTypes ();
@@ -317,7 +307,6 @@ namespace System.Reflection {
 		}
 #endif
   		
-
 #if NET_2_0
 		private Exception resolve_token_exception (int metadataToken, ResolveTokenError error, string tokenType) {
 			if (error == ResolveTokenError.OutOfRange)
@@ -455,36 +444,6 @@ namespace System.Reflection {
 			else
 				return String.Compare (m.Name, s, true) == 0;
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal extern IntPtr GetHINSTANCE ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern string GetGuidInternal ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern Type GetGlobalType ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern IntPtr ResolveTypeToken (IntPtr module, int token, IntPtr[] type_args, IntPtr[] method_args, out ResolveTokenError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern IntPtr ResolveMethodToken (IntPtr module, int token, IntPtr[] type_args, IntPtr[] method_args, out ResolveTokenError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern IntPtr ResolveFieldToken (IntPtr module, int token, IntPtr[] type_args, IntPtr[] method_args, out ResolveTokenError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern string ResolveStringToken (IntPtr module, int token, out ResolveTokenError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern MemberInfo ResolveMemberToken (IntPtr module, int token, IntPtr[] type_args, IntPtr[] method_args, out ResolveTokenError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern byte[] ResolveSignature (IntPtr module, int metadataToken, out ResolveTokenError error);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		internal static extern void GetPEKind (IntPtr module, out PortableExecutableKinds peKind, out ImageFileMachine machine);
 
 #if NET_1_1
 		void _Module.GetIDsOfNames ([In] ref Guid riid, IntPtr rgszNames, uint cNames, uint lcid, IntPtr rgDispId)

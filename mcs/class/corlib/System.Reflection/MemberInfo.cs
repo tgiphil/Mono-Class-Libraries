@@ -40,7 +40,7 @@ namespace System.Reflection {
 	[Serializable]
 	[ClassInterface(ClassInterfaceType.None)]
 	[PermissionSet (SecurityAction.InheritanceDemand, Unrestricted = true)]
-	public abstract class MemberInfo : ICustomAttributeProvider, _MemberInfo {
+	public abstract partial class MemberInfo : ICustomAttributeProvider, _MemberInfo {
 
 		protected MemberInfo ()
 		{
@@ -82,16 +82,6 @@ namespace System.Reflection {
 		public abstract object [] GetCustomAttributes (bool inherit);
 
 		public abstract object [] GetCustomAttributes (Type attributeType, bool inherit);
-
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-		public
-#else
-		internal
-#endif
-		virtual extern int MetadataToken {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
 
 		void _MemberInfo.GetIDsOfNames ([In] ref Guid riid, IntPtr rgszNames, uint cNames, uint lcid, IntPtr rgDispId)
 		{

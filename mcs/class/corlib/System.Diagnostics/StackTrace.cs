@@ -45,7 +45,7 @@ namespace System.Diagnostics {
 	[ComVisible (true)]
 #endif
 	[MonoTODO ("Serialized objects are not compatible with .NET")]
-	public class StackTrace {
+	public partial class StackTrace {
 
 		public const int METHODS_TO_SKIP = 0;
 
@@ -93,9 +93,6 @@ namespace System.Diagnostics {
 			frames = (StackFrame [])al.ToArray (typeof (StackFrame));	
 		}
 		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern static StackFrame [] get_trace (Exception e, int skipFrames, bool fNeedFileInfo);
-
 		public StackTrace (Exception e)
 			: this (e, METHODS_TO_SKIP, false)
 		{

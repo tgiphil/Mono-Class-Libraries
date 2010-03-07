@@ -49,7 +49,7 @@ namespace System.Reflection
 	 * NotImplementedException for many of the methods but we can't do that as gmcs
 	 * depends on them.
 	 */
-	internal class MonoGenericClass : MonoType
+	internal partial class MonoGenericClass : MonoType
 	{
 		#region Keep in sync with object-internals.h
 #pragma warning disable 649
@@ -74,9 +74,6 @@ namespace System.Reflection
 			this.generic_type = tb;
 			this.type_arguments = args;
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern void initialize (MethodInfo[] methods, ConstructorInfo[] ctors, FieldInfo[] fields, PropertyInfo[] properties, EventInfo[] events);
 
 		private const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic |
 		BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly;

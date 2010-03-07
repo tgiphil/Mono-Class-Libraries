@@ -46,7 +46,7 @@ namespace System {
 	[ComVisible (true)]
 	[ComDefaultInterface (typeof (_Type))]
 #endif
-	public abstract class Type : MemberInfo, IReflect, _Type {
+	public abstract partial class Type : MemberInfo, IReflect, _Type {
 		
 		internal RuntimeTypeHandle _impl;
 
@@ -436,15 +436,6 @@ namespace System {
 			return UnderlyingSystemType.EqualsInternal (o.UnderlyingSystemType);
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern bool EqualsInternal (Type type);
-		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern Type internal_from_handle (IntPtr handle);
-		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern Type internal_from_name (string name, bool throwOnError, bool ignoreCase);
-
 		public static Type GetType(string typeName)
 		{
 			if (typeName == null)
@@ -499,9 +490,6 @@ namespace System {
 				ret [i] = args[i].GetType ();
 			return ret;
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern static TypeCode GetTypeCodeInternal (Type type);
 
 		public static TypeCode GetTypeCode (Type type) {
 			if (type is MonoType)
@@ -592,12 +580,6 @@ namespace System {
 			return o.GetType().TypeHandle;
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal static extern bool type_is_subtype_of (Type a, Type b, bool check_interfaces);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal static extern bool type_is_assignable_from (Type a, Type b);
-
 		public new Type GetType ()
 		{
 			return base.GetType ();
@@ -642,9 +624,6 @@ namespace System {
 		}
 
 		public abstract Type GetInterface (string name, bool ignoreCase);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal static extern void GetInterfaceMapData (Type t, Type iface, out MethodInfo[] targets, out MethodInfo[] methods);
 
 #if NET_2_0
 		[ComVisible (true)]
@@ -696,9 +675,6 @@ namespace System {
 
 			return type_is_assignable_from (this, c);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern virtual bool IsInstanceOfType (object o);
 
 		public virtual int GetArrayRank ()
 		{
@@ -842,7 +818,6 @@ namespace System {
 			throw new System.InvalidOperationException ("can only be called in generic type");
                 }
 
-		
 		public MethodInfo[] GetMethods ()
 		{
 			return GetMethods (DefaultBindingFlags);
@@ -864,14 +839,12 @@ namespace System {
 
 		public abstract Type[] GetNestedTypes (BindingFlags bindingAttr);
 
-
 		public PropertyInfo[] GetProperties ()
 		{
 			return GetProperties (DefaultBindingFlags);
 		}
 
 		public abstract PropertyInfo[] GetProperties (BindingFlags bindingAttr);
-
 
 		public PropertyInfo GetProperty (string name)
 		{
@@ -949,9 +922,6 @@ namespace System {
 		protected abstract bool IsPointerImpl ();
 		protected abstract bool IsPrimitiveImpl ();
 		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal static extern bool IsArrayImpl (Type type);
-
 		protected virtual bool IsValueTypeImpl ()
 		{
 			if (this == typeof (ValueType) || this == typeof (Enum))
@@ -1181,26 +1151,10 @@ namespace System {
 			get { return false; }
 		}
 
-		public virtual extern bool IsGenericTypeDefinition {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
-		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal extern Type GetGenericTypeDefinition_impl ();
-
 		public virtual Type GetGenericTypeDefinition ()
 		{
 			throw new NotSupportedException ("Derived classes must provide an implementation.");
 		}
-
-		public virtual extern bool IsGenericType {
-			[MethodImplAttribute(MethodImplOptions.InternalCall)]
-			get;
-		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		static extern Type MakeGenericType (Type gt, Type [] types);
 
 		public virtual Type MakeGenericType (params Type[] typeArguments)
 		{
@@ -1250,9 +1204,6 @@ namespace System {
 			}
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern int GetGenericParameterPosition ();
-		
 		public virtual int GenericParameterPosition {
 			get {
 				int res = GetGenericParameterPosition ();
@@ -1262,9 +1213,6 @@ namespace System {
 			}
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern GenericParameterAttributes GetGenericParameterAttributes ();
-
 		public virtual GenericParameterAttributes GenericParameterAttributes {
 			get {
 				if (!IsGenericParameter)
@@ -1273,9 +1221,6 @@ namespace System {
 				return GetGenericParameterAttributes ();
 			}
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern Type[] GetGenericParameterConstraints_impl ();
 
 		public virtual Type[] GetGenericParameterConstraints ()
 		{
@@ -1291,9 +1236,6 @@ namespace System {
 			}
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern Type make_array_type (int rank);
-
 		public virtual Type MakeArrayType ()
 		{
 			return make_array_type (0);
@@ -1307,16 +1249,10 @@ namespace System {
 			return make_array_type (rank);
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern Type make_byref_type ();
-
 		public virtual Type MakeByRefType ()
 		{
 			return make_byref_type ();
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern virtual Type MakePointerType ();
 
 		public static Type ReflectionOnlyGetType (string typeName, 
 							  bool throwIfNotFound, 
@@ -1338,9 +1274,6 @@ namespace System {
 			}
 			return a.GetType (typeName.Substring (0, idx), throwIfNotFound, ignoreCase);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern void GetPacking (out int packing, out int size);		
 
 		public virtual StructLayoutAttribute StructLayoutAttribute {
 			get {

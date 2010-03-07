@@ -36,7 +36,7 @@ namespace System.Globalization
 	[System.Runtime.InteropServices.ComVisible(true)]
 #endif
 	[Serializable]
-	public class RegionInfo
+	public partial class RegionInfo
 	{
 		static RegionInfo currentRegion;
 
@@ -117,12 +117,7 @@ namespace System.Globalization
 #endif		
 
 #if !NET_2_0
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern bool construct_internal_region_from_lcid (int lcid);
 #endif
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern bool construct_internal_region_from_name (string name);
 
 #if NET_2_0
 		[System.Runtime.InteropServices.ComVisible(false)]

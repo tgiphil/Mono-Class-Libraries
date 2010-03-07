@@ -80,7 +80,6 @@ namespace System.Security.Policy {
 #endif
 		}
 
-
 		//
 		// Public Methods
 		//

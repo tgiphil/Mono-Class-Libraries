@@ -80,7 +80,6 @@ namespace System.Runtime.Remoting.Services {
 					if (_handlers.Count == 0)
 						return new ITrackingHandler[0];
 
-
 					return (ITrackingHandler[]) _handlers.ToArray (typeof(ITrackingHandler));
 				}
 			}

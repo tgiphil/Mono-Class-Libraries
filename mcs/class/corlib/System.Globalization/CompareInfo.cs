@@ -43,7 +43,7 @@ namespace System.Globalization
 	[Serializable]
 #if !NET_2_1 || MONOTOUCH
 	[ComVisible (true)]
-	public class CompareInfo : IDeserializationCallback {
+	public partial class CompareInfo : IDeserializationCallback {
 
 		static readonly bool useManagedCollation =
 			Environment.internalGetEnvironmentVariable ("MONO_DISABLE_MANAGED_COLLATION")
@@ -69,36 +69,8 @@ namespace System.Globalization
 			}
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern void construct_compareinfo (string locale);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern void free_internal_collator ();
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern int internal_compare (string str1, int offset1,
-						     int length1, string str2,
-						     int offset2, int length2,
-						     CompareOptions options);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern void assign_sortkey (object key, string source,
-						    CompareOptions options);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern int internal_index (string source, int sindex,
-						   int count, char value,
-						   CompareOptions options,
-						   bool first);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern int internal_index (string source, int sindex,
-						   int count, string value,
-						   CompareOptions options,
-						   bool first);
-
 #else
-	public class CompareInfo {
+	public partial class CompareInfo {
 		internal static bool UseManagedCollation {
 			get { return true; }
 		}

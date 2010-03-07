@@ -101,7 +101,6 @@ namespace Mono.Security.X509 {
 
 		private static string encoding_error = Locale.GetText ("Input data cannot be coded as a valid certificate.");
 
-
 		// that's were the real job is!
 		private void Parse (byte[] data) 
 		{

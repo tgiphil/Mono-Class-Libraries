@@ -29,7 +29,6 @@ using System.Runtime.InteropServices;
 
 namespace System.Reflection.Emit {
 
-
 	/// <summary>
 	///  Represents the Token returned by the metadata to represent a Property.
 	/// </summary>
@@ -43,12 +42,10 @@ namespace System.Reflection.Emit {
 
 		public static readonly PropertyToken Empty;
 
-
 		static PropertyToken ()
 		{
 			Empty = new PropertyToken ();
 		}
-
 
 		internal PropertyToken (int val)
 		{
@@ -94,7 +91,6 @@ namespace System.Reflection.Emit {
 		{
 			return tokValue;
 		}
-
 
 		/// <summary>
 		///  Returns the metadata token for this Property.

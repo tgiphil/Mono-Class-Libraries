@@ -36,7 +36,6 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 
-
 namespace System.Reflection.Emit
 {
 	internal enum TypeKind : int {
@@ -44,12 +43,9 @@ namespace System.Reflection.Emit
 		ARRAY = 0x14
 	}
 
-	internal abstract class DerivedType : Type
+	internal abstract partial class DerivedType : Type
 	{
 		internal Type elementType;
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal static extern void create_unmanaged_type (Type type);
 
 		internal DerivedType (Type elementType)
 		{
@@ -140,7 +136,6 @@ namespace System.Reflection.Emit
 			throw new NotSupportedException ();
 		}
 
-
 		protected override TypeAttributes GetAttributeFlagsImpl ()
 		{
 			/*LAMEIMPL MS just return the elementType.Attributes*/
@@ -176,7 +171,6 @@ namespace System.Reflection.Emit
 		{
 			return false;
 		}
-
 
 		public override ConstructorInfo[] GetConstructors (BindingFlags bindingAttr)
 		{
@@ -265,7 +259,6 @@ namespace System.Reflection.Emit
 				return fullName + ", " + elementType.Assembly.FullName;
 			}
 		}
-
 
 		public override string FullName {
 			get {
@@ -364,7 +357,6 @@ namespace System.Reflection.Emit
 		}
 	}
 
-
 	internal class ByRefType : DerivedType
 	{
 		internal ByRefType (Type elementType) : base (elementType)
@@ -409,7 +401,6 @@ namespace System.Reflection.Emit
 		}
 #endif
 	}
-
 
 	internal class PointerType : DerivedType
 	{

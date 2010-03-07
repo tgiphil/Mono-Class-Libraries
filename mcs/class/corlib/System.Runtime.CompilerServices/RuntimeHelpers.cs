@@ -36,10 +36,10 @@ using System.Reflection;
 namespace System.Runtime.CompilerServices
 {
 #if NET_2_0
-	public static class RuntimeHelpers
+	public static partial class RuntimeHelpers
 #else
 	[Serializable]
-	public sealed class RuntimeHelpers
+	public sealed partial class RuntimeHelpers
 #endif
 	{
 #if NET_2_0
@@ -50,20 +50,12 @@ namespace System.Runtime.CompilerServices
 		private RuntimeHelpers () {}
 #endif
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		static extern void InitializeArray (Array array, IntPtr fldHandle);
-
 		public static void InitializeArray (Array array, RuntimeFieldHandle fldHandle)
 		{
 			if ((array == null) || (fldHandle.Value == IntPtr.Zero))
 				throw new ArgumentNullException ();
 
 			InitializeArray (array, fldHandle.Value);
-		}
-
-		public static extern int OffsetToStringData {
-			[MethodImpl (MethodImplOptions.InternalCall)]
-			get;
 		}
 
 #if NET_1_1
@@ -86,12 +78,6 @@ namespace System.Runtime.CompilerServices
 				return Object.Equals (o1, o2);
 		}
 #endif
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public static extern object GetObjectValue (object obj);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		static extern void RunClassConstructor (IntPtr type);
 
 		public static void RunClassConstructor (RuntimeTypeHandle type)
 		{
@@ -150,8 +136,6 @@ namespace System.Runtime.CompilerServices
 			RunModuleConstructor (module.Value);
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public static extern void RunModuleConstructor (IntPtr module);
 #endif
 	}
 }

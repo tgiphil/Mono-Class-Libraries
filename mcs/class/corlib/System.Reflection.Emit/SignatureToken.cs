@@ -29,7 +29,6 @@ using System.Runtime.InteropServices;
 
 namespace System.Reflection.Emit {
 
-
 	/// <summary>
 	///  Represents the Token returned by the metadata to represent a Signature.
 	/// </summary>
@@ -44,12 +43,10 @@ namespace System.Reflection.Emit {
 
 		public static readonly SignatureToken Empty;
 
-
 		static SignatureToken ()
 		{
 			Empty = new SignatureToken ();
 		}
-
 
 		internal SignatureToken (int val)
 		{
@@ -95,7 +92,6 @@ namespace System.Reflection.Emit {
 		{
 			return tokValue;
 		}
-
 
 		/// <summary>
 		///  Returns the metadata token for this Signature.

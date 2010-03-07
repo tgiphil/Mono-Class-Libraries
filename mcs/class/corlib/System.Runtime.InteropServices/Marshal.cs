@@ -57,7 +57,7 @@ namespace System.Runtime.InteropServices
 #else
 	sealed
 #endif
-	class Marshal
+	partial class Marshal
 	{
 		/* fields */
 		public static readonly int SystemMaxDBCSCharSize = 2; // don't know what this is
@@ -72,24 +72,12 @@ namespace System.Runtime.InteropServices
 		private Marshal () {}
 #endif
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static int AddRefInternal (IntPtr pUnk);
-
 		public static int AddRef (IntPtr pUnk)
 		{
 			if (pUnk == IntPtr.Zero)
 				throw new ArgumentException ("Value cannot be null.", "pUnk");
 			return AddRefInternal (pUnk);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static IntPtr AllocCoTaskMem (int cb);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-#if NET_2_0
-		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
-#endif
-		public extern static IntPtr AllocHGlobal (IntPtr cb);
 
 #if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
@@ -110,14 +98,6 @@ namespace System.Runtime.InteropServices
 		{
 			throw new NotImplementedException ();
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern static void copy_to_unmanaged (Array source, int startIndex,
-						      IntPtr destination, int length);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern static void copy_from_unmanaged (IntPtr source, int startIndex,
-							Array destination, int length);
 
 		public static void Copy (byte[] source, int startIndex, IntPtr destination, int length)
 		{
@@ -228,24 +208,6 @@ namespace System.Runtime.InteropServices
 		}
 #endif
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-#if NET_2_0
-		[ComVisible (true)]
-#endif
-		public extern static void DestroyStructure (IntPtr ptr, Type structuretype);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static void FreeBSTR (IntPtr ptr);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static void FreeCoTaskMem (IntPtr ptr);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-#if NET_2_0
-		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
-		public extern static void FreeHGlobal (IntPtr hglobal);
-
 #if NET_2_0
 
 		static void ClearBSTR (IntPtr ptr)
@@ -317,9 +279,6 @@ namespace System.Runtime.InteropServices
 			throw new NotImplementedException ();
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static IntPtr GetCCW (object o, Type T);
-
 		private static IntPtr GetComInterfaceForObjectInternal (object o, Type T)
 		{
 			if (IsComObject (o))
@@ -348,9 +307,6 @@ namespace System.Runtime.InteropServices
 		{
 			throw new NotSupportedException ("MSDN states user code should never need to call this method.");
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static int GetComSlotForMethodInfoInternal (MemberInfo m);
 
 		public static int GetComSlotForMethodInfo (MemberInfo m)
 		{
@@ -412,8 +368,6 @@ namespace System.Runtime.InteropServices
 			throw new NotImplementedException ();
 		}
 #if !NET_2_1 || MONOTOUCH
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static IntPtr GetIDispatchForObjectInternal (object o);
 
 		public static IntPtr GetIDispatchForObject (object o)
 		{
@@ -436,9 +390,6 @@ namespace System.Runtime.InteropServices
 		{
 			throw new NotImplementedException ();
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static IntPtr GetIUnknownForObjectInternal (object o);
 
 		public static IntPtr GetIUnknownForObject (object o)
 		{
@@ -477,9 +428,6 @@ namespace System.Runtime.InteropServices
 			vt.SetValue(obj);
 			Marshal.StructureToPtr(vt, pDstNativeVariant, false);
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private static extern object GetObjectForCCW (IntPtr pUnk);
 
 		public static object GetObjectForIUnknown (IntPtr pUnk)
 		{
@@ -636,9 +584,6 @@ namespace System.Runtime.InteropServices
 			throw new NotImplementedException ();
 		}
 
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static bool IsComObject (object o);
-
 		[MonoTODO]
 		public static bool IsTypeVisibleFromCom (Type t)
 		{
@@ -652,27 +597,6 @@ namespace System.Runtime.InteropServices
 		}
 #endif // !NET_2_1
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-#if NET_2_0
-		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
-		public static extern int GetLastWin32Error();
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static IntPtr OffsetOf (Type t, string fieldName);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static void Prelink (MethodInfo m);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static void PrelinkAll (Type c);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static string PtrToStringAnsi (IntPtr ptr);
-		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static string PtrToStringAnsi (IntPtr ptr, int len);
-
 		public static string PtrToStringAuto (IntPtr ptr)
 		{
 			return SystemDefaultCharSize == 2
@@ -684,30 +608,6 @@ namespace System.Runtime.InteropServices
 			return SystemDefaultCharSize == 2
 				? PtrToStringUni (ptr, len) : PtrToStringAnsi (ptr, len);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static string PtrToStringUni (IntPtr ptr);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static string PtrToStringUni (IntPtr ptr, int len);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static string PtrToStringBSTR (IntPtr ptr);
-		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-#if NET_2_0
-		[ComVisible (true)]
-#endif
-		public extern static void PtrToStructure (IntPtr ptr, object structure);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-#if NET_2_0
-		[ComVisible (true)]
-#endif
-		public extern static object PtrToStructure (IntPtr ptr, Type structureType);
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static int QueryInterfaceInternal (IntPtr pUnk, ref Guid iid, out IntPtr ppv);
 
 		public static int QueryInterface (IntPtr pUnk, ref Guid iid, out IntPtr ppv)
 		{
@@ -721,9 +621,6 @@ namespace System.Runtime.InteropServices
 			return ReadByte (ptr, 0);
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static byte ReadByte (IntPtr ptr, int ofs);
-
 		[MonoTODO]
 		public static byte ReadByte ([In, MarshalAs (UnmanagedType.AsAny)] object ptr, int ofs)
 		{
@@ -734,9 +631,6 @@ namespace System.Runtime.InteropServices
 		{
 			return ReadInt16 (ptr, 0);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static short ReadInt16 (IntPtr ptr, int ofs);
 
 		[MonoTODO]
 		public static short ReadInt16 ([In, MarshalAs(UnmanagedType.AsAny)] object ptr, int ofs)
@@ -751,12 +645,6 @@ namespace System.Runtime.InteropServices
 		{
 			return ReadInt32 (ptr, 0);
 		}
-
-#if NET_2_0
-		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static int ReadInt32 (IntPtr ptr, int ofs);
 
 #if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
@@ -778,12 +666,6 @@ namespace System.Runtime.InteropServices
 #if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
 #endif
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static long ReadInt64 (IntPtr ptr, int ofs);
-
-#if NET_2_0
-		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		[MonoTODO]
 		public static long ReadInt64 ([In, MarshalAs (UnmanagedType.AsAny)] object ptr, int ofs)
 		{
@@ -801,29 +683,11 @@ namespace System.Runtime.InteropServices
 #if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
 #endif
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static IntPtr ReadIntPtr (IntPtr ptr, int ofs);
-
-#if NET_2_0
-		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		[MonoTODO]
 		public static IntPtr ReadIntPtr ([In, MarshalAs (UnmanagedType.AsAny)] object ptr, int ofs)
 		{
 			throw new NotImplementedException ();
 		}
-
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern static IntPtr ReAllocCoTaskMem (IntPtr pv, int cb);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static IntPtr ReAllocHGlobal (IntPtr pv, IntPtr cb);
-
-#if NET_2_0
-		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static int ReleaseInternal (IntPtr pUnk);
 
 #if NET_2_0
 		[ReliabilityContract (Consistency.WillNotCorruptState, Cer.Success)]
@@ -836,8 +700,6 @@ namespace System.Runtime.InteropServices
 		}
 
 #if !NET_2_1 || MONOTOUCH
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern static int ReleaseComObjectInternal (object co);
 
 		public static int ReleaseComObject (object o)
 		{
@@ -871,12 +733,6 @@ namespace System.Runtime.InteropServices
 		{
 			return SizeOf (structure.GetType ());
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static int SizeOf (Type t);
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static IntPtr StringToBSTR (string s);
 
 		//
 		// I believe this is wrong, because in Mono and in P/Invoke
@@ -916,17 +772,11 @@ namespace System.Runtime.InteropServices
 			return ctm;
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static IntPtr StringToHGlobalAnsi (string s);
-
 		public static IntPtr StringToHGlobalAuto (string s)
 		{
 			return SystemDefaultCharSize == 2
 				? StringToHGlobalUni (s) : StringToHGlobalAnsi (s);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static IntPtr StringToHGlobalUni (string s);
 
 #if NET_2_0 && (!NET_2_1 || MONOTOUCH)
 		public static IntPtr SecureStringToBSTR (SecureString s)
@@ -1018,13 +868,6 @@ namespace System.Runtime.InteropServices
 		}
 #endif
 
-#if NET_2_0
-		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
-		[ComVisible (true)]
-#endif
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static void StructureToPtr (object structure, IntPtr ptr, bool fDeleteOld);
-
 		public static void ThrowExceptionForHR (int errorCode) {
 			Exception ex = GetExceptionForHR (errorCode);
 			if (ex != null)
@@ -1037,16 +880,10 @@ namespace System.Runtime.InteropServices
 				throw ex;
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static IntPtr UnsafeAddrOfPinnedArrayElement (Array arr, int index);
-
 		public static void WriteByte (IntPtr ptr, byte val)
 		{
 			WriteByte (ptr, 0, val);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static void WriteByte (IntPtr ptr, int ofs, byte val);
 
 		[MonoTODO]
 		public static void WriteByte ([In, Out, MarshalAs (UnmanagedType.AsAny)] object ptr, int ofs, byte val)
@@ -1058,9 +895,6 @@ namespace System.Runtime.InteropServices
 		{
 			WriteInt16 (ptr, 0, val);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static void WriteInt16 (IntPtr ptr, int ofs, short val);
 
 		[MonoTODO]
 		public static void WriteInt16 ([In, Out, MarshalAs (UnmanagedType.AsAny)] object ptr, int ofs, short val)
@@ -1074,10 +908,6 @@ namespace System.Runtime.InteropServices
 		}
 
 		[MonoTODO]
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static void WriteInt16 (IntPtr ptr, int ofs, char val);
-
-		[MonoTODO]
 		public static void WriteInt16([In, Out] object ptr, int ofs, char val)
 		{
 			throw new NotImplementedException ();
@@ -1087,9 +917,6 @@ namespace System.Runtime.InteropServices
 		{
 			WriteInt32 (ptr, 0, val);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static void WriteInt32 (IntPtr ptr, int ofs, int val);
 
 		[MonoTODO]
 		public static void WriteInt32([In, Out, MarshalAs(UnmanagedType.AsAny)] object ptr, int ofs, int val)
@@ -1102,9 +929,6 @@ namespace System.Runtime.InteropServices
 			WriteInt64 (ptr, 0, val);
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static void WriteInt64 (IntPtr ptr, int ofs, long val);
-
 		[MonoTODO]
 		public static void WriteInt64 ([In, Out, MarshalAs (UnmanagedType.AsAny)] object ptr, int ofs, long val)
 		{
@@ -1115,9 +939,6 @@ namespace System.Runtime.InteropServices
 		{
 			WriteIntPtr (ptr, 0, val);
 		}
-
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern static void WriteIntPtr (IntPtr ptr, int ofs, IntPtr val);
 
 		[MonoTODO]
 		public static void WriteIntPtr([In, Out, MarshalAs(UnmanagedType.AsAny)] object ptr, int ofs, IntPtr val)
@@ -1164,8 +985,6 @@ namespace System.Runtime.InteropServices
 		}
 #endif
 #if NET_2_0
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern Delegate GetDelegateForFunctionPointerInternal (IntPtr ptr, Type t);
 
 		public static Delegate GetDelegateForFunctionPointer (IntPtr ptr, Type t)
 		{
@@ -1179,9 +998,6 @@ namespace System.Runtime.InteropServices
 			return GetDelegateForFunctionPointerInternal (ptr, t);
 		}
 
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private static extern IntPtr GetFunctionPointerForDelegateInternal (Delegate d);
-		
 		public static IntPtr GetFunctionPointerForDelegate (Delegate d)
 		{
 			if (d == null)

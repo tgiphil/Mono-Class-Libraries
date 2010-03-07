@@ -155,7 +155,6 @@ namespace System.Collections.ObjectModel
 			list[index] = item;
 		}
 
-		
 #region Helper methods for non-generic interfaces
 		
 		internal static bool IsValidItem (object item)

@@ -45,14 +45,10 @@ namespace System.Security {
 		public RuntimeDeclSecurityEntry choice;
 	}
 
-	internal static class SecurityManager {
+	internal static partial class SecurityManager {
 
 		// note: this let us differentiate between running in the browser (w/CoreCLR) and 
 		// running on the desktop (e.g. smcs compiling stuff)
-		extern public static bool SecurityEnabled {
-			[MethodImplAttribute (MethodImplOptions.InternalCall)]
-			get;
-		}
 
 		internal static IPermission CheckPermissionSet (Assembly a, PermissionSet ps, bool noncas)
 		{
