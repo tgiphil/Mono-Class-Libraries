@@ -207,6 +207,7 @@ System/Single.cs
 System/StackOverflowException.cs
 System/STAThreadAttribute.cs
 System/String.cs
+System/String.Partial.cs
 System/StringSplitOptions.cs
 System/StringComparer.cs
 System/StringComparison.cs
