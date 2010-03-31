@@ -70,6 +70,7 @@ namespace System.Runtime.Serialization
 				if (_registeredObjectsCount < _objectRecords.Count)
 					throw new SerializationException ("There are some fixups that refer to objects that have not been registered");
 
+
 				ObjectRecord last = _lastObjectRecord;
 				bool firstCicle = true;
 
@@ -269,6 +270,7 @@ namespace System.Runtime.Serialization
 			}
 		}
 
+
 		public virtual void RegisterObject (object obj, long objectID)
 		{
 			if (obj == null) throw new ArgumentNullException("obj", "The obj parameter is null.");
@@ -304,6 +306,8 @@ namespace System.Runtime.Serialization
 			RegisterObjectInternal (obj, record);
 		}
 	}
+
+
 
 	// Fixup types. There is a fixup class for each fixup type.
 

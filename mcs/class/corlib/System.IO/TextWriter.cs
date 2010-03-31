@@ -109,6 +109,7 @@ namespace System.IO {
 		}
 #endif
 
+
                 public virtual void Flush()
 		{
 			// do nothing

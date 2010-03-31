@@ -47,6 +47,7 @@ namespace System.Deployment.Internal
 			throw new NotImplementedException ();
 		}
 
+
 		[MonoTODO ("2.0 SP1 member")]
 		public static byte [] GetApplicationManifestBytes (ActivationContext appInfo)
 		{

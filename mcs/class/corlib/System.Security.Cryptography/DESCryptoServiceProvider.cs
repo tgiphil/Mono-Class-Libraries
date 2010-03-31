@@ -222,6 +222,7 @@ namespace System.Security.Cryptography {
 			63-1, 55-1, 47-1, 39-1, 31-1, 23-1, 15-1,  7-1
 		};
 	
+	
 		// Final permutation FP = IP^(-1), page 10.
 		// Transposed to 0-based format.
 		private static readonly byte [] fpBits = {

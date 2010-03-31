@@ -352,6 +352,7 @@ public class TaiwanCalendar : Calendar {
 		return CCGregorianCalendar.GetDaysInYear(gregorianYear);
 	}
 		
+
 	/// <summary>
 	/// Overridden. Gives the era of the specified date.
 	/// </summary>

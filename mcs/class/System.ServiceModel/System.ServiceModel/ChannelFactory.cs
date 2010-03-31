@@ -67,11 +67,9 @@ namespace System.ServiceModel
 			get { return service_endpoint; }
 		}
 
-#if !NET_2_1
 		public ClientCredentials Credentials {
 			get { return Endpoint.Behaviors.Find<ClientCredentials> (); }
 		}
-#endif
 
 		protected internal override TimeSpan DefaultCloseTimeout {
 			get { return Endpoint.Binding.CloseTimeout; }
@@ -253,6 +251,15 @@ namespace System.ServiceModel
 
 		protected void EnsureOpened ()
 		{
+			if (Endpoint == null)
+				throw new InvalidOperationException ("A service endpoint must be configured for this channel factory");
+			if (Endpoint.Address == null)
+				throw new InvalidOperationException ("An EndpointAddress must be configured for this channel factory");
+			if (Endpoint.Contract == null)
+				throw new InvalidOperationException ("A service Contract must be configured for this channel factory");
+			if (Endpoint.Binding == null)
+				throw new InvalidOperationException ("A Binding must be configured for this channel factory");
+
 			if (State != CommunicationState.Opened)
 				Open ();
 		}

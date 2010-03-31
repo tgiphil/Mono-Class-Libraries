@@ -35,6 +35,9 @@ using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
+#if (NET_2_0 || MONOTOUCH) && SECURITY_DEP
+using Mono.Security.Protocol.Tls;
+#endif
 
 namespace System.Net
 {
@@ -82,6 +85,16 @@ namespace System.Net
 		static PropertyInfo piClient;
 		static PropertyInfo piServer;
 		static PropertyInfo piTrustFailure;
+
+#if MONOTOUCH
+                static MethodInfo start_wwan;
+
+                static WebConnection ()
+                {
+                        Type type = Type.GetType ("MonoTouch.ObjCRuntime.Runtime, monotouch");
+                        start_wwan = type.GetMethod ("StartWWAN");
+                }
+#endif
 
 		public WebConnection (WebConnectionGroup group, ServicePoint sPoint)
 		{
@@ -136,9 +149,19 @@ namespace System.Net
 				IPHostEntry hostEntry = sPoint.HostEntry;
 
 				if (hostEntry == null) {
-					status = sPoint.UsesProxy ? WebExceptionStatus.ProxyNameResolutionFailure :
-								    WebExceptionStatus.NameResolutionFailure;
-					return;
+#if MONOTOUCH
+					if (start_wwan != null) {
+						start_wwan.Invoke (null, new object [1] { sPoint.Address });
+						hostEntry = sPoint.HostEntry;
+					}
+					if (hostEntry == null) {
+#endif
+						status = sPoint.UsesProxy ? WebExceptionStatus.ProxyNameResolutionFailure :
+									    WebExceptionStatus.NameResolutionFailure;
+						return;
+#if MONOTOUCH
+					}
+#endif
 				}
 
 				WebConnectionData data = Data;
@@ -332,6 +355,11 @@ namespace System.Net
 										request.ClientCertificates,
 										request, buffer};
 						nstream = (Stream) Activator.CreateInstance (sslStream, args);
+#if (NET_2_0 || MONOTOUCH) && SECURITY_DEP
+						SslClientStream scs = (SslClientStream) nstream;
+						var helper = new ServicePointManager.ChainValidationHelper (request);
+						scs.ServerCertValidation2 += new CertificateValidationCallback2 (helper.ValidateChain);
+#endif
 						certsAvailable = false;
 					}
 					// we also need to set ServicePoint.Certificate 

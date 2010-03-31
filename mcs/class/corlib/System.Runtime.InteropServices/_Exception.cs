@@ -51,6 +51,7 @@ namespace System.Runtime.InteropServices {
 
 		MethodBase TargetSite { get; }
 
+
 		bool Equals (object obj);
 
 		Exception GetBaseException ();

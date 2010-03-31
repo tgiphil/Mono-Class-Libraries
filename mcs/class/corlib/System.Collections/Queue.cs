@@ -1,4 +1,4 @@
-//
+﻿//
 // System.Collections.Queue
 //
 // Author:

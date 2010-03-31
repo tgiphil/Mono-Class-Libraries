@@ -505,6 +505,7 @@ namespace System.Collections.Concurrent
 			}
 		}
 
+		
 		bool IDictionary.IsFixedSize {
 			get {
 				return false;

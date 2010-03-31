@@ -934,6 +934,7 @@ namespace System.Collections.Generic {
 				this.dictionary = dictionary;
 			}
 
+
 			public void CopyTo (TKey [] array, int index)
 			{
 				dictionary.CopyToCheck (array, index);

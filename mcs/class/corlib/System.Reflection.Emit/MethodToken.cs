@@ -29,6 +29,7 @@ using System.Runtime.InteropServices;
 
 namespace System.Reflection.Emit {
 
+
 	/// <summary>
 	///  Represents the Token returned by the metadata to represent a Method.
 	/// </summary>
@@ -42,10 +43,12 @@ namespace System.Reflection.Emit {
 
 		public static readonly MethodToken Empty;
 
+
 		static MethodToken ()
 		{
 			Empty = new MethodToken ();
 		}
+
 
 		internal MethodToken (int val)
 		{
@@ -91,6 +94,7 @@ namespace System.Reflection.Emit {
 		{
 			return tokValue;
 		}
+
 
 		/// <summary>
 		///  Returns the metadata token for this Method.

@@ -200,6 +200,10 @@ namespace System
 			SetGenericValueImpl (index, ref item);
 		}
 
+		// CAUTION! No bounds checking!
+
+		// CAUTION! No bounds checking!
+
 		internal struct InternalEnumerator<T> : IEnumerator<T>
 		{
 			const int NOT_STARTED = -2;
@@ -2251,7 +2255,7 @@ namespace System
 
 			public void CopyTo (T [] array, int index)
 			{
-				array.CopyTo (array, index);
+				this.array.CopyTo (array, index);
 			}
 
 			IEnumerator IEnumerable.GetEnumerator ()

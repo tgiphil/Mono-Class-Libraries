@@ -87,6 +87,7 @@ namespace System.IO {
 			}
 		}
 
+
 		// The method will read up to count characters from the StringReader
 		// into the buffer character array starting at position index. Returns
 		// the actual number of characters read, or zero if the end of the string

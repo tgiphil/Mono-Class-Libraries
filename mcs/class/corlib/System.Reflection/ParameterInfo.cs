@@ -46,6 +46,7 @@ namespace System.Reflection
 		protected int PositionImpl;
 		protected ParameterAttributes AttrsImpl;
 		private UnmanagedMarshal marshalAs;
+		//ParameterInfo parent;
 
 		protected ParameterInfo () {
 		}
@@ -62,6 +63,15 @@ namespace System.Reflection
 				this.PositionImpl = position - 1;
 				this.AttrsImpl = ParameterAttributes.None;
 			}
+		}
+
+		internal ParameterInfo (ParameterInfo pinfo, MemberInfo member) {
+			this.ClassImpl = pinfo.ParameterType;
+			this.MemberImpl = member;
+			this.NameImpl = pinfo.Name;
+			this.PositionImpl = pinfo.Position;
+			this.AttrsImpl = pinfo.Attributes;
+			//this.parent = pinfo;
 		}
 
 		/* to build a ParameterInfo for the return type of a method */
@@ -105,7 +115,12 @@ namespace System.Reflection
 					DecimalConstantAttribute[] attrs = (DecimalConstantAttribute[])GetCustomAttributes (typeof (DecimalConstantAttribute), false);
 					if (attrs.Length > 0)
 						return attrs [0].Value;
-				}					
+				} else if (ClassImpl == typeof (DateTime)) {
+					/* default values for DateTime are encoded using a custom attribute */
+					DateTimeConstantAttribute[] attrs = (DateTimeConstantAttribute[])GetCustomAttributes (typeof (DateTimeConstantAttribute), false);
+					if (attrs.Length > 0)
+						return new DateTime (attrs [0].Ticks);
+				}
 				return DefaultValueImpl;
 			}
 		}
@@ -172,6 +187,28 @@ namespace System.Reflection
 			get {return PositionImpl;}
 		}
 
+#if NET_2_0 || BOOTSTRAP_NET_2_0
+		public
+#else
+		internal
+#endif
+		int MetadataToken {
+			get {
+				if (MemberImpl is PropertyInfo) {
+					PropertyInfo prop = (PropertyInfo)MemberImpl;
+					MethodInfo mi = prop.GetGetMethod (true);
+					if (mi == null)
+						mi = prop.GetSetMethod (true);
+					/*TODO expose and use a GetParametersNoCopy()*/
+					return mi.GetParameters () [PositionImpl].MetadataToken;
+				} else if (MemberImpl is MethodBase) {
+					return GetMetadataToken ();
+				}
+				throw new ArgumentException ("Can't produce MetadataToken for member of type " + MemberImpl.GetType ());
+			}
+
+		}
+
 		public virtual object[] GetCustomAttributes (bool inherit)
 		{
 			return MonoCustomAttrs.GetCustomAttributes (this, inherit);
@@ -232,10 +269,10 @@ namespace System.Reflection
 			return types;
 		}
 
-		[MonoTODO]
 		public virtual object RawDefaultValue {
 			get {
-				throw new NotImplementedException ();
+				/*FIXME right now DefaultValue doesn't throw for reflection-only assemblies. Change this once the former is fixed.*/
+				return DefaultValue;
 			}
 		}
 #endif

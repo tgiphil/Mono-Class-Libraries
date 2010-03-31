@@ -1,9 +1,20 @@
+/*
+ * (c) 2010 MOSA - The Managed Operating System Alliance
+ *
+ * Licensed under the terms of the New BSD License.
+ *
+ * Authors:
+ *  Phil Garcia (tgiphil) <phil@thinkedge.com>
+ *
+ */
+
+#if NET_2_1 && !MONOTOUCH
+
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Policy;
 
-#if NET_2_1 && !MONOTOUCH
 namespace System.Security
 {
 	 partial class SecurityManager
@@ -17,4 +28,3 @@ namespace System.Security
 
 	}
 }
-#endif

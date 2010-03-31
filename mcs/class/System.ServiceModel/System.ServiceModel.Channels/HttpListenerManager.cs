@@ -111,8 +111,8 @@ namespace System.ServiceModel.Channels
 			opened_listeners = new Dictionary<Uri, HttpListener> ();
 		}
 
-		public HttpSimpleListenerManager (IChannelListener channelListener)
-			: base (channelListener)
+		public HttpSimpleListenerManager (IChannelListener channelListener, HttpTransportBindingElement source)
+			: base (channelListener, source)
 		{
 		}
 
@@ -121,6 +121,9 @@ namespace System.ServiceModel.Channels
 			lock (opened_listeners) {
 				if (!opened_listeners.ContainsKey (channelListener.Uri)) {
 					HttpListener listener = new HttpListener ();
+					listener.AuthenticationSchemes = Source.AuthenticationScheme;
+					listener.Realm = Source.Realm;
+					listener.UnsafeConnectionNtlmAuthentication = Source.UnsafeConnectionNtlmAuthentication;
 
 					string uriString = channelListener.Uri.ToString ();
 					if (!uriString.EndsWith ("/", StringComparison.Ordinal))
@@ -154,7 +157,7 @@ namespace System.ServiceModel.Channels
 			http_listener = null;
 		}
 
-		public override void KickContextReceiver (IChannelListener listener, Action<HttpContextInfo> contextReceivedCallback)
+		protected override void KickContextReceiver (IChannelListener listener, Action<HttpContextInfo> contextReceivedCallback)
 		{
 			http_listener.BeginGetContext (delegate (IAsyncResult result) {
 				var hctx = http_listener.EndGetContext (result);
@@ -167,8 +170,8 @@ namespace System.ServiceModel.Channels
 	{
 		SvcHttpHandler http_handler;
 
-		public AspNetListenerManager (IChannelListener channelListener)
-			: base (channelListener)
+		public AspNetListenerManager (IChannelListener channelListener, HttpTransportBindingElement source)
+			: base (channelListener, source)
 		{
 			http_handler = SvcHttpHandlerFactory.GetHandlerForListener (channelListener);
 		}
@@ -189,7 +192,7 @@ namespace System.ServiceModel.Channels
 
 		Func<IChannelListener,HttpContext> wait_delegate;
 
-		public override void KickContextReceiver (IChannelListener listener, Action<HttpContextInfo> contextReceivedCallback)
+		protected override void KickContextReceiver (IChannelListener listener, Action<HttpContextInfo> contextReceivedCallback)
 		{
 			if (wait_delegate == null)
 				wait_delegate = new Func<IChannelListener,HttpContext> (http_handler.WaitForRequest);
@@ -209,19 +212,21 @@ namespace System.ServiceModel.Channels
 		AutoResetEvent wait_http_ctx = new AutoResetEvent (false);
 		List<HttpContextInfo> pending = new List<HttpContextInfo> ();
 
-public MetadataPublishingInfo MexInfo { get { return mex_info; } }
+		public MetadataPublishingInfo MexInfo { get { return mex_info; } }
+		public HttpTransportBindingElement Source { get; private set; }
 
 		static HttpListenerManager ()
 		{
 			registered_channels = new Dictionary<Uri, List<IChannelListener>> ();
 		}
 
-		protected HttpListenerManager (IChannelListener channelListener)
+		protected HttpListenerManager (IChannelListener channelListener, HttpTransportBindingElement source)
 		{
 			this.channel_listener = channelListener;
 			// FIXME: this cast should not be required, but current JIT somehow causes an internal error.
 			mex_info = ((IChannelListener) channelListener).GetProperty<MetadataPublishingInfo> ();
 			wsdl_instance = mex_info != null ? mex_info.Instance : null;
+			Source = source;
 		}
 
 		public void Open (TimeSpan timeout)
@@ -265,6 +270,11 @@ public MetadataPublishingInfo MexInfo { get { return mex_info; } }
 		protected abstract void OnRegister (IChannelListener listener, TimeSpan timeout);
 		protected abstract void OnUnregister (IChannelListener listener, bool abort);
 
+		public void CancelGetHttpContextAsync ()
+		{
+			wait_http_ctx.Set ();
+		}
+
 		// Do not directly handle retrieved HttpListenerContexts when
 		// the listener received ones.
 		// Instead, iterate every listeners to find the most-likely-
@@ -292,25 +302,32 @@ public MetadataPublishingInfo MexInfo { get { return mex_info; } }
 			}
 		}
 
-		public abstract void KickContextReceiver (IChannelListener listener, Action<HttpContextInfo> contextReceiverCallback);
+		protected abstract void KickContextReceiver (IChannelListener listener, Action<HttpContextInfo> contextReceiverCallback);
 
 		void DispatchHttpListenerContext (HttpContextInfo ctx)
 		{
 			if (wsdl_instance == null) {
-				pending.Add (ctx);
-				wait_http_ctx.Set ();
+				AddListenerContext (this, ctx);
 				return;
 			}
 			foreach (var l in registered_channels [channel_listener.Uri]) {
 				var lm = l.GetProperty<HttpListenerManager> ();
 				if (lm.FilterHttpContext (ctx)) {
-					lm.pending.Add (ctx);
-					lm.wait_http_ctx.Set ();
+					AddListenerContext (lm, ctx);
 					return;
 				}
 			}
-			pending.Add (ctx);
-			wait_http_ctx.Set ();
+			AddListenerContext (this, ctx);
+		}
+
+		static void AddListenerContext (HttpListenerManager lm, HttpContextInfo ctx)
+		{
+			lock (registered_channels) {
+				lm.pending.Add (ctx);
+				// FIXME: this should not be required, but it somehow saves some failures wrt concurrent calls.
+				Thread.Sleep (100);
+				lm.wait_http_ctx.Set ();
+			}
 		}
 
 		const UriComponents cmpflag = UriComponents.HttpRequestUrl ^ UriComponents.Query;

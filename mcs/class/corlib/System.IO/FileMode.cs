@@ -38,6 +38,7 @@ using System.Runtime.InteropServices;
 
 namespace System.IO {
 
+
 	/// <summary>
 	/// </summary>
 #if NET_2_0

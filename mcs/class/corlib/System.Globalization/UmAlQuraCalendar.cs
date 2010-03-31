@@ -40,6 +40,7 @@ namespace System.Globalization {
 using System;
 using System.IO;
 
+
 /// <summary>
 /// This is the Hijri calendar which might be called Islamic calendar. 
 /// </summary>
@@ -730,6 +731,7 @@ public class UmAlQuraCalendar : Calendar {
 		return rd2 - rd1;
 	}
 		
+
 	/// <summary>
 	/// Overridden. Gives the era of the specified date.
 	/// </summary>

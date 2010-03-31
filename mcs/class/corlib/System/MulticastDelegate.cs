@@ -62,6 +62,7 @@ namespace System
 			base.GetObjectData  (info, context);
 		}
 
+
 		protected sealed override object DynamicInvokeImpl (object[] args)
 		{
 			if (prev != null)

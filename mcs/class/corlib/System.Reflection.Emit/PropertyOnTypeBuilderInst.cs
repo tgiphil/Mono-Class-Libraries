@@ -99,6 +99,7 @@ namespace System.Reflection.Emit
 			return res;
 		}
 
+
 		public override MethodInfo GetGetMethod (bool nonPublic)
 		{
 			MethodInfo mi = prop.GetGetMethod (nonPublic);

@@ -427,6 +427,7 @@ internal class CCGregorianCalendar {
 		december
 	};
 
+
 	/// <summary>
 	/// The method tells whether the year is a leap year.
 	/// </summary>
@@ -996,6 +997,7 @@ internal class CCJulianCalendar {
 		month = CCMath.div(12 * (prior_days + correction) + 373, 367);
 	}
 	
+
 	/// <summary>
 	/// The method computes the Julian year, month, and day from a
 	/// fixed day number.
@@ -1228,6 +1230,7 @@ internal class CCHebrewCalendar {
 		return is_leap_year(year) ? 13 : 12;
 	}
 
+	
 	/// <summary>The method is a helper function.</summary>
 	/// <param name="year">An integer specifying the Hebrew year.
 	/// </param>
@@ -1551,6 +1554,7 @@ internal class CCHebrewCalendar {
 			1, 7, year+1)-1;
 	}
 } // class HebrewCalendar
+
 
 /// <summary>
 /// A class encapsulating the functions of the Islamic calendar as static
@@ -2281,6 +2285,7 @@ internal class CCGregorianEraHandler {
 		return _Eras.Contains((System.Object)era);
 	}
 } // class CCGregorianEraHandler
+
 
 // FIXME: remove this class. It should be identical to CCGregorianEraHandler
 [System.Serializable]

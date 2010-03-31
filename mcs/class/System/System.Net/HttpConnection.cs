@@ -81,7 +81,6 @@ namespace System.Net {
 			return key;
 		}
 
-
 		void Init ()
 		{
 			context_bound = false;
@@ -229,6 +228,7 @@ namespace System.Net {
 
 			try {
 				line = ReadLine (buffer, position, len - position, ref used);
+				position += used;
 			} catch (Exception e) {
 				context.ErrorMessage = "Bad request";
 				context.ErrorStatus = 400;
@@ -238,7 +238,6 @@ namespace System.Net {
 			do {
 				if (line == null)
 					break;
-				position += used;
 				if (line == "") {
 					if (input_state == InputState.RequestLine)
 						continue;
@@ -254,10 +253,8 @@ namespace System.Net {
 					try {
 						context.Request.AddHeader (line);
 					} catch (Exception e) {
-						Console.WriteLine (line);
 						context.ErrorMessage = e.Message;
 						context.ErrorStatus = 400;
-						Console.WriteLine (e);
 						return true;
 					}
 				}
@@ -269,6 +266,7 @@ namespace System.Net {
 					break;
 				try {
 					line = ReadLine (buffer, position, len - position, ref used);
+					position += used;
 				} catch (Exception e) {
 					context.ErrorMessage = "Bad request";
 					context.ErrorStatus = 400;
@@ -358,46 +356,42 @@ namespace System.Net {
 			}
 
 			if (sock != null) {
-				if (force_close == false) {
+				force_close |= (context.Request.Headers ["connection"] == "close");
+				if (!force_close) {
 					int status_code = context.Response.StatusCode;
 					bool conn_close = (status_code == 400 || status_code == 408 || status_code == 411 ||
 							status_code == 413 || status_code == 414 || status_code == 500 ||
 							status_code == 503);
 
-					if (conn_close == false) {
-						conn_close = (context.Request.Headers ["connection"] == "close");
-						conn_close |= (context.Request.ProtocolVersion <= HttpVersion.Version10);
-					}
-
-					if (conn_close)
-						force_close = true;
+					force_close |= (context.Request.ProtocolVersion <= HttpVersion.Version10);
 				}
 
-				if (!force_close && chunked && context.Response.ForceCloseChunked == false) {
-					// Don't close. Keep working.
-					chunked_uses++;
+				if (!force_close && context.Request.FlushInput ()) {
+					if (chunked && context.Response.ForceCloseChunked == false) {
+						// Don't close. Keep working.
+						chunked_uses++;
+						Unbind ();
+						Init ();
+						BeginReadRequest ();
+						return;
+					}
+
 					Unbind ();
 					Init ();
 					BeginReadRequest ();
 					return;
 				}
 
-				if (force_close || context.Response.Headers ["connection"] == "close") {
-					Socket s = sock;
-					sock = null;
-					try {
-						s.Shutdown (SocketShutdown.Both);
-					} catch {
-					} finally {
-						s.Close ();
-					}
-					Unbind ();
-				} else {
-					Unbind ();
-					Init ();
-					BeginReadRequest ();
-					return;
+				Socket s = sock;
+				sock = null;
+				try {
+					s.Shutdown (SocketShutdown.Both);
+				} catch {
+				} finally {
+					s.Close ();
 				}
+				Unbind ();
+				return;
 			}
 		}
 	}

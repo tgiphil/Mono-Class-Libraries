@@ -83,6 +83,7 @@ namespace System.Collections {
 
 		const int CHAIN_MARKER  = ~Int32.MaxValue;
 
+
 		private int inUse;
 		private int modificationCount;
 		private float loadFactor;
@@ -237,6 +238,7 @@ namespace System.Collections {
 		{
 		}
 
+
 		public Hashtable (IDictionary d) : this (d, 1.0f)
 		{
 		}
@@ -342,6 +344,8 @@ namespace System.Collections {
 			}
 		}
 
+
+
 		// IDictionary
 
 		public virtual bool IsFixedSize {
@@ -349,6 +353,7 @@ namespace System.Collections {
 				return false;
 			}
 		}
+
 
 		public virtual bool IsReadOnly {
 			get {
@@ -372,6 +377,8 @@ namespace System.Collections {
 			}
 		}
 
+
+
 		public virtual Object this [Object key] {
 			get {
 				if (key == null)
@@ -384,6 +391,7 @@ namespace System.Collections {
 				uint indx = (uint)h;
 				uint step = (uint) ((h >> 5)+1) % (size-1)+1;
 				
+	
 				for (uint i = size; i > 0; i--) {
 					indx %= size;
 					Slot entry = table [indx];
@@ -411,9 +419,13 @@ namespace System.Collections {
 			}
 		}
 
+
+
+
 		//
 		// Interface methods
 		//
+
 
 		// IEnumerable
 
@@ -421,6 +433,7 @@ namespace System.Collections {
 		{
 			return new Enumerator (this, EnumeratorMode.ENTRY_MODE);
 		}
+
 
 		// ICollection
 		public virtual void CopyTo (Array array, int arrayIndex)
@@ -447,6 +460,7 @@ namespace System.Collections {
 				array.SetValue (it.Entry, i++);
 			}
 		}
+
 
 		// IDictionary
 
@@ -528,6 +542,7 @@ namespace System.Collections {
 			}
 			return false;
 		}
+
 
 		// ICloneable
 
@@ -624,6 +639,8 @@ namespace System.Collections {
 			return new SyncHashtable (table);
 		}
 
+
+
 		//
 		// Protected instance methods
 		//
@@ -658,6 +675,8 @@ namespace System.Collections {
 			
 			return comparerRef.Compare (item, key) == 0;
 		}
+
+
 
 		//
 		// Private instance methods
@@ -694,6 +713,7 @@ namespace System.Collections {
 			uint indx = (uint)h;
 			uint step = (uint) ((h >> 5)+1) % (size-1)+1;
 			
+
 			for (uint i = size; i > 0; i--) {
 				indx %= size;
 				Slot entry = table [indx];
@@ -715,6 +735,7 @@ namespace System.Collections {
 			return -1;
 		}
 
+
 		private void Rehash ()
 		{
 			int oldSize = this.table.Length;
@@ -724,6 +745,7 @@ namespace System.Collections {
 			//   to the smallest prime number that is larger
 			//   than twice the current number of Hashtable buckets
 			uint newSize = (uint)ToPrime ((oldSize<<1)|1);
+
 
 			Slot [] newTable = new Slot [newSize];
 			Slot [] table = this.table;
@@ -755,6 +777,7 @@ namespace System.Collections {
 
 			this.SetTable (newTable, newHashes);
 		}
+
 
 		private void PutImpl (Object key, Object value, bool overwrite)
 		{
@@ -835,6 +858,8 @@ namespace System.Collections {
 			}
 		}
 
+
+
 		//
 		// Private static methods
 		//
@@ -870,6 +895,9 @@ namespace System.Collections {
 			return CalcPrime (x);
 		}
 
+
+
+
 		//
 		// Inner classes
 		//
@@ -900,6 +928,7 @@ namespace System.Collections {
 
 			public Enumerator (Hashtable host)
 			           : this (host, EnumeratorMode.KEY_MODE) {}
+
 
 			private void FailFast ()
 			{
@@ -1094,6 +1123,7 @@ namespace System.Collections {
 			}
 		}
 
+
 		[Serializable]
 		private class SyncHashtable : Hashtable, IEnumerable {
 
@@ -1136,6 +1166,8 @@ namespace System.Collections {
 				}
 			}
 
+
+
 			// IDictionary
 
 			public override bool IsFixedSize {
@@ -1143,6 +1175,7 @@ namespace System.Collections {
 					return host.IsFixedSize;
 				}     
 			}
+
 
 			public override bool IsReadOnly {
 				get {
@@ -1170,6 +1203,8 @@ namespace System.Collections {
 				}
 			}
 
+
+
 			public override Object this [Object key] {
 				get {
 					return host [key];
@@ -1188,12 +1223,16 @@ namespace System.Collections {
 				return new Enumerator (host, EnumeratorMode.ENTRY_MODE);
 			}
 
+
+
+
 			// ICollection
 
 			public override void CopyTo (Array array, int arrayIndex)
 			{
 				host.CopyTo (array, arrayIndex);
 			}
+
 
 			// IDictionary
 
@@ -1228,6 +1267,8 @@ namespace System.Collections {
 				}
 			}
 
+
+
 			public override bool ContainsKey (object key)
 			{
 				return host.Contains (key);
@@ -1237,6 +1278,7 @@ namespace System.Collections {
 			{
 				return host.ContainsValue (value);
 			}
+
 
 			// ICloneable
 
@@ -1248,6 +1290,7 @@ namespace System.Collections {
 			}
 
 		} // SyncHashtable
+
 
 	} // Hashtable
 

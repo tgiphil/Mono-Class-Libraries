@@ -50,6 +50,7 @@ namespace System.Security.Cryptography.X509Certificates {
 		private string issuer_name;
 		private string subject_name;
 
+
 		public X509Certificate ()
 		{
 			// this allows an empty certificate to exists
@@ -118,6 +119,7 @@ namespace System.Security.Cryptography.X509Certificates {
 			Import (raw, (string)null, X509KeyStorageFlags.DefaultKeySet);
 		}
 
+
 		public string Issuer {
 			get {
 				if (x509 == null)
@@ -144,6 +146,7 @@ namespace System.Security.Cryptography.X509Certificates {
 		public IntPtr Handle {
 			get { return IntPtr.Zero; }
 		}
+
 
 		[ComVisible (false)]
 		public override bool Equals (object obj) 

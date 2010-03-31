@@ -1,3 +1,15 @@
+/*
+ * (c) 2010 MOSA - The Managed Operating System Alliance
+ *
+ * Licensed under the terms of the New BSD License.
+ *
+ * Authors:
+ *  Phil Garcia (tgiphil) <phil@thinkedge.com>
+ *
+ */
+
+#endif
+
 using System.Globalization;
 using System.Text;
 using System.Threading;

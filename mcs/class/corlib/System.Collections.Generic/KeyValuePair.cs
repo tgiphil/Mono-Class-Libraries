@@ -52,8 +52,8 @@ namespace System.Collections.Generic {
 		
 		public KeyValuePair (TKey key, TValue value)
 		{
-			this.key = key;
-			this.value = value;
+			Key = key;
+			Value = value;
 		}
 
 		public override string ToString()

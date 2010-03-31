@@ -44,6 +44,7 @@ namespace System.Security.Permissions {
 			e = list.GetEnumerator ();
 		}
 
+
 		public KeyContainerPermissionAccessEntry Current {
 			get { return (KeyContainerPermissionAccessEntry) e.Current; }
 		}
@@ -51,6 +52,7 @@ namespace System.Security.Permissions {
 		object IEnumerator.Current {
 			get { return e.Current; }
 		}
+
 
 		public bool MoveNext ()
 		{

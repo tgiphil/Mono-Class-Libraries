@@ -9,7 +9,7 @@
 //	Stephane Delcroix (sdelcroix@novell.com)
 //
 // Copyright 2003 Ximian, Inc. (http://www.ximian.com)
-// Copyright 2006, 2008, 2009 Novell, Inc. (http://www.novell.com)
+// Copyright 2006, 2008, 2009-2010 Novell, Inc. (http://www.novell.com)
 //
 //
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -34,13 +34,12 @@
 
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace System.Net {
 
 	// note: this type is effectively sealed to transparent code since it's default .ctor is marked with [SecuritySafeCritical]
 	public class WebClient {
-
-		private delegate void ProgressChangedDelegate (long read, long length, object state);
 
 		WebHeaderCollection headers;
 		WebHeaderCollection responseHeaders;
@@ -50,6 +49,7 @@ namespace System.Net {
 		bool allow_read_buffering = true;
 		WebRequest request;
 		object locker;
+		CallbackData callback_data;
 
 		public WebClient ()
 		{
@@ -149,8 +149,9 @@ namespace System.Net {
 		public event UploadStringCompletedEventHandler UploadStringCompleted;
 		public event WriteStreamClosedEventHandler WriteStreamClosed;
 
-		WebRequest SetupRequest (Uri uri, string method)
+		WebRequest SetupRequest (Uri uri, string method, CallbackData callbackData)
 		{
+			callback_data = callbackData;
 			WebRequest request = GetWebRequest (uri);
 			request.Method = DetermineMethod (uri, method);
 			foreach (string header in Headers.AllKeys)
@@ -190,8 +191,21 @@ namespace System.Net {
 
 		void CompleteAsync ()
 		{
-			lock (locker) {
-				is_busy = false;
+			is_busy = false;
+		}
+
+		class CallbackData {
+			public object user_token;
+			public SynchronizationContext sync_context;
+			public byte [] data;
+			public CallbackData (object user_token, byte [] data)
+			{
+				this.user_token = user_token;
+				this.data = data;
+				this.sync_context = SynchronizationContext.Current ?? new SynchronizationContext ();
+			}
+			public CallbackData (object user_token) : this (user_token, null)
+			{
 			}
 		}
 
@@ -211,8 +225,8 @@ namespace System.Net {
 				SetBusy ();
 
 				try {
-					request = SetupRequest (address, "GET");
-					request.BeginGetResponse (new AsyncCallback (DownloadStringAsyncCallback), userToken);
+					request = SetupRequest (address, "GET", new CallbackData (userToken));
+					request.BeginGetResponse (new AsyncCallback (DownloadStringAsyncCallback), null);
 				}
 				catch (Exception e) {
 					WebException wex = new WebException ("Could not start operation.", e);
@@ -243,8 +257,9 @@ namespace System.Net {
 				ex = e;
 			}
 			finally {
-				OnDownloadStringCompleted (
-					new DownloadStringCompletedEventArgs (data, ex, cancel, result.AsyncState));
+				callback_data.sync_context.Post (delegate (object sender) {
+					OnDownloadStringCompleted (new DownloadStringCompletedEventArgs (data, ex, cancel, callback_data.user_token));
+				}, null);
 			}
 		}
 
@@ -264,8 +279,8 @@ namespace System.Net {
 				SetBusy ();
 
 				try {
-					request = SetupRequest (address, "GET");
-					request.BeginGetResponse (new AsyncCallback (OpenReadAsyncCallback), userToken);
+					request = SetupRequest (address, "GET", new CallbackData (userToken));
+					request.BeginGetResponse (new AsyncCallback (OpenReadAsyncCallback), null);
 				}
 				catch (Exception e) {
 					WebException wex = new WebException ("Could not start operation.", e);
@@ -292,8 +307,9 @@ namespace System.Net {
 				ex = e;
 			}
 			finally {
-				OnOpenReadCompleted (
-					new OpenReadCompletedEventArgs (stream, ex, cancel, result.AsyncState));
+				callback_data.sync_context.Post (delegate (object sender) {
+					OnOpenReadCompleted (new OpenReadCompletedEventArgs (stream, ex, cancel, callback_data.user_token));
+				}, null);
 			}
 		}
 
@@ -318,8 +334,8 @@ namespace System.Net {
 				SetBusy ();
 
 				try {
-					request = SetupRequest (address, method);
-					request.BeginGetRequestStream (new AsyncCallback (OpenWriteAsyncCallback), userToken);
+					request = SetupRequest (address, method, new CallbackData (userToken));
+					request.BeginGetRequestStream (new AsyncCallback (OpenWriteAsyncCallback), null);
 				}
 				catch (Exception e) {
 					WebException wex = new WebException ("Could not start operation.", e);
@@ -334,8 +350,13 @@ namespace System.Net {
 			Stream stream = null;
 			Exception ex = null;
 			bool cancel = false;
+			InternalWebRequestStreamWrapper internal_stream;
+
 			try {
 				stream = request.EndGetRequestStream (result);
+				internal_stream = (InternalWebRequestStreamWrapper) stream;
+				internal_stream.WebClient = this;
+				internal_stream.WebClientData = callback_data;
 			}
 			catch (WebException web) {
 				cancel = (web.Status == WebExceptionStatus.RequestCanceled);
@@ -345,8 +366,34 @@ namespace System.Net {
 				ex = e;
 			}
 			finally {
-				OnOpenWriteCompleted (
-					new OpenWriteCompletedEventArgs (stream, ex, cancel, result.AsyncState));
+				callback_data.sync_context.Post (delegate (object sender) {
+					OnOpenWriteCompleted (new OpenWriteCompletedEventArgs (stream, ex, cancel, callback_data.user_token));
+				}, null);
+			}
+		}
+
+		internal void WriteStreamClosedCallback (object WebClientData)
+		{
+			try {
+				request.BeginGetResponse (OpenWriteAsyncResponseCallback, WebClientData);
+			}
+			catch (Exception e) {
+				callback_data.sync_context.Post (delegate (object sender) {
+					OnWriteStreamClosed (new WriteStreamClosedEventArgs (e));
+				}, null);
+			}
+		}
+
+		private void OpenWriteAsyncResponseCallback (IAsyncResult result)
+		{
+			try {
+				WebResponse response = request.EndGetResponse (result);
+				ProcessResponse (response);
+			}
+			catch (Exception e) {
+				callback_data.sync_context.Post (delegate (object sender) {
+					OnWriteStreamClosed (new WriteStreamClosedEventArgs (e));
+				}, null);
 			}
 		}
 
@@ -373,10 +420,8 @@ namespace System.Net {
 				SetBusy ();
 
 				try {
-					request = SetupRequest (address, method);
-					object[] bag = new object [] { encoding.GetBytes (data), userToken };
-
-					request.BeginGetRequestStream (new AsyncCallback (UploadStringRequestAsyncCallback), bag);
+					request = SetupRequest (address, method, new CallbackData (userToken, encoding.GetBytes (data)));
+					request.BeginGetRequestStream (new AsyncCallback (UploadStringRequestAsyncCallback), null);
 				}
 				catch (Exception e) {
 					WebException wex = new WebException ("Could not start operation.", e);
@@ -389,11 +434,9 @@ namespace System.Net {
 		private void UploadStringRequestAsyncCallback (IAsyncResult result)
 		{
 			try {
-				object[] bag = (result.AsyncState as object[]);
-				byte[] data = (bag [0] as byte[]);
 				Stream stream = request.EndGetRequestStream (result);
-				stream.Write (data, 0, data.Length);
-				request.BeginGetResponse (new AsyncCallback (UploadStringResponseAsyncCallback), bag [1]);
+				stream.Write (callback_data.data, 0, callback_data.data.Length);
+				request.BeginGetResponse (new AsyncCallback (UploadStringResponseAsyncCallback), null);
 			}
 			catch {
 				request.Abort ();
@@ -425,57 +468,64 @@ namespace System.Net {
 				ex = e;
 			}
 			finally {
-				OnUploadStringCompleted (
-					new UploadStringCompletedEventArgs (data, ex, cancel, result.AsyncState));
+				callback_data.sync_context.Post (delegate (object sender) {
+					OnUploadStringCompleted (new UploadStringCompletedEventArgs (data, ex, cancel, callback_data.user_token));
+				}, null);
 			}
 		}
 
 		protected virtual void OnDownloadProgressChanged (DownloadProgressChangedEventArgs e)
 		{
-			if (DownloadProgressChanged != null) {
-				DownloadProgressChanged (this, e);
-			}
+			DownloadProgressChangedEventHandler handler = DownloadProgressChanged;
+			if (handler != null)
+				handler (this, e);
 		}
 		
 		protected virtual void OnOpenReadCompleted (OpenReadCompletedEventArgs args)
 		{
 			CompleteAsync ();
-			if (OpenReadCompleted != null) {
-				OpenReadCompleted (this, args);
-			}
+			OpenReadCompletedEventHandler handler = OpenReadCompleted;
+			if (handler != null)
+				handler (this, args);
 		}
 
 		protected virtual void OnDownloadStringCompleted (DownloadStringCompletedEventArgs args)
 		{
 			CompleteAsync ();
-			if (DownloadStringCompleted != null) {
-				DownloadStringCompleted (this, args);
-			}
+			DownloadStringCompletedEventHandler handler = DownloadStringCompleted;
+			if (handler != null)
+				handler (this, args);
 		}
 
 		protected virtual void OnOpenWriteCompleted (OpenWriteCompletedEventArgs args)
 		{
 			CompleteAsync ();
-			if (OpenWriteCompleted != null)
-				OpenWriteCompleted (this, args);
+			OpenWriteCompletedEventHandler handler = OpenWriteCompleted;
+			if (handler != null)
+				handler (this, args);
 		}
 
 		protected virtual void OnUploadProgressChanged (UploadProgressChangedEventArgs e)
 		{
-			if (UploadProgressChanged != null)
-				UploadProgressChanged (this, e);
+			UploadProgressChangedEventHandler handler = UploadProgressChanged;
+			if (handler != null)
+				handler (this, e);
 		}
 
 		protected virtual void OnUploadStringCompleted (UploadStringCompletedEventArgs args)
 		{
 			CompleteAsync ();
-			if (UploadStringCompleted != null)
-				UploadStringCompleted (this, args);
+			UploadStringCompletedEventHandler handler = UploadStringCompleted;
+			if (handler != null)
+				handler (this, args);
 		}
 
 		protected virtual void OnWriteStreamClosed (WriteStreamClosedEventArgs e)
 		{
-			throw new NotImplementedException ();
+			CompleteAsync ();
+			WriteStreamClosedEventHandler handler = WriteStreamClosed;
+			if (handler != null)
+				handler (this, e);
 		}
 
 		protected virtual WebRequest GetWebRequest (Uri address)
@@ -488,8 +538,11 @@ namespace System.Net {
 
 			WebRequest request = WebRequest.Create (uri);
 
-			request.SetupProgressDelegate ((ProgressChangedDelegate) delegate (long read, long length, object state) {
-				OnDownloadProgressChanged (new DownloadProgressChangedEventArgs (read, length, state));
+			request.SetupProgressDelegate (delegate (long read, long length) {
+				callback_data.sync_context.Post (delegate (object sender) {
+					OnDownloadProgressChanged (new DownloadProgressChangedEventArgs (read, length, callback_data.user_token));
+				}, null);
+
 			});
 			return request;
 		}

@@ -1,9 +1,20 @@
+/*
+ * (c) 2010 MOSA - The Managed Operating System Alliance
+ *
+ * Licensed under the terms of the New BSD License.
+ *
+ * Authors:
+ *  Phil Garcia (tgiphil) <phil@thinkedge.com>
+ *
+ */
+
 using System;
 using System.Collections;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
 using UUtil = Mono.Globalization.Unicode.MSCompatUnicodeTableUtil;
 
 namespace Mono.Globalization.Unicode

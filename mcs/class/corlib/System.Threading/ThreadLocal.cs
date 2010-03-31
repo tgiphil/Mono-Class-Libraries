@@ -75,6 +75,7 @@ namespace System.Threading
 			return string.Format("[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
 		}
 
+		
 		T GetValueThreadLocal ()
 		{
 			DataSlotWrapper myWrapper = Thread.GetData (localStore) as DataSlotWrapper;

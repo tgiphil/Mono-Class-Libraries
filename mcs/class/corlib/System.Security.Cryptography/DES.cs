@@ -73,6 +73,7 @@ public abstract class DES : SymmetricAlgorithm {
 		return (DES) CryptoConfig.CreateFromName (algName);
 	}
 
+
 	// Ek(Ek(m)) = m
 	internal static readonly byte[,] weakKeys = {
 		{ 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01 },

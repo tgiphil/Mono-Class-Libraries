@@ -116,6 +116,7 @@ namespace Microsoft.Win32
 			Close ();
 		}
 
+		
 		/// <summary>
 		///	Final cleanup of registry key object. Close the 
 		///	key if it's still open.
@@ -125,6 +126,7 @@ namespace Microsoft.Win32
 			Close ();
 		}
 
+		
 		/// <summary>
 		///	Get the fully qualified registry key name.
 		/// </summary>
@@ -132,6 +134,7 @@ namespace Microsoft.Win32
 			get { return qname; }
 		}
 	
+		
 		/// <summary>
 		///	Flush the current registry state to disk.
 		/// </summary>
@@ -139,6 +142,7 @@ namespace Microsoft.Win32
 		{
 			RegistryApi.Flush (this);
 		}
+		
 		
 		/// <summary>
 		///	Close the current registry key and flushes the state of the registry
@@ -157,6 +161,7 @@ namespace Microsoft.Win32
 			handle = null;
 		}
 		
+		
 		/// <summary>
 		///	get the number of sub-keys for this key
 		/// </summary>
@@ -168,6 +173,7 @@ namespace Microsoft.Win32
 			}
 		}
 
+		
 		/// <summary>
 		///	get the number of values for this key
 		/// </summary>
@@ -179,6 +185,7 @@ namespace Microsoft.Win32
 			}
 		}
 
+		
 		/// <summary>
 		///	Set a registry value.
 		/// </summary>
@@ -225,6 +232,7 @@ namespace Microsoft.Win32
 			return OpenSubKey (name, false);
 		}
 
+		
 		/// <summary>
 		///	Open the sub key specified.
 		/// </summary>
@@ -240,6 +248,7 @@ namespace Microsoft.Win32
 			return RegistryApi.OpenSubKey (this, name, writable);
 		}
 		
+		
 		/// <summary>
 		///	Get a registry value.
 		/// </summary>
@@ -248,6 +257,7 @@ namespace Microsoft.Win32
 			return GetValue (name, null);
 		}
 
+		
 		/// <summary>
 		///	Get a registry value.
 		/// </summary>
@@ -311,6 +321,7 @@ namespace Microsoft.Win32
 			DeleteSubKey (subkey, true);
 		}
 		
+		
 		/// <summary>
 		///	Delete the specified subkey.
 		/// </summary>
@@ -342,6 +353,7 @@ namespace Microsoft.Win32
 			RegistryApi.DeleteKey (this, subkey, throwOnMissingSubKey);
 		}
 		
+		
 		/// <summary>
 		///	Delete a sub tree (node, and values alike).
 		/// </summary>
@@ -365,6 +377,7 @@ namespace Microsoft.Win32
 			DeleteSubKey (subkey, false);
 		}
 		
+
 		/// <summary>
 		///	Delete a value from the registry.
 		/// </summary>
@@ -372,6 +385,7 @@ namespace Microsoft.Win32
 		{
 			DeleteValue (name, true);
 		}
+		
 		
 		/// <summary>
 		///	Delete a value from the registry.
@@ -401,6 +415,7 @@ namespace Microsoft.Win32
 		}
 #endif
 		
+		
 		/// <summary>
 		///	Get the names of the sub keys.
 		/// </summary>
@@ -411,6 +426,7 @@ namespace Microsoft.Win32
 			return RegistryApi.GetSubKeyNames (this);
 		}
 		
+		
 		/// <summary>
 		///	Get the names of values contained in this key.
 		/// </summary>
@@ -419,6 +435,7 @@ namespace Microsoft.Win32
 			AssertKeyStillValid ();
 			return RegistryApi.GetValueNames (this);
 		}
+		
 		
 		[MonoTODO ("Not implemented on unix")]
 		public static RegistryKey OpenRemoteBaseKey(RegistryHive hKey,string machineName)
@@ -446,6 +463,7 @@ namespace Microsoft.Win32
 			throw new NotImplementedException ();
 		}
 #endif
+		
 		
 		/// <summary>
 		///	Build a string representation of the registry key.
@@ -492,6 +510,7 @@ namespace Microsoft.Win32
 				throw new ObjectDisposedException ("Microsoft.Win32.RegistryKey");
 		}
 
+		
 		/// <summary>
 		/// validate that the registry key handle is still usable, and
 		/// that the 'subKeyName' is not null.

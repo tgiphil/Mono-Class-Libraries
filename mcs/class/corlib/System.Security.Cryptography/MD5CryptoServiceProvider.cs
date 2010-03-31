@@ -224,6 +224,7 @@ namespace System.Security.Cryptography {
 			b = (b << 22) | (b >> 10);
 			b += c;
 
+
 			// ---- Round 2 --------
   
 			a += (((b ^ c) & d) ^ c) + (uint) K [16] + buff [1];
@@ -290,6 +291,7 @@ namespace System.Security.Cryptography {
 			b = (b << 20) | (b >> 12);
 			b += c;
 
+
 			// ---- Round 3 --------
   
 			a += (b ^ c ^ d) + (uint) K [32] + buff [5];
@@ -355,6 +357,7 @@ namespace System.Security.Cryptography {
 			b += (c ^ d ^ a) + (uint) K [47] + buff [2];
 			b = (b << 23) | (b >> 9);
 			b += c;
+
 
 			// ---- Round 4 --------
   

@@ -71,6 +71,7 @@ namespace Mono.Security.X509 {
 		public PKCS9 () {}
 	}
 
+
 	internal class SafeBag {
 		private string _bagOID;
 		private ASN1 _asn1;
@@ -88,6 +89,7 @@ namespace Mono.Security.X509 {
 			get { return _asn1; }
 		}
 	}
+
 
 #if INSIDE_CORLIB
 	internal
@@ -1202,6 +1204,7 @@ namespace Mono.Security.X509 {
 					safeBagSequence.Add (contentInfo.ASN1);
 				}
 			}
+
 
 			ASN1 encapsulates = new ASN1 (0x04, safeBagSequence.GetBytes ());
 			ASN1 ci = new ASN1 (0xA0);

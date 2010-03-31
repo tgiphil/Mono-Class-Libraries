@@ -132,6 +132,7 @@ namespace System.Security.Cryptography {
 					| ((inputBuffer[inputOffset + 4 * i + 3])));
 			}
 
+		
 			for (i=16; i<64; i++) {
 				t1 = buff[i - 15];
 				t1 = (((t1 >> 7) | (t1 << 25)) ^ ((t1 >> 18) | (t1 << 14)) ^ (t1 >> 3));

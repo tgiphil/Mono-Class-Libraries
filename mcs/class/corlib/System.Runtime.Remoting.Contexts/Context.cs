@@ -324,6 +324,7 @@ namespace System.Runtime.Remoting.Contexts {
 			}
 			newContext.Freeze();
 
+
 			// Ask each context property whether the new context is OK
 
 			foreach (IContextProperty prop in msg.ContextProperties)

@@ -88,6 +88,7 @@ namespace System.Diagnostics {
 		}
 #endif
 		
+		
 		// Public Instance Properties
 		public bool IsJITTrackingEnabled { get { return JITTrackingEnabledFlag; } }
 		

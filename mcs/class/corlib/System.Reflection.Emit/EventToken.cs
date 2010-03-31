@@ -29,6 +29,7 @@ using System.Runtime.InteropServices;
 
 namespace System.Reflection.Emit {
 
+
 	/// <summary>
 	///  Represents the Token returned by the metadata to represent a Event.
 	/// </summary>
@@ -42,15 +43,19 @@ namespace System.Reflection.Emit {
 
 		public static readonly EventToken Empty;
 
+
 		static EventToken ()
 		{
 			Empty = new EventToken ();
 		}
 
+
 		internal EventToken (int val)
 		{
 			tokValue = val;
 		}
+
+
 
 		/// <summary>
 		/// </summary>
@@ -91,6 +96,7 @@ namespace System.Reflection.Emit {
 		{
 			return tokValue;
 		}
+
 
 		/// <summary>
 		///  Returns the metadata token for this Event.

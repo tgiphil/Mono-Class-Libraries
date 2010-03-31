@@ -227,6 +227,23 @@ namespace MonoTests.System.Runtime.Serialization
 			Assert.AreEqual (expected, sw.ToString ());
 		}
 
+		// DCEmpty
+
+		[Test]
+		public void SerializeEmptyNoNSClass ()
+		{
+			var ser = new DataContractSerializer (typeof (DCEmptyNoNS));
+			SerializeEmptyNoNSClass (ser, "<DCEmptyNoNS xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" />");
+		}
+
+		void SerializeEmptyNoNSClass (XmlObjectSerializer ser, string expected)
+		{
+			var sw = new StringWriter ();
+			using (var w = XmlWriter.Create (sw, settings)) {
+				ser.WriteObject (w, new DCEmptyNoNS ());
+			}
+			Assert.AreEqual (expected, sw.ToString ());
+		}
 		// string (primitive)
 
 		[Test]
@@ -1267,7 +1284,22 @@ namespace MonoTests.System.Runtime.Serialization
 		{
 			new DataContractSerializer (typeof (NestedContractType));
 		}
-		
+
+		[Test]
+		public void Bug560155 ()
+		{
+			var g = Guid.NewGuid ();
+			Person p1 = new Person ("UserName", g);
+			Assert.AreEqual ("name=UserName,id=" + g, p1.ToString (), "#1");
+			MemoryStream memStream = new MemoryStream ();
+			DataContractSerializer ser =  new DataContractSerializer (typeof (Person));
+
+			ser.WriteObject (memStream, p1);
+			memStream.Seek (0, SeekOrigin.Begin);
+			Person p2 = (Person) ser.ReadObject (memStream);
+			Assert.AreEqual ("name=UserName,id=" + g, p2.ToString (), "#1");
+		}
+
 		private T Deserialize<T> (string xml)
 		{
 			return Deserialize<T> (xml, typeof (T));
@@ -1436,6 +1468,11 @@ namespace MonoTests.System.Runtime.Serialization
 	{
 		// serializer doesn't touch it.
 		public string Foo = "TEST";
+	}
+
+	[DataContract (Namespace = "")]
+	public class DCEmptyNoNS
+	{
 	}
 
 	[DataContract]
@@ -1676,4 +1713,26 @@ public class AsxEntryInfo
 {
     [DataMember]
     public string AdvertPrompt { get; set; }
+}
+
+// bug #560155
+
+[DataContract]
+public class Person
+{
+	[DataMember]
+	readonly public string name;
+	[DataMember]
+	readonly public Guid Id = Guid.Empty;
+
+	public Person (string nameIn, Guid idIn)
+	{
+		name = nameIn;
+		Id = idIn;
+	}
+
+	public override string ToString()
+	{
+		return string.Format ("name={0},id={1}", name, Id);
+	}
 }

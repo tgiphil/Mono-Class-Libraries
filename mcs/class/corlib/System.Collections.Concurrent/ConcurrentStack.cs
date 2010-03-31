@@ -32,6 +32,7 @@ using System.Runtime.Serialization;
 namespace System.Collections.Concurrent
 {
 	
+	
 	public class ConcurrentStack<T> : IProducerConsumerCollection<T>, IEnumerable<T>,
 	                                  ICollection, IEnumerable, ISerializable, IDeserializationCallback
 	{

@@ -60,6 +60,7 @@ namespace System.Reflection.Emit {
 			flow = (byte) ((q >> 24) & 0xFF);
 		}
 
+
 		public override int GetHashCode ()
 		{
 			return Name.GetHashCode ();

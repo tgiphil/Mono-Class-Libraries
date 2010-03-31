@@ -213,6 +213,7 @@ namespace System.Security.Cryptography.X509Certificates {
 			}
 		}
 
+
 		// public methods
 	
 		public virtual bool Equals (System.Security.Cryptography.X509Certificates.X509Certificate other)

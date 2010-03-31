@@ -344,6 +344,7 @@ namespace System.Runtime.Remoting.Messaging {
 				if (_methodBase == null) throw new RemotingException ("Method " + _methodName + " not found in " + TypeName);
 			}
 
+
 #if NET_2_0
 			if (_methodBase.IsGenericMethod && _methodBase.ContainsGenericParameters) {
 				if (GenericArguments == null)

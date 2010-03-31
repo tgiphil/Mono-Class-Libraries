@@ -1,7 +1,20 @@
+/*
+ * (c) 2010 MOSA - The Managed Operating System Alliance
+ *
+ * Licensed under the terms of the New BSD License.
+ *
+ * Authors:
+ *  Phil Garcia (tgiphil) <phil@thinkedge.com>
+ *
+ */
+
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+#if NET_2_0
 using System.Runtime.ConstrainedExecution;
+#endif
 
 namespace System.Threading
 {
@@ -88,6 +101,10 @@ namespace System.Threading
 			throw new System.NotImplementedException();
 		}
 		public static long Add(ref long location1, long value)
+		{
+			throw new System.NotImplementedException();
+		}
+		internal static IntPtr CompareExchange(ref IntPtr location1, IntPtr value, IntPtr comparand)
 		{
 			throw new System.NotImplementedException();
 		}

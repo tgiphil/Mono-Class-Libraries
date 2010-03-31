@@ -43,6 +43,7 @@ namespace System.Runtime.Serialization
 		long current; // this is the current ID, starts at 1
 		static InstanceComparer comparer = new InstanceComparer ();
 
+
 		// ObjectIDGenerator must generate a new id for each object instance.
 		// If two objects have the same state (i.e. the method Equals() returns true),
 		// each one should have a different id.

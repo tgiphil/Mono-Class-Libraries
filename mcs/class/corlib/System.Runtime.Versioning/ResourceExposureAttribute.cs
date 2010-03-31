@@ -43,6 +43,7 @@ namespace System.Runtime.Versioning {
 			exposure = exposureLevel;
 		}
 
+
 		public ResourceScope ResourceExposureLevel {
 			get { return exposure; }
 		}

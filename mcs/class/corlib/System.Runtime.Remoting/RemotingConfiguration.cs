@@ -112,6 +112,7 @@ namespace System.Runtime.Remoting
 			}
 		}
 
+
 		// public methods
 		
 #if NET_2_0
@@ -837,6 +838,7 @@ namespace System.Runtime.Remoting
 				RemotingConfiguration.RegisterTypes (typeEntries);
 		}
 	}
+
 
 		/*******************************************************************
          * Internal data structures used by ConfigHandler, to store             *

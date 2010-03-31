@@ -1,7 +1,9 @@
+
 using System;
 using System.Globalization;
 using System.Text;
 using System.Runtime.CompilerServices;
+
 using NUtil = Mono.Globalization.Unicode.NormalizationTableUtil;
 
 namespace Mono.Globalization.Unicode

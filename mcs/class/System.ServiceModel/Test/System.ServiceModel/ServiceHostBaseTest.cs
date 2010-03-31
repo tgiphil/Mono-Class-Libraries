@@ -166,6 +166,7 @@ namespace MonoTests.System.ServiceModel
 			b.HttpHelpPageEnabled = false;						
 
 			h.Open ();
+			try {
 			Assert.AreEqual (h.ChannelDispatchers.Count, 1);
 			ChannelDispatcher channelDispatcher =  h.ChannelDispatchers[0] as ChannelDispatcher;
 			Assert.IsNotNull (channelDispatcher, "#1");
@@ -175,7 +176,9 @@ namespace MonoTests.System.ServiceModel
 			Assert.IsTrue (filter.Address.Equals (new EndpointAddress ("http://localhost:8080/address")), "#4");
 			Assert.IsFalse (filter.IncludeHostNameInComparison, "#5");
 			Assert.IsTrue (channelDispatcher.Endpoints [0].ContractFilter is MatchAllMessageFilter, "#6");
+			} finally {
 			h.Close ();
+			}
 		}
 
 		[Test]
@@ -286,7 +289,7 @@ namespace MonoTests.System.ServiceModel
 			var host = new ServiceHost (typeof (AllActions),
 				new Uri ("http://localhost:37564"));
 			var se = host.AddServiceEndpoint (typeof (AllActions),
-				new BasicHttpBinding (), "/foobar");
+				new BasicHttpBinding (), "foobar");
 			Assert.AreEqual ("http://localhost:37564/foobar", se.Address.Uri.AbsoluteUri, "#1");
 			Assert.AreEqual ("http://localhost:37564/foobar", se.ListenUri.AbsoluteUri, "#2");
 		}

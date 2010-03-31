@@ -52,6 +52,7 @@ namespace System.Security.AccessControl {
 				throw new ArgumentException ("type");
 			}
 			
+			
 			if (accessMask == 0) {
 				/* FIXME: check inheritance and
 				 * propagation flags too

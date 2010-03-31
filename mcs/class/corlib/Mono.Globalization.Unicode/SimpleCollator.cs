@@ -64,6 +64,7 @@
 //	IndexOf("\u00E6", "e")
 //
 
+
 using System;
 using System.Collections;
 using System.Globalization;

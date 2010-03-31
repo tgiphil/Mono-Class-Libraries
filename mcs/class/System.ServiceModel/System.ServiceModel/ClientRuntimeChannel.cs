@@ -435,6 +435,10 @@ namespace System.ServiceModel
 			if (AllowInitializationUI)
 				DisplayInitializationUI ();
 			OperationDescription od = SelectOperation (method, operationName, parameters);
+
+			if (State != CommunicationState.Opened)
+				Open ();
+
 			if (!od.IsOneWay)
 				return Request (od, parameters);
 			else {
@@ -458,18 +462,12 @@ namespace System.ServiceModel
 
 		void Output (OperationDescription od, object [] parameters)
 		{
-			if (OutputChannel.State != CommunicationState.Opened)
-				OutputChannel.Open ();
-
 			ClientOperation op = runtime.Operations [od.Name];
 			Send (CreateRequest (op, parameters), OperationTimeout);
 		}
 
 		object Request (OperationDescription od, object [] parameters)
 		{
-			if (OperationChannel.State != CommunicationState.Opened)
-				OperationChannel.Open ();
-
 			ClientOperation op = runtime.Operations [od.Name];
 			object [] inspections = new object [runtime.MessageInspectors.Count];
 			Message req = CreateRequest (op, parameters);
@@ -553,8 +551,13 @@ namespace System.ServiceModel
 			if (op.SerializeRequest)
 				msg = op.GetFormatter ().SerializeRequest (
 					version, parameters);
-			else
+			else {
+				if (parameters.Length != 1)
+					throw new ArgumentException (String.Format ("Argument parameters does not match the expected input. It should contain only a Message, but has {0} parameters", parameters.Length));
+				if (!(parameters [0] is Message))
+					throw new ArgumentException (String.Format ("Argument should be only a Message, but has {0}", parameters [0] != null ? parameters [0].GetType ().FullName : "null"));
 				msg = (Message) parameters [0];
+			}
 
 			context = context ?? OperationContext.Current;
 			if (context != null) {
@@ -571,6 +574,15 @@ namespace System.ServiceModel
 			if (OutputSession != null)
 				msg.Headers.MessageId = new UniqueId (OutputSession.Id);
 			msg.Properties.AllowOutputBatching = AllowOutputBatching;
+
+			if (msg.Version.Addressing.Equals (AddressingVersion.WSAddressing10)) {
+				if (msg.Headers.MessageId == null)
+					msg.Headers.MessageId = new UniqueId ();
+				if (msg.Headers.ReplyTo == null)
+					msg.Headers.ReplyTo = new EndpointAddress (Constants.WsaAnonymousUri);
+				if (msg.Headers.To == null)
+					msg.Headers.To = RemoteAddress.Uri;
+			}
 
 			return msg;
 		}

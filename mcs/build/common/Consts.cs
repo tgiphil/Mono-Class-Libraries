@@ -46,7 +46,7 @@ internal
 	// Use these assembly version constants to make code more maintainable.
 	//
 
-	public const string MonoVersion = "2.6.1.0";
+	public const string MonoVersion = "2.6.3.0";
 	public const string MonoCompany = "MONO development team";
 	public const string MonoProduct = "MONO Common language infrastructure";
 	public const string MonoCopyright = "(c) various MONO Authors";
@@ -69,11 +69,11 @@ internal
 	public const string FxFileVersion = "3.0.4506.648";
 	public const string VsFileVersion = "6.0.6001.17014";
 #elif NET_2_1
-	// Versions of .NET Framework for SilverLight
+	// Versions of .NET Framework for Silverlight 3.0
 	public const string FxVersion = "2.0.5.0";
-	public const string VsVersion = "9.0.0.0"; // TODO:
-	public const string FxFileVersion = "2.0.40115.0";
-	public const string VsFileVersion = "9.0.50727.42"; // TODO:
+	public const string VsVersion = "9.0.0.0"; // unused, but needed for compilation
+	public const string FxFileVersion = "3.0.40818.0";
+	public const string VsFileVersion = "9.0.50727.42"; // unused, but needed for compilation
 #elif NET_2_0 || BOOTSTRAP_NET_2_0
 	// Versions of .NET Framework 2.0 RTM
 	public const string FxVersion = "2.0.0.0";

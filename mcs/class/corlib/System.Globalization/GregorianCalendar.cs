@@ -294,6 +294,7 @@ public class GregorianCalendar : Calendar {
 		return CCGregorianCalendar.GetDaysInYear(year);
 	}
 		
+
 	/// <summary>
 	/// Overridden. Gives the era of the specified date.
 	/// </summary>
@@ -394,6 +395,7 @@ public class GregorianCalendar : Calendar {
 		M_CheckYMDE(year, month, day, ref era);
 		return CCGregorianCalendar.IsLeapDay(year, month, day);
 	}
+
 
 	/// <summary>
 	/// Overridden. Tells whether the given month 

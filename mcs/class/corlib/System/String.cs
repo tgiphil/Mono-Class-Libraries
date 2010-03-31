@@ -937,7 +937,7 @@ namespace System
 			if (valueLen <= 1) {
 				if (valueLen == 1)
 					return IndexOfUnchecked (value[0], startIndex, count);
-				return 0;
+				return startIndex;
 			}
 
 			fixed (char* thisptr = this, valueptr = value) {
@@ -965,7 +965,7 @@ namespace System
 				return -1;
 
 			if (valueLen == 0)
-				return 0;
+				return startIndex;
 
 			fixed (char* thisptr = this, valueptr = value) {
 				char* ap = thisptr + startIndex;
@@ -1043,7 +1043,7 @@ namespace System
 			if (valueLen <= 1) {
 				if (valueLen == 1)
 					return LastIndexOfUnchecked (value[0], startIndex, count);
-				return 0;
+				return startIndex;
 			}
 
 			fixed (char* thisptr = this, valueptr = value) {
@@ -1071,7 +1071,7 @@ namespace System
 				return -1;
 
 			if (valueLen == 0)
-				return 0;
+				return startIndex;
 
 			fixed (char* thisptr = this, valueptr = value) {
 				char* ap = thisptr + startIndex - valueLen + 1;

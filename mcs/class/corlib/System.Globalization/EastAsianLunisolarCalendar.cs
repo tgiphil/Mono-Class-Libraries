@@ -146,6 +146,7 @@ public abstract class EastAsianLunisolarCalendar : Calendar {
 		return CCEastAsianLunisolarCalendar.GetDaysInYear(gregorianYear);
 	}
 		
+
 	[MonoTODO]
 	public override int GetLeapMonth(int year, int era)
 	{
@@ -217,6 +218,7 @@ public abstract class EastAsianLunisolarCalendar : Calendar {
 			return CalendarAlgorithmType.LunisolarCalendar;
 		}
 	}
+
 
 	#region celestial/terrestial thingy
 	public int GetCelestialStem (int sexagenaryYear)

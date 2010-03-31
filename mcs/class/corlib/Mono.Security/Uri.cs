@@ -462,6 +462,7 @@ namespace Mono.Security {
 			get { return userinfo; }
 		}
 		
+
 		// Methods		
 		
 /*		public static UriHostNameType CheckHostName (string name) 
@@ -759,6 +760,7 @@ namespace Mono.Security {
 			info.AddValue ("AbsoluteUri", this.AbsoluteUri);
 		}*/
 
+
 		// Internal Methods		
 
 		protected void Escape ()
@@ -856,6 +858,7 @@ namespace Mono.Security {
 			return s.ToString ();
 		}
 
+		
 		// Private Methods
 		
 		private void ParseAsWindowsUNC (string uriString)
@@ -1194,6 +1197,7 @@ namespace Mono.Security {
 			return false;
 		}
 
+		
 		protected static bool IsExcludedCharacter (char ch)
 		{
 			if (ch <= 32 || ch >= 127)

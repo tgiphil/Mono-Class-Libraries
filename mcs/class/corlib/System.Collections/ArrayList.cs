@@ -694,6 +694,7 @@ namespace System.Collections
 				QuickSort(m_Adaptee, index, index + count - 1, comparer);
 			}
 
+
 			/// <summary>
 			/// Swaps two items in a list at the specified indexes.
 			/// </summary>

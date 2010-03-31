@@ -46,12 +46,13 @@ namespace System.IO.IsolatedStorage {
 	// This is a terribly named class.  It doesn't actually represent a file as
 	// much as a directory
 
+
 #if NET_2_0
 	[ComVisible (true)]
 #endif
 	// FIXME: Further limit the assertion when imperative Assert is implemented
 	[FileIOPermission (SecurityAction.Assert, Unrestricted = true)]
-	public sealed partial class IsolatedStorageFile : IsolatedStorage, IDisposable {
+	public sealed class IsolatedStorageFile : IsolatedStorage, IDisposable {
 
 		private bool _resolved;
 		private ulong _maxSize;
@@ -572,6 +573,7 @@ namespace System.IO.IsolatedStorage {
 		{
 			directory.Delete (true);
 		}
+
 
 		protected override IsolatedStoragePermission GetPermission (PermissionSet ps)
 		{

@@ -100,9 +100,9 @@ namespace System.Runtime.Serialization
 		{
 			KnownTypes = knownTypes;
 			RuntimeType = type;
-			if (qname.Namespace == String.Empty)
+			if (qname.Namespace == null)
 				qname = new QName (qname.Name,
-					"http://schemas.datacontract.org/2004/07/" + type.Namespace);
+					KnownTypeCollection.DefaultClrNamespaceBase + type.Namespace);
 
 			XmlName = qname;
 			Members = new List<DataMemberInfo> ();
@@ -547,9 +547,6 @@ namespace System.Runtime.Serialization
 					GetDataMemberAttribute (fi);
 				if (dma == null)
 					continue;
-				if (fi.IsInitOnly)
-					throw new InvalidDataContractException (String.Format (
-							"DataMember field {0} must not be read-only.", fi));
 				data_members.Add (CreateDataMemberInfo (dma, fi, fi.FieldType));
 			}
 

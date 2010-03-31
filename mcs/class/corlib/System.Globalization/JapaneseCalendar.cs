@@ -108,6 +108,7 @@ public class JapaneseCalendar : Calendar {
 			"Heisei" };
 	}
 		
+
 	/// <value>Overridden. Gives the eras supported by the
 	/// calendar as an array of integers.
 	/// </value>
@@ -387,6 +388,7 @@ public class JapaneseCalendar : Calendar {
 		return CCGregorianCalendar.GetDaysInYear(gregorianYear);
 	}
 		
+
 	/// <summary>
 	/// Overridden. Gives the era of the specified date.
 	/// </summary>
@@ -596,6 +598,7 @@ public class JapaneseCalendar : Calendar {
 			gregorianYear, month, day,
 			hour, minute, second, millisecond);
 	}
+
 
 	/// <summary>
 	/// This functions returns simply the year for the Japanese calendar.

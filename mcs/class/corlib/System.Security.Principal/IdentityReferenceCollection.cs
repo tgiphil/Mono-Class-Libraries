@@ -50,6 +50,7 @@ namespace System.Security.Principal {
 			_list = new ArrayList (capacity);
 		}
 
+
 		public int Count {
 			get { return _list.Count; }
 		}
@@ -66,6 +67,7 @@ namespace System.Security.Principal {
 			}
 			set { _list [index] = value; }
 		}
+
 
 		public void Add (IdentityReference identity)
 		{

@@ -42,6 +42,7 @@ namespace System.Security.Principal {
 		public static readonly int MaxBinaryLength = 0;
 		public static readonly int MinBinaryLength = 0;
 
+
 		public SecurityIdentifier (string sddlForm)
 		{
 			if (sddlForm == null)

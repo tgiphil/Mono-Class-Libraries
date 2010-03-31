@@ -1155,6 +1155,13 @@ public class EcmaHelpSource : HelpSource {
 	
 	string GetTextFromUrl (string url)
 	{
+		if (nozip) {
+			string path = XmlDocUtils.GetCachedFileName (base_dir, url);
+			if (File.Exists (path))
+				return File.OpenText (path).ReadToEnd ();
+			return null;
+		}
+
 		string rest, rest2;
 		Node node;
 
@@ -1216,18 +1223,14 @@ public class EcmaHelpSource : HelpSource {
 			basetype = basetypedoc.SelectSingleNode("Type/Base/BaseTypeName");
 		}
 		ArrayList extensions = new ArrayList ();
+		AddExtensionMethodsFromHelpSource (extensions, this);
 		foreach (HelpSource hs in RootTree.HelpSources) {
 			EcmaHelpSource es = hs as EcmaHelpSource;
 			if (es == null)
 				continue;
-			Stream s = es.GetHelpStream ("ExtensionMethods.xml");
-			if (s != null) {
-				XmlDocument d = new XmlDocument ();
-				d.Load (s);
-				foreach (XmlNode n in d.SelectNodes ("/ExtensionMethods/*")) {
-					extensions.Add (n);
-				}
-			}
+			if (es == this)
+				continue;
+			AddExtensionMethodsFromHelpSource (extensions, es);
 		}
 		XmlDocUtils.AddExtensionMethods (doc, extensions, delegate (string s) {
 				s = s.StartsWith ("T:") ? s : "T:" + s;
@@ -1302,6 +1305,18 @@ public class EcmaHelpSource : HelpSource {
 
 		string html = Htmlize(doc, args);
 		return BuildHtml (css_ecma_code, js_code, html); 
+	}
+
+	void AddExtensionMethodsFromHelpSource (ArrayList extensions, EcmaHelpSource es)
+	{
+		Stream s = es.GetHelpStream ("ExtensionMethods.xml");
+		if (s != null) {
+			XmlDocument d = new XmlDocument ();
+			d.Load (s);
+			foreach (XmlNode n in d.SelectNodes ("/ExtensionMethods/*")) {
+				extensions.Add (n);
+			}
+		}
 	}
 
 	

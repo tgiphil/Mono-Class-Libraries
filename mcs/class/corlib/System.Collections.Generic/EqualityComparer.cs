@@ -42,6 +42,7 @@ namespace System.Collections.Generic {
 				_default = new DefaultComparer ();
 		}
 		
+		
 		public abstract int GetHashCode (T obj);
 		public abstract bool Equals (T x, T y);
 	
@@ -84,6 +85,9 @@ namespace System.Collections.Generic {
 	}
 	
 	[Serializable]
+#if MONOTOUCH
+	internal
+#endif
 	sealed class GenericEqualityComparer <T> : EqualityComparer <T> where T : IEquatable <T> {
 
 		public override int GetHashCode (T obj)

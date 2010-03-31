@@ -740,6 +740,7 @@ namespace System {
 			bufferWidth = windowWidth;
 		}
 
+		
 		public int WindowHeight {
 			get {
 				if (!inited) {
@@ -1246,6 +1247,7 @@ namespace System {
 			// No need to throw exceptions here.
 			//throw new NotSupportedException ();
 		}
+
 
 		void CreateKeyMap ()
 		{

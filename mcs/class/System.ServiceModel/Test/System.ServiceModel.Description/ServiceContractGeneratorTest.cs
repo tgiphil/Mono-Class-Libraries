@@ -80,3 +80,4 @@ namespace MonoTests.System.ServiceModel.Description
 		}
 	}
 }
+

@@ -29,6 +29,7 @@ using System.Runtime.InteropServices;
 
 namespace System.Reflection.Emit {
 
+
 	/// <summary>
 	///  Represents the Token returned by the metadata to represent a String.
 	/// </summary>
@@ -43,6 +44,7 @@ namespace System.Reflection.Emit {
 		static StringToken ()
 		{
 		}
+
 
 		internal StringToken (int val)
 		{
@@ -88,6 +90,7 @@ namespace System.Reflection.Emit {
 		{
 			return tokValue;
 		}
+
 
 		/// <summary>
 		///  Returns the metadata token for this String.

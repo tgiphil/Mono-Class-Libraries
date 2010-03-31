@@ -1,11 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{86C4BBAF-4D43-4A83-8876-5456598950DF}</ProjectGuid>
+    <ProjectGuid>{06695dd7-f76d-4899-8cfa-46d61172cdd2}</ProjectGuid>
     <OutputType>library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>corlib</RootNamespace>
@@ -233,6 +233,7 @@
     <Compile Include="System\MonoCustomAttrs.cs" />
     <Compile Include="System\MonoListItem.cs" />
     <Compile Include="System\MonoType.cs" />
+    <Compile Include="System\MonoTouchAOTHelper.cs" />
     <Compile Include="System\MTAThreadAttribute.cs" />
     <Compile Include="System\MulticastDelegate.cs" />
     <Compile Include="System\MulticastNotSupportedException.cs" />

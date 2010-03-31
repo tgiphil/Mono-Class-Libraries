@@ -43,10 +43,12 @@ namespace Mono.Math.Prime.Generator {
 			return ret;
 		}
 
+
 		public override BigInteger GenerateNewPrime (int bits)
 		{
 			return GenerateNewPrime (bits, null);
 		}
+
 
 		public virtual BigInteger GenerateNewPrime (int bits, object context)
 		{

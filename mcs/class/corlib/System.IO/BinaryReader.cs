@@ -55,6 +55,7 @@ namespace System.IO {
 		//
 		const int MaxBufferSize = 128;
 
+		
 		private bool m_disposed = false;
 
 		public BinaryReader(Stream input) : this(input, Encoding.UTF8UnmarkedUnsafe) {
@@ -468,6 +469,7 @@ namespace System.IO {
 			if (len == 0)
 				return String.Empty;
 			
+			
 			if (charBuffer == null)
 				charBuffer = new char [MaxBufferSize];
 
@@ -517,6 +519,7 @@ namespace System.IO {
 		public virtual uint ReadUInt32() {
 			FillBuffer(4);
 				
+
 			return((uint) (m_buffer[0] |
 				       (m_buffer[1] << 8) |
 				       (m_buffer[2] << 16) |

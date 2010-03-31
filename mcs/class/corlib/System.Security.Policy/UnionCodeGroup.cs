@@ -69,6 +69,7 @@ namespace System.Security.Policy {
 			return copy;
 		}
 
+
 		public override PolicyStatement Resolve (Evidence evidence)
 		{
 			if (evidence == null)

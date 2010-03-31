@@ -228,7 +228,6 @@ namespace System.Net {
 			case "max-forwards":
 			case "proxy-authorization":
 			case "referer":
-			case "range":
 			case "te":
 			case "user-agent":
 			// extra (not HttpRequestHeader defined) headers that are not accepted by SL2
@@ -259,7 +258,7 @@ namespace System.Net {
 			case "vary":
 			case "www-authenticate":
 			case "x-flash-version":
-				throw new ArgumentException ();
+				throw new ArgumentException ("header");
 			default:
 				return;
 			}

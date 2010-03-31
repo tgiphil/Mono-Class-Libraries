@@ -334,10 +334,14 @@ namespace System.ServiceModel.Dispatcher
 			TimeSpan close_timeout;
 			Func<IAsyncResult> channel_acceptor;
 			List<IChannel> channels = new List<IChannel> ();
+			AddressFilterMode address_filter_mode;
 
 			public ListenerLoopManager (ChannelDispatcher owner)
 			{
 				this.owner = owner;
+				var sba = owner.Host != null ? owner.Host.Description.Behaviors.Find<ServiceBehaviorAttribute> () : null;
+				if (sba != null)
+					address_filter_mode = sba.AddressFilterMode;
 			}
 
 			public void Setup (TimeSpan openTimeout)
@@ -354,10 +358,6 @@ namespace System.ServiceModel.Dispatcher
 
 			public void Start ()
 			{
-				foreach (var ed in owner.Endpoints)
-					if (ed.DispatchRuntime.InstanceContextProvider == null)
-						ed.DispatchRuntime.InstanceContextProvider = new DefaultInstanceContextProvider ();
-
 				if (loop_thread == null)
 					loop_thread = new Thread (new ThreadStart (Loop));
 				loop_thread.Start ();
@@ -374,6 +374,7 @@ namespace System.ServiceModel.Dispatcher
 					} catch (Exception ex) {
 						Console.WriteLine ("Exception during finishing channel acceptance.");
 						Console.WriteLine (ex);
+						creator_handle.Set ();
 					}
 				};
 				return delegate {
@@ -416,8 +417,11 @@ namespace System.ServiceModel.Dispatcher
 					stop_handle.Close ();
 					stop_handle = null;
 				}
-				if (owner.Listener.State != CommunicationState.Closed)
+				if (owner.Listener.State != CommunicationState.Closed) {
+					// FIXME: log it
+					Console.WriteLine ("Channel listener '{0}' is not closed. Aborting.", owner.Listener.GetType ());
 					owner.Listener.Abort ();
+				}
 				if (loop_thread != null && loop_thread.IsAlive)
 					loop_thread.Abort ();
 				loop_thread = null;
@@ -543,6 +547,8 @@ namespace System.ServiceModel.Dispatcher
 				var reply = (IReplyChannel) result.AsyncState;
 				if (reply.EndTryReceiveRequest (result, out rc))
 					ProcessRequest (reply, rc);
+				else
+					reply.Close ();
 			}
 
 			void TryReceiveDone (IAsyncResult result)
@@ -551,6 +557,8 @@ namespace System.ServiceModel.Dispatcher
 				var input = (IInputChannel) result.AsyncState;
 				if (input.EndTryReceive (result, out msg))
 					ProcessInput (input, msg);
+				else
+					input.Close ();
 			}
 
 			void SendEndpointNotFound (RequestContext rc, EndpointNotFoundException ex) 
@@ -582,7 +590,7 @@ namespace System.ServiceModel.Dispatcher
 					if (rc != null)
 						rc.Close ();
 					// unless it is closed by session/call manager, move it back to the loop to receive the next message.
-					if (reply.State != CommunicationState.Closed)
+					if (loop && reply.State != CommunicationState.Closed)
 						ProcessRequestOrInput (reply);
 				}
 			}
@@ -600,7 +608,7 @@ namespace System.ServiceModel.Dispatcher
 					Console.WriteLine (ex);
 				} finally {
 					// unless it is closed by session/call manager, move it back to the loop to receive the next message.
-					if (input.State != CommunicationState.Closed)
+					if (loop && input.State != CommunicationState.Closed)
 						ProcessRequestOrInput (input);
 				}
 			}
@@ -623,9 +631,11 @@ namespace System.ServiceModel.Dispatcher
 
 			bool MessageMatchesEndpointDispatcher (Message req, EndpointDispatcher endpoint)
 			{
+				// FIXME: handle AddressFilterMode.Prefix too.
+
 				Uri to = req.Headers.To;
 				if (to == null)
-					return false;
+					return address_filter_mode == AddressFilterMode.Any;
 				if (to.AbsoluteUri == Constants.WsaAnonymousUri)
 					return false;
 				return endpoint.AddressFilter.Match (req) && endpoint.ContractFilter.Match (req);

@@ -233,14 +233,18 @@ namespace System.Web.Compilation {
 				if (reader.Name == "preserve" && reader.HasAttributes) {
 					reader.MoveToNextAttribute ();
 					string val = reader.Value;
+					// 1 -> app_code subfolder - add the assembly to CodeAssemblies
 					// 2 -> ashx
 					// 3 -> ascx, aspx
-					// 6 -> app_code - nothing to do here
+					// 6 -> app_code - add the assembly to CodeAssemblies
 					// 8 -> global.asax
 					// 9 -> App_GlobalResources - set the assembly for HttpContext
 					if (reader.Name == "resultType" && (val == "2" || val == "3" || val == "8"))
 						LoadPageData (reader, true);
-					else if (val == "9") {
+					else if (val == "1" || val == "6") {
+						PreCompilationData pd = LoadPageData (reader, false);
+						CodeAssemblies.Add (Assembly.Load (pd.AssemblyFileName));
+					} else if (val == "9") {
 						PreCompilationData pd = LoadPageData (reader, false);
 						HttpContext.AppGlobalResourcesAssembly = Assembly.Load (pd.AssemblyFileName);
 					}
@@ -340,7 +344,8 @@ namespace System.Web.Compilation {
 
 			CompilationSection cs = CompilationConfig;
 			lock (bigCompilationLock) {
-				if (HasCachedItemNoLock (vp.Absolute))
+				bool entryExists;
+				if (HasCachedItemNoLock (vp.Absolute, out entryExists))
 					return;
 
 				if (recursionDepth == 0)
@@ -349,13 +354,14 @@ namespace System.Web.Compilation {
 				recursionDepth++;
 				try {
 					BuildInner (vp, cs != null ? cs.Debug : false);
-					if (recursionDepth <= 1)
+					if (entryExists && recursionDepth <= 1)
+						// We count only update builds - first time a file
+						// (or a batch) is built doesn't count.
 						buildCount++;
-
+				} finally {
 					// See http://support.microsoft.com/kb/319947
 					if (buildCount > cs.NumRecompilesBeforeAppRestart)
 						HttpRuntime.UnloadAppDomain ();
-				} finally {
 					recursionDepth--;
 				}
 			}
@@ -569,8 +575,13 @@ namespace System.Web.Compilation {
 				try {
 					bp.GenerateCode (abuilder);
 				} catch (Exception ex) {
-					if (String.Compare (bvp, vpabsolute, stringComparer) == 0)
+					if (String.Compare (bvp, vpabsolute, stringComparer) == 0) {
+						if (ex is CompilationException || ex is ParseException)
+							throw;
+						
 						throw new HttpException ("Code generation failed.", ex);
+					}
+					
 					if (failedBuildProviders == null)
 						failedBuildProviders = new List <BuildProvider> ();
 					failedBuildProviders.Add (bp);
@@ -943,9 +954,23 @@ namespace System.Web.Compilation {
 			return provider.ExtractDependencies ();
 		}
 
+		internal static bool HasCachedItemNoLock (string vp, out bool entryExists)
+		{
+			BuildManagerCacheItem item;
+			
+			if (buildCache.TryGetValue (vp, out item)) {
+				entryExists = true;
+				return item != null;
+			}
+
+			entryExists = false;
+			return false;
+		}
+		
 		internal static bool HasCachedItemNoLock (string vp)
 		{
-			return buildCache.ContainsKey (vp);
+			bool dummy;
+			return HasCachedItemNoLock (vp, out dummy);
 		}
 		
 		internal static bool IgnoreVirtualPath (string virtualPath)
@@ -1056,7 +1081,7 @@ namespace System.Web.Compilation {
 				locked = true;
 
 				if (HasCachedItemNoLock (virtualPath)) {
-					buildCache.Remove (virtualPath);
+					buildCache [virtualPath] = null;
 					OnEntryRemoved (virtualPath);
 				}
 			} finally {
@@ -1169,12 +1194,17 @@ namespace System.Web.Compilation {
 
 		static void StoreInCache (BuildProvider bp, Assembly compiledAssembly, CompilerResults results)
 		{
-			buildCache.Add (bp.VirtualPath, new BuildManagerCacheItem (compiledAssembly, bp, results));
+			string virtualPath = bp.VirtualPath;
+			var item = new BuildManagerCacheItem (compiledAssembly, bp, results);
+			
+			if (buildCache.ContainsKey (virtualPath))
+				buildCache [virtualPath] = item;
+			else
+				buildCache.Add (virtualPath, item);
 			
 			HttpContext ctx = HttpContext.Current;
 			HttpRequest req = ctx != null ? ctx.Request : null;
 			CacheDependency dep;
-			string virtualPath = bp.VirtualPath;
 			
 			if (req != null) {
 				IDictionary <string, bool> deps = bp.ExtractDependencies ();

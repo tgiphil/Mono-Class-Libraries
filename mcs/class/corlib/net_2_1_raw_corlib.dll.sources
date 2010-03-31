@@ -207,7 +207,6 @@ System/Single.cs
 System/StackOverflowException.cs
 System/STAThreadAttribute.cs
 System/String.cs
-System/String.Partial.cs
 System/StringSplitOptions.cs
 System/StringComparer.cs
 System/StringComparison.cs
@@ -1015,4 +1014,8 @@ System/Comparison.cs
 System/Converter.cs
 System/Predicate.cs
 System.Collections.Generic/Comparer.cs
+../Mono.CompilerServices.SymbolWriter/MonoSymbolWriter.cs
+../Mono.CompilerServices.SymbolWriter/MonoSymbolTable.cs
+../Mono.CompilerServices.SymbolWriter/MonoSymbolFile.cs
+../Mono.CompilerServices.SymbolWriter/SymbolWriterImpl.cs
 

@@ -30,6 +30,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+
 using System;
 using System.Collections;
 using System.Runtime.Remoting;
@@ -81,6 +82,7 @@ namespace System.Runtime.Remoting {
 			get { return "http://schemas.microsoft.com/clr/nsassem/"; }
 		}
 
+		
 		// public methods
 
 		public static string CodeXmlNamespaceForClrTypeNamespace (string typeNamespace, 

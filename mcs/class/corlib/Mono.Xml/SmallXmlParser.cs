@@ -179,6 +179,7 @@ namespace Mono.Xml
 				"Unexpected end of stream. Element stack content is {0}", String.Join (",", arr)));
 		}
 
+
 		private bool IsNameChar (char c, bool start)
 		{
 			switch (c) {
@@ -230,6 +231,7 @@ namespace Mono.Xml
 			}
 		}
 
+
 		public void SkipWhitespaces ()
 		{
 			SkipWhitespaces (false);
@@ -261,6 +263,7 @@ namespace Mono.Xml
 				return;
 			}
 		}
+
 
 		private int Peek ()
 		{
@@ -330,6 +333,7 @@ namespace Mono.Xml
 				throw Error ("Valid XML name is expected.");
 			return new string (nameBuffer, 0, idx);
 		}
+
 
 		public void Parse (TextReader input, IContentHandler handler)
 		{

@@ -195,6 +195,7 @@ namespace System.Threading.Tasks
 			return cont;
 		}
 
+		
 		public Task<TResult> ContinueWhenAll<TResult> (Task[] tasks, Func<Task[], TResult> continuationFunction)
 		{
 			return ContinueWhenAll<TResult> (tasks, continuationFunction, contOptions);
@@ -267,6 +268,7 @@ namespace System.Threading.Tasks
 		{
 			throw new NotSupportedException (errorMsg);
 		}
+		
 		
 		[MonoLimitation(errorMsg)]
 		public Task FromAsync (Func<AsyncCallback, Object, IAsyncResult> beginMethod, Action<IAsyncResult> endMethod,

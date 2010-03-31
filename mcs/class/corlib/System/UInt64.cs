@@ -353,6 +353,7 @@ namespace System
 			return res;
 		}
 
+
 #if NET_2_0
 		[CLSCompliant (false)]
 		public static bool TryParse (string s, out ulong result) 
