@@ -40,10 +40,6 @@ namespace System.Threading
 		{
 			throw new System.NotImplementedException();
 		}
-		private bool WaitOne_internal(IntPtr handle, int ms, bool exitContext)
-		{
-			throw new System.NotImplementedException();
-		}
-
+		
 	}
 }

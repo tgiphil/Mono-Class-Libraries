@@ -32,3 +32,5 @@ namespace System.Reflection.Emit
 
 	}
 }
+
+#endif

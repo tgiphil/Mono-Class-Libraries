@@ -102,3 +102,5 @@ namespace Microsoft.Win32
 
 	}
 }
+
+#endif

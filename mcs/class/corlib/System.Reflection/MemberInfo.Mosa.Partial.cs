@@ -16,7 +16,7 @@ namespace System.Reflection
 {
 	public partial class MemberInfo
 	{
-		virtual int MetadataToken {
+		public virtual int MetadataToken {
 			get
 			{
 				throw new System.NotImplementedException();

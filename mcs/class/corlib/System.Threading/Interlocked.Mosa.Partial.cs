@@ -104,10 +104,6 @@ namespace System.Threading
 		{
 			throw new System.NotImplementedException();
 		}
-		internal static IntPtr CompareExchange(ref IntPtr location1, IntPtr value, IntPtr comparand)
-		{
-			throw new System.NotImplementedException();
-		}
 
 	}
 }

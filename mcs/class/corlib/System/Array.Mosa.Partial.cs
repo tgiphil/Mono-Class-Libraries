@@ -70,6 +70,11 @@ namespace System
 		{
 			throw new System.NotImplementedException();
 		}
+#if INSIDE_CORLIB 
+		public 
+#else 
+		internal 
+#endif 
 		object Clone ()
 		{
 			throw new System.NotImplementedException();
