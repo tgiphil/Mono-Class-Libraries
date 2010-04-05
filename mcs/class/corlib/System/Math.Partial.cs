@@ -41,11 +41,9 @@ namespace System
 {
 	public partial class Math
 	{
-#endif
-		
+
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		public extern static double Floor (double d);
-#endif
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		public extern static double Round (double a);

@@ -134,6 +134,7 @@ namespace System
 		
 		[DllImport("libdec", EntryPoint="decimalCompare")]
 		private static extern int decimalCompare (ref Decimal d1, ref Decimal d2);
+#endif
 
 	}
 }

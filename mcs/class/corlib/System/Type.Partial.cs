@@ -69,7 +69,9 @@ namespace System
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		internal static extern bool IsArrayImpl (Type type);
-		
+
+#if NET_2_0 || BOOTSTRAP_NET_2_0
+
 		public virtual extern bool IsGenericTypeDefinition {
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		get;
@@ -106,6 +108,7 @@ namespace System
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern void GetPacking (out int packing, out int size);		
+#endif
 
 	}
 }

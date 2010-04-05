@@ -40,8 +40,7 @@ namespace System
 {
 	public partial class GC
 	{
-#endif
-		
+	
 		public extern static int MaxGeneration {
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		get;
@@ -49,8 +48,7 @@ namespace System
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		extern static void InternalCollect (int generation);
-#endif
-		
+
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		public extern static int GetGeneration (object obj);
 		
@@ -83,6 +81,6 @@ namespace System
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern static void RecordPressure (long bytesAllocated);
-
+#endif
 	}
 }

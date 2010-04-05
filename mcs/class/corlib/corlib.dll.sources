@@ -90,6 +90,7 @@ System/ArgumentNullException.cs
 System/ArgumentOutOfRangeException.cs
 System/ArithmeticException.cs
 System/Array.cs
+System/Array.Partial.cs
 System/ArrayTypeMismatchException.cs
 System/AssemblyLoadEventArgs.cs
 System/AssemblyLoadEventHandler.cs
@@ -102,9 +103,11 @@ System/Base64FormattingOptions.cs
 System/BitConverter.cs
 System/Boolean.cs
 System/Buffer.cs
+System/Buffer.Partial.cs
 System/Byte.cs
 System/CannotUnloadAppDomainException.cs
 System/Char.cs
+System/Char.Partial.cs
 System/CharEnumerator.cs
 System/CLSCompliantAttribute.cs
 System/CStreamReader.cs
@@ -123,21 +126,25 @@ System/ContextMarshalException.cs
 System/ContextStaticAttribute.cs
 System/ControlCharacters.cs
 System/Convert.cs
+System/Convert.Partial.cs
 System/CrossAppDomainDelegate.cs
 System/DataMisalignedException.cs
 System/DateTime.cs
+System/DateTime.Partial.cs
 System/DateTimeKind.cs
 System/DateTimeOffset.cs
 System/DateTimeUtils.cs
 System/DayOfWeek.cs
 System/DBNull.cs
 System/Decimal.cs
+System/Decimal.Partial.cs
 System/Delegate.cs
 System/DelegateSerializationHolder.cs
 System/DivideByZeroException.cs
 System/DllNotFoundException.cs
 System/DomainManagerInitializationFlags.cs
 System/Double.cs
+System/Double.Partial.cs
 System/DuplicateWaitObjectException.cs
 System/EntryPointNotFoundException.cs
 System/Enum.cs
@@ -152,6 +159,7 @@ System/FlagsAttribute.cs
 System/FormatException.cs
 System/Funcs.cs
 System/GC.cs
+System/GC.Partial.cs
 System/GCCollectionMode.cs
 System/GCNotificationStatus.cs
 System/Guid.cs
@@ -185,6 +193,7 @@ System/LoaderOptimizationAttribute.cs
 System/LocalDataStoreSlot.cs
 System/MarshalByRefObject.cs
 System/Math.cs
+System/Math.Partial.cs
 System/MemberAccessException.cs
 System/MethodAccessException.cs
 System/MidpointRounding.cs
@@ -224,6 +233,7 @@ System/ResolveEventHandler.cs
 System/RuntimeArgumentHandle.cs
 System/RuntimeFieldHandle.cs
 System/RuntimeMethodHandle.cs
+System/RuntimeMethodHandle.Partial.cs
 System/RuntimeTypeHandle.cs
 System/ModuleHandle.cs
 System/SByte.cs
@@ -232,6 +242,7 @@ System/Single.cs
 System/StackOverflowException.cs
 System/STAThreadAttribute.cs
 System/String.cs
+System/String.Partial.cs
 System/StringSplitOptions.cs
 System/StringComparer.cs
 System/StringComparison.cs
@@ -251,8 +262,10 @@ System/TimeZoneNotFoundException.cs
 System/TimeoutException.cs
 ../../build/common/MonoTODOAttribute.cs
 System/Type.cs
+System/Type.Partial.cs
 System/TypeCode.cs
 System/TypedReference.cs
+System/TypedReference.Partial.cs
 System/TypeInitializationException.cs
 System/TypeLoadException.cs
 System/TypeUnloadedException.cs
@@ -267,6 +280,7 @@ System/UnhandledExceptionEventArgs.cs
 System/UnhandledExceptionEventHandler.cs
 System/UnitySerializationHolder.cs
 System/ValueType.cs
+System/ValueType.Partial.cs
 System/Variant.cs
 System/Version.cs
 System/Void.cs

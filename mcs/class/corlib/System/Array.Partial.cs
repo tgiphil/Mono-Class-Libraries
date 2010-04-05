@@ -45,19 +45,20 @@ namespace System
 	public partial class Array
 	{
 		
+#if NET_2_0
+
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal extern void GetGenericValueImpl<T> (int pos, out T value);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal extern void SetGenericValueImpl<T> (int pos, ref T value);
-		
+#endif
+
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		extern int GetRank ();
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern int GetLength (int dimension);
-#endif
-		
+		public extern int GetLength (int dimension);		
 #if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
 #endif
