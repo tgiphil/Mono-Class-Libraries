@@ -25,3 +25,5 @@ namespace System.IO.IsolatedStorage
 
 	}
 }
+
+#endif

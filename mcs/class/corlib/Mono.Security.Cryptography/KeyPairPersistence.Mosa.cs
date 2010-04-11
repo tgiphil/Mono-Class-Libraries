@@ -24,7 +24,12 @@ using Mono.Xml;
 
 namespace Mono.Security.Cryptography
 {
-	public partial class KeyPairPersistence
+#if INSIDE_CORLIB
+	internal
+#else
+	public 
+#endif
+	partial class KeyPairPersistence
 	{
 		internal static bool _CanSecure (string root)
 		{
@@ -49,3 +54,4 @@ namespace Mono.Security.Cryptography
 
 	}
 }
+#endif
