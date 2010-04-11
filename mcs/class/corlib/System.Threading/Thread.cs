@@ -39,40 +39,29 @@ using System.IO;
 using System.Collections;
 using System.Reflection;
 using System.Security;
-
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
-#endif
 
 namespace System.Threading {
 
-	[ClassInterface (ClassInterfaceType.None)]
-#if NET_2_0
-	[ComVisible (true)]
-	[ComDefaultInterface (typeof (_Thread))]
-	public sealed partial class Thread : CriticalFinalizerObject, _Thread {
-#else
-	public sealed partial class Thread : _Thread {
-#endif
-
+	internal partial class InternalThread : CriticalFinalizerObject {
 #pragma warning disable 169, 414, 649
 		#region Sync with metadata/object-internals.h
 		int lock_thread_id;
 		// stores a thread handle
-		private IntPtr system_thread_handle;
+		internal IntPtr system_thread_handle;
 
 		/* Note this is an opaque object (an array), not a CultureInfo */
 		private object cached_culture_info;
 		private IntPtr unused0;
-		private bool threadpool_thread;
+		internal bool threadpool_thread;
 		/* accessed only from unmanaged code */
 		private IntPtr name;
 		private int name_len; 
-		private ThreadState state = ThreadState.Unstarted;
+		private ThreadState state;
 		private object abort_exc;
 		private int abort_state_handle;
 		/* thread_id is only accessed from unmanaged code */
-		private Int64 thread_id;
+		internal Int64 thread_id;
 		
 		/* start_notify is used by the runtime to signal that Start()
 		 * is ok to return
@@ -85,27 +74,18 @@ namespace System.Threading {
 		/* current System.Runtime.Remoting.Contexts.Context instance
 		   keep as an object to avoid triggering its class constructor when not needed */
 		private object current_appcontext;
-		int stack_size;
-		object start_obj;
+		internal int stack_size;
 		private IntPtr appdomain_refs;
 		private int interruption_requested;
 		private IntPtr suspend_event;
 		private IntPtr suspended_event;
 		private IntPtr resume_event;
 		private IntPtr synch_cs;
-		private IntPtr serialized_culture_info;
-		private int serialized_culture_info_len;
-		private IntPtr serialized_ui_culture_info;
-		private int serialized_ui_culture_info_len;
 		private bool thread_dump_requested;
 		private IntPtr end_stack;
 		private bool thread_interrupt_requested;
-#if NET_2_1
-		private byte apartment_state;
-#else
-		private byte apartment_state = (byte)ApartmentState.Unknown;
-#endif
-		volatile int critical_region_level;
+		internal byte apartment_state;
+		internal volatile int critical_region_level;
 		private int small_id;
 		private IntPtr manage_callback;
 		private object pending_exception;
@@ -126,9 +106,52 @@ namespace System.Threading {
 		#endregion
 #pragma warning restore 169, 414, 649
 
-		// the name of local_slots is important as it's used by the runtime.
-		[ThreadStatic] 
+		internal int managed_id;
+
+		internal byte[] _serialized_principal;
+		internal int _serialized_principal_version;
+
+		internal byte[] serialized_culture_info;
+		internal byte[] serialized_ui_culture_info;
+
+		/* If the current_lcid() isn't known by CultureInfo,
+		 * it will throw an exception which may cause
+		 * String.Concat to try and recursively look up the
+		 * CurrentCulture, which will throw an exception, etc.
+		 * Use a boolean to short-circuit this scenario.
+		 */
+		internal bool in_currentculture=false;
+
+		// Closes the system thread handle
+
+		[ReliabilityContract (Consistency.WillNotCorruptState, Cer.Success)]
+		~InternalThread() {
+			Thread_free_internal(system_thread_handle);
+		}
+	}
+
+	[ClassInterface (ClassInterfaceType.None)]
+	[ComVisible (true)]
+	[ComDefaultInterface (typeof (_Thread))]
+	public sealed partial class Thread : CriticalFinalizerObject, _Thread {
+#pragma warning disable 414		
+		#region Sync with metadata/object-internals.h
+		private InternalThread internal_thread;
+		object start_obj;
+		private ExecutionContext ec_to_set;
+		#endregion
+#pragma warning restore 414
+
+		IPrincipal principal;
+		int principal_version;
+
+		// the name of local_slots, current_thread and _ec is
+		// important because they are used by the runtime.
+		[ThreadStatic]
 		static object[] local_slots;
+
+		[ThreadStatic]
+		static Thread current_thread;
 
 		/* The actual ExecutionContext of the thread.  It's
 		   ThreadStatic so that it's not shared between
@@ -140,12 +163,15 @@ namespace System.Threading {
 		private MulticastDelegate threadstart;
 		//private string thread_name=null;
 
-#if NET_2_0		
 		private static int _managed_id_counter;
-		private int managed_id;
-#endif		
-		
-		private IPrincipal _principal;
+
+		private InternalThread Internal {
+			get {
+				if (internal_thread == null)
+					ConstructInternalThread ();
+				return internal_thread;
+			}
+		}
 
 		public static Context CurrentContext {
 			[SecurityPermission (SecurityAction.LinkDemand, Infrastructure=true)]
@@ -154,45 +180,70 @@ namespace System.Threading {
 			}
 		}
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		public static IPrincipal CurrentPrincipal {
 			get {
-				IPrincipal p = null;
 				Thread th = CurrentThread;
-				lock (th) {
-					p = th._principal;
-					if (p == null) {
-						p = GetDomain ().DefaultPrincipal;
-						th._principal = p;
+
+				if (th.principal_version != th.Internal._serialized_principal_version)
+					th.principal = null;
+
+				if (th.principal != null)
+					return th.principal;
+
+				if (th.Internal._serialized_principal != null) {
+					try {
+						BinaryFormatter bf = new BinaryFormatter ();
+						MemoryStream ms = new MemoryStream (ByteArrayToCurrentDomain (th.Internal._serialized_principal));
+						th.principal = (IPrincipal) bf.Deserialize (ms);
+						th.principal_version = th.Internal._serialized_principal_version;
+						return th.principal;
+					} catch (Exception) {
 					}
 				}
-				return p;
+
+				th.principal = GetDomain ().DefaultPrincipal;
+				th.principal_version = th.Internal._serialized_principal_version;
+				return th.principal;
 			}
 			[SecurityPermission (SecurityAction.Demand, ControlPrincipal = true)]
 			set {
-				CurrentThread._principal = value;
+				Thread th = CurrentThread;
+
+				++th.Internal._serialized_principal_version;
+				try {
+					BinaryFormatter bf = new BinaryFormatter ();
+					MemoryStream ms = new MemoryStream ();
+					bf.Serialize (ms, value);
+					th.Internal._serialized_principal = ByteArrayToRootDomain (ms.ToArray ());
+				} catch (Exception) {
+					th.Internal._serialized_principal = null;
+				}
+
+				th.principal = value;
+				th.principal_version = th.Internal._serialized_principal_version;
 			}
 		}
 #endif
 
 		// Looks up the object associated with the current thread
-		
+
 		public static Thread CurrentThread {
-#if NET_2_0
 			[ReliabilityContract (Consistency.WillNotCorruptState, Cer.MayFail)]
-#endif
 			get {
-				return(CurrentThread_internal());
+				if (current_thread == null)
+					current_thread = new Thread (CurrentInternalThread_internal ());
+				return current_thread;
 			}
 		}
 
 		internal static int CurrentThreadId {
 			get {
-				return (int)(CurrentThread.thread_id);
+				return (int)(CurrentThread.internal_thread.thread_id);
 			}
 		}
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		// Stores a hash keyed by strings of LocalDataStoreSlot objects
 		static Hashtable datastorehash;
 		private static object datastore_lock = new object ();
@@ -279,6 +330,7 @@ namespace System.Threading {
 			}
 		}
 #endif
+		
 		public static AppDomain GetDomain() {
 			return AppDomain.CurrentDomain;
 		}
@@ -313,40 +365,24 @@ namespace System.Threading {
 				throw new ArgumentNullException("Null ThreadStart");
 			}
 			threadstart=start;
-
-			Thread_init ();
 		}
 
-#if !NET_2_1 || MONOTOUCH
-#if NET_2_0
+		private Thread (InternalThread it) {
+			internal_thread = it;
+		}
+
+#if !MOONLIGHT
 		[Obsolete ("Deprecated in favor of GetApartmentState, SetApartmentState and TrySetApartmentState.")]
-#endif
 		public ApartmentState ApartmentState {
 			get {
 				if ((ThreadState & ThreadState.Stopped) != 0)
 					throw new ThreadStateException ("Thread is dead; state can not be accessed.");
 
-				return (ApartmentState)apartment_state;
+				return (ApartmentState)Internal.apartment_state;
 			}
 
-			set	{
-#if NET_2_0
+			set {
 				TrySetApartmentState (value);
-#else
-				/* Only throw this exception when
-				 * changing the state of another
-				 * thread.  See bug 324338
-				 */
-				if ((this != CurrentThread) &&
-				    (ThreadState & ThreadState.Unstarted) == 0)
-					throw new ThreadStateException ("Thread was in an invalid state for the operation being executed.");
-
-				if (value != ApartmentState.STA && value != ApartmentState.MTA)
-					throw new ArgumentOutOfRangeException ("value is not a valid apartment state.");
-
-				if ((ApartmentState)apartment_state == ApartmentState.Unknown)
-					apartment_state = (byte)value;
-#endif
 			}
 		}
 #endif // !NET_2_1
@@ -354,14 +390,9 @@ namespace System.Threading {
 		//[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		//private static extern int current_lcid ();
 
-		/* If the current_lcid() isn't known by CultureInfo,
-		 * it will throw an exception which may cause
-		 * String.Concat to try and recursively look up the
-		 * CurrentCulture, which will throw an exception, etc.
-		 * Use a boolean to short-circuit this scenario.
-		 */
-		private bool in_currentculture=false;
-
+		/* FIXME: in_currentculture exists once, but
+		   culture_lock is once per appdomain.  Is it correct
+		   to lock this way? */
 		static object culture_lock = new object ();
 		
 		/*
@@ -375,18 +406,18 @@ namespace System.Threading {
 		 */		
 		public CultureInfo CurrentCulture {
 			get {
-				if (in_currentculture)
+				if (Internal.in_currentculture)
 					/* Bail out */
 					return CultureInfo.InvariantCulture;
 
-				CultureInfo culture = GetCachedCurrentCulture ();
+				CultureInfo culture = GetCachedCurrentCulture (Internal);
 				if (culture != null)
 					return culture;
 
-				byte[] arr = GetSerializedCurrentCulture ();
+				byte[] arr = ByteArrayToCurrentDomain (Internal.serialized_culture_info);
 				if (arr == null) {
 					lock (culture_lock) {
-						in_currentculture=true;
+						Internal.in_currentculture=true;
 						culture = CultureInfo.ConstructCurrentCulture ();
 						//
 						// Don't serialize the culture in this case to avoid
@@ -394,7 +425,7 @@ namespace System.Threading {
 						// common case when the culture is not set explicitly.
 						//
 						SetCachedCurrentCulture (culture);
-						in_currentculture = false;
+						Internal.in_currentculture = false;
 						NumberFormatter.SetThreadCurrentCulture (culture);
 						return culture;
 					}
@@ -404,14 +435,14 @@ namespace System.Threading {
 				 * No cultureinfo object exists for this domain, so create one
 				 * by deserializing the serialized form.
 				 */
-				in_currentculture = true;
+				Internal.in_currentculture = true;
 				try {
 					BinaryFormatter bf = new BinaryFormatter ();
 					MemoryStream ms = new MemoryStream (arr);
 					culture = (CultureInfo)bf.Deserialize (ms);
 					SetCachedCurrentCulture (culture);
 				} finally {
-					in_currentculture = false;
+					Internal.in_currentculture = false;
 				}
 
 				NumberFormatter.SetThreadCurrentCulture (culture);
@@ -423,12 +454,12 @@ namespace System.Threading {
 				if (value == null)
 					throw new ArgumentNullException ("value");
 
-				CultureInfo culture = GetCachedCurrentCulture ();
+				CultureInfo culture = GetCachedCurrentCulture (Internal);
 				if (culture == value)
 					return;
 
 				value.CheckNeutral ();
-				in_currentculture = true;
+				Internal.in_currentculture = true;
 				try {
 					SetCachedCurrentCulture (value);
 
@@ -445,10 +476,10 @@ namespace System.Threading {
 						if (value.IsReadOnly)
 							value.cached_serialized_form = serialized_form;
 					}
-						
-					SetSerializedCurrentCulture (serialized_form);
+
+					Internal.serialized_culture_info = ByteArrayToRootDomain (serialized_form);
 				} finally {
-					in_currentculture = false;
+					Internal.in_currentculture = false;
 				}
 				NumberFormatter.SetThreadCurrentCulture (value);
 			}
@@ -456,18 +487,18 @@ namespace System.Threading {
 
 		public CultureInfo CurrentUICulture {
 			get {
-				if (in_currentculture)
+				if (Internal.in_currentculture)
 					/* Bail out */
 					return CultureInfo.InvariantCulture;
 
-				CultureInfo culture = GetCachedCurrentUICulture ();
+				CultureInfo culture = GetCachedCurrentUICulture (Internal);
 				if (culture != null)
 					return culture;
 
-				byte[] arr = GetSerializedCurrentUICulture ();
+				byte[] arr = ByteArrayToCurrentDomain (Internal.serialized_ui_culture_info);
 				if (arr == null) {
 					lock (culture_lock) {
-						in_currentculture=true;
+						Internal.in_currentculture=true;
 						/* We don't
 						 * distinguish
 						 * between
@@ -481,7 +512,7 @@ namespace System.Threading {
 						// common case when the culture is not set explicitly.
 						//
 						SetCachedCurrentUICulture (culture);
-						in_currentculture = false;
+						Internal.in_currentculture = false;
 						return culture;
 					}
 				}
@@ -490,7 +521,7 @@ namespace System.Threading {
 				 * No cultureinfo object exists for this domain, so create one
 				 * by deserializing the serialized form.
 				 */
-				in_currentculture = true;
+				Internal.in_currentculture = true;
 				try {
 					BinaryFormatter bf = new BinaryFormatter ();
 					MemoryStream ms = new MemoryStream (arr);
@@ -498,7 +529,7 @@ namespace System.Threading {
 					SetCachedCurrentUICulture (culture);
 				}
 				finally {
-					in_currentculture = false;
+					Internal.in_currentculture = false;
 				}
 
 				return culture;
@@ -508,11 +539,11 @@ namespace System.Threading {
 				if (value == null)
 					throw new ArgumentNullException ("value");
 
-				CultureInfo culture = GetCachedCurrentUICulture ();
+				CultureInfo culture = GetCachedCurrentUICulture (Internal);
 				if (culture == value)
 					return;
 
-				in_currentculture = true;
+				Internal.in_currentculture = true;
 				try {
 					SetCachedCurrentUICulture (value);
 
@@ -529,10 +560,10 @@ namespace System.Threading {
 						if (value.IsReadOnly)
 							value.cached_serialized_form = serialized_form;
 					}
-						
-					SetSerializedCurrentUICulture (serialized_form);
+
+					Internal.serialized_ui_culture_info = ByteArrayToRootDomain (serialized_form);
 				} finally {
-					in_currentculture = false;
+					Internal.in_currentculture = false;
 				}
 			}
 		}
@@ -545,16 +576,16 @@ namespace System.Threading {
 
 		internal bool IsThreadPoolThreadInternal {
 			get {
-				return threadpool_thread;
+				return Internal.threadpool_thread;
 			}
 			set {
-				threadpool_thread = value;
+				Internal.threadpool_thread = value;
 			}
 		}
 
 		public bool IsAlive {
 			get {
-				ThreadState curstate = GetState ();
+				ThreadState curstate = GetState (Internal);
 				
 				if((curstate & ThreadState.Aborted) != 0 ||
 				   (curstate & ThreadState.Stopped) != 0 ||
@@ -568,7 +599,7 @@ namespace System.Threading {
 
 		public bool IsBackground {
 			get {
-				ThreadState thread_state = GetState ();
+				ThreadState thread_state = GetState (Internal);
 				if ((thread_state & ThreadState.Stopped) != 0)
 					throw new ThreadStateException ("Thread is dead; state can not be accessed.");
 
@@ -577,9 +608,9 @@ namespace System.Threading {
 			
 			set {
 				if (value) {
-					SetState (ThreadState.Background);
+					SetState (Internal, ThreadState.Background);
 				} else {
-					ClrState (ThreadState.Background);
+					ClrState (Internal, ThreadState.Background);
 				}
 			}
 		}
@@ -591,15 +622,15 @@ namespace System.Threading {
 
 		public string Name {
 			get {
-				return GetName_internal ();
+				return GetName_internal (Internal);
 			}
 			
 			set {
-				SetName_internal (value);
+				SetName_internal (Internal, value);
 			}
 		}
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		public ThreadPriority Priority {
 			get {
 				return(ThreadPriority.Lowest);
@@ -613,27 +644,27 @@ namespace System.Threading {
 
 		public ThreadState ThreadState {
 			get {
-				return GetState ();
+				return GetState (Internal);
 			}
 		}
 
 		[SecurityPermission (SecurityAction.Demand, ControlThread=true)]
 		public void Abort () 
 		{
-			Abort_internal (null);
+			Abort_internal (Internal, null);
 		}
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		[SecurityPermission (SecurityAction.Demand, ControlThread=true)]
 		public void Abort (object stateInfo) 
 		{
-			Abort_internal (stateInfo);
+			Abort_internal (Internal, stateInfo);
 		}
 
 		[SecurityPermission (SecurityAction.Demand, ControlThread=true)]
 		public void Interrupt ()
 		{
-			Interrupt_internal ();
+			Interrupt_internal (Internal);
 		}
 #endif
 
@@ -642,7 +673,7 @@ namespace System.Threading {
 		
 		public void Join()
 		{
-			Join_internal(Timeout.Infinite, system_thread_handle);
+			Join_internal(Internal, Timeout.Infinite, Internal.system_thread_handle);
 		}
 
 		public bool Join(int millisecondsTimeout)
@@ -650,28 +681,26 @@ namespace System.Threading {
 			if (millisecondsTimeout < Timeout.Infinite)
 				throw new ArgumentOutOfRangeException ("millisecondsTimeout", "Timeout less than zero");
 
-			return Join_internal (millisecondsTimeout, system_thread_handle);
+			return Join_internal (Internal, millisecondsTimeout, Internal.system_thread_handle);
 		}
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		public bool Join(TimeSpan timeout)
 		{
 			long ms = (long) timeout.TotalMilliseconds;
 			if (ms < Timeout.Infinite || ms > Int32.MaxValue)
 				throw new ArgumentOutOfRangeException ("timeout", "timeout out of range");
 
-			return Join_internal ((int) ms, system_thread_handle);
+			return Join_internal (Internal, (int) ms, Internal.system_thread_handle);
 		}
 #endif
 
 #if NET_1_1
 #endif
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 
-#if NET_2_0
 		[Obsolete ("")]
-#endif
 		[SecurityPermission (SecurityAction.Demand, ControlThread=true)]
 		public void Resume () 
 		{
@@ -679,9 +708,7 @@ namespace System.Threading {
 		}
 #endif // !NET_2_1
 
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		public static void SpinWait (int iterations) 
 		{
 			if (iterations < 0)
@@ -692,9 +719,11 @@ namespace System.Threading {
 			}
 		}
 
-#if NET_2_1 && !MONOTOUCH
+#if MOONLIGHT
 		private void StartSafe ()
 		{
+			current_thread = this;
+
 			try {
 				if (threadstart is ThreadStart) {
 					((ThreadStart) threadstart) ();
@@ -730,55 +759,46 @@ namespace System.Threading {
 		}
 #endif
 
+		private void StartUnsafe ()
+		{
+			current_thread = this;
+
+			if (threadstart is ThreadStart) {
+				((ThreadStart) threadstart) ();
+			} else {
+				((ParameterizedThreadStart) threadstart) (start_obj);
+			}
+		}
+
 		public void Start() {
 			// propagate informations from the original thread to the new thread
-#if NET_2_0
 			if (!ExecutionContext.IsFlowSuppressed ())
 				ec_to_set = ExecutionContext.Capture ();
-#else
-			// before 2.0 this was only used for security (mostly CAS) so we
-			// do this only if the security manager is active
-			if (SecurityManager.SecurityEnabled)
-				ec_to_set = ExecutionContext.Capture ();
-#endif
-			if (CurrentThread._principal != null)
-				_principal = CurrentThread._principal;
+			Internal._serialized_principal = CurrentThread.Internal._serialized_principal;
 
 			// Thread_internal creates and starts the new thread, 
-#if NET_2_1 && !MONOTOUCH
+#if MOONLIGHT
 			if (Thread_internal((ThreadStart) StartSafe) == (IntPtr) 0)
 #else
-			if (Thread_internal(threadstart) == (IntPtr) 0)
+			if (Thread_internal((ThreadStart) StartUnsafe) == (IntPtr) 0)
 #endif
 				throw new SystemException ("Thread creation failed.");
 		}
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 
-#if NET_2_0
 		[Obsolete ("")]
-#endif
 		[SecurityPermission (SecurityAction.Demand, ControlThread=true)]
 		public void Suspend ()
 		{
-			Suspend_internal ();
+			Suspend_internal (Internal);
 		}
 #endif // !NET_2_1
-
-		// Closes the system thread handle
-
-#if NET_2_0
-		[ReliabilityContract (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
-		~Thread() {
-				Thread_free_internal(system_thread_handle);
-		}
 
 #if NET_1_1
 		
 #endif
 
-#if NET_2_0
 		private static int GetNewManagedId() {
 			return Interlocked.Increment(ref _managed_id_counter);
 		}
@@ -791,8 +811,7 @@ namespace System.Threading {
 				throw new ArgumentException ("< 128 kb", "maxStackSize");
 
 			threadstart = start;
-			stack_size = maxStackSize;
-			Thread_init ();
+			Internal.stack_size = maxStackSize;
 		}
 
 		public Thread (ParameterizedThreadStart start)
@@ -801,7 +820,6 @@ namespace System.Threading {
 				throw new ArgumentNullException ("start");
 
 			threadstart = start;
-			Thread_init ();
 		}
 
 		public Thread (ParameterizedThreadStart start, int maxStackSize)
@@ -812,8 +830,7 @@ namespace System.Threading {
 				throw new ArgumentException ("< 128 kb", "maxStackSize");
 
 			threadstart = start;
-			stack_size = maxStackSize;
-			Thread_init ();
+			Internal.stack_size = maxStackSize;
 		}
 
 		[MonoTODO ("limited to CompressedStack support")]
@@ -829,26 +846,26 @@ namespace System.Threading {
 		public int ManagedThreadId {
 			[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
 			get {
-				if (managed_id == 0) {
+				if (Internal.managed_id == 0) {
 					int new_managed_id = GetNewManagedId ();
 					
-					Interlocked.CompareExchange (ref managed_id, new_managed_id, 0);
+					Interlocked.CompareExchange (ref Internal.managed_id, new_managed_id, 0);
 				}
 				
-				return managed_id;
+				return Internal.managed_id;
 			}
 		}
 
 		[ReliabilityContract (Consistency.WillNotCorruptState, Cer.MayFail)]
 		public static void BeginCriticalRegion ()
 		{
-			CurrentThread.critical_region_level++;
+			CurrentThread.Internal.critical_region_level++;
 		}
 
 		[ReliabilityContract (Consistency.WillNotCorruptState, Cer.Success)]
 		public static void EndCriticalRegion ()
 		{
-			CurrentThread.critical_region_level--;
+			CurrentThread.Internal.critical_region_level--;
 		}
 
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
@@ -863,10 +880,10 @@ namespace System.Threading {
 			// Managed and native threads are currently bound together.
 		}
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		public ApartmentState GetApartmentState ()
 		{
-			return (ApartmentState)apartment_state;
+			return (ApartmentState)Internal.apartment_state;
 		}
 
 		public void SetApartmentState (ApartmentState state)
@@ -884,10 +901,10 @@ namespace System.Threading {
 			    (ThreadState & ThreadState.Unstarted) == 0)
 				throw new ThreadStateException ("Thread was in an invalid state for the operation being executed.");
 
-			if ((ApartmentState)apartment_state != ApartmentState.Unknown)
+			if ((ApartmentState)Internal.apartment_state != ApartmentState.Unknown)
 				return false;
 
-			apartment_state = (byte)state;
+			Internal.apartment_state = (byte)state;
 
 			return true;
 		}
@@ -904,25 +921,14 @@ namespace System.Threading {
 			start_obj = parameter;
 			Start ();
 		}
-#else
-		internal ExecutionContext ExecutionContext {
-			get {
-				if (_ec == null)
-					_ec = new ExecutionContext ();
-				return _ec;
-			}
-		}
-#endif
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		// NOTE: This method doesn't show in the class library status page because
 		// it cannot be "found" with the StrongNameIdentityPermission for ECMA key.
 		// But it's there!
 		[SecurityPermission (SecurityAction.LinkDemand, UnmanagedCode = true)]
 		[StrongNameIdentityPermission (SecurityAction.LinkDemand, PublicKey="00000000000000000400000000000000")]
-#if NET_2_0
 		[Obsolete ("see CompressedStack class")]
-#endif
 #if NET_1_1
 		public
 #else
@@ -942,9 +948,7 @@ namespace System.Threading {
 		// But it's there!
 		[SecurityPermission (SecurityAction.LinkDemand, UnmanagedCode = true)]
 		[StrongNameIdentityPermission (SecurityAction.LinkDemand, PublicKey="00000000000000000400000000000000")]
-#if NET_2_0
 		[Obsolete ("see CompressedStack class")]
-#endif
 #if NET_1_1
 		public
 #else

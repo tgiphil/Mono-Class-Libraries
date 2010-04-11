@@ -8,7 +8,7 @@
  *
  */
 
-#if (NET_2_0||BOOTSTRAP_NET_2_0) && !NET_2_1
+#if !NET_2_1
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -103,5 +103,3 @@ namespace System
 
 	}
 }
-
-#endif

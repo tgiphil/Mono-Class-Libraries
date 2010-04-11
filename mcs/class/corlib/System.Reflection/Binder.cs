@@ -36,9 +36,7 @@ using System.Runtime.InteropServices;
 
 namespace System.Reflection
 {
-#if NET_2_0
 	[ComVisible (true)]
-#endif
 	[Serializable]
 	[ClassInterface(ClassInterfaceType.AutoDual)]
 	public abstract class Binder
@@ -169,7 +167,39 @@ namespace System.Reflection
 				state = null;
 				if (names != null)
 					ReorderParameters (names, ref args, selected);
+
+				if (selected != null) {
+					if (args == null)
+						args = new object [0];
+	
+					AdjustArguments (selected, ref args);
+				}
+
 				return selected;
+			}
+
+			// probably belongs in ReorderArgumentArray
+			static void AdjustArguments (MethodBase selected, ref object [] args)
+			{
+				var parameters = selected.GetParameters ();
+				if (parameters.Length == 0)
+					return;
+
+				var last_parameter = parameters [parameters.Length - 1];
+				if (!Attribute.IsDefined (last_parameter, typeof (ParamArrayAttribute)))
+					return;
+
+				var adjusted = new object [parameters.Length];
+				Array.Copy (args, adjusted, parameters.Length - 1);
+
+				var param_args_count = args.Length + 1 - parameters.Length;
+				var params_args = Array.CreateInstance (last_parameter.ParameterType.GetElementType (), param_args_count);
+
+				for (int i = 0; i < param_args_count; i++)
+					params_args.SetValue (args [args.Length - param_args_count + i], i);
+
+				adjusted [adjusted.Length - 1] = params_args;
+				args = adjusted;
 			}
 
 			void ReorderParameters (string [] names, ref object [] args, MethodBase selected)
@@ -255,10 +285,8 @@ namespace System.Reflection
 						return true;
 				}
 
-#if NET_2_0
 				if (to.IsGenericType && to.GetGenericTypeDefinition () == typeof (Nullable<>) && to.GetGenericArguments ()[0] == from)
 					return true;
-#endif
 
 				TypeCode fromt = Type.GetTypeCode (from);
 				TypeCode tot = Type.GetTypeCode (to);
@@ -406,7 +434,7 @@ namespace System.Reflection
 				for (i = 0; i < match.Length; ++i) {
 					m = match [i];
 					ParameterInfo[] args = m.GetParameters ();
-					if (args.Length > types.Length)
+					if (args.Length > types.Length + 1)
 						continue;
 					else if (args.Length == 0)
 						continue;
@@ -447,14 +475,12 @@ namespace System.Reflection
 
 			MethodBase GetBetterMethod (MethodBase m1, MethodBase m2, Type [] types)
 			{
-#if NET_2_0
 				if (m1.IsGenericMethodDefinition && 
 				    !m2.IsGenericMethodDefinition)
 					return m2;
 				if (m2.IsGenericMethodDefinition && 
 				    !m1.IsGenericMethodDefinition)
 					return m1;
-#endif
 
 				ParameterInfo [] pl1 = m1.GetParameters ();
 				ParameterInfo [] pl2 = m2.GetParameters ();
@@ -492,12 +518,10 @@ namespace System.Reflection
 			{
 				if (t1 == t2)
 					return 0;
-#if NET_2_0
 				if (t1.IsGenericParameter && !t2.IsGenericParameter)
 					return 1; // t2
 				if (!t1.IsGenericParameter && t2.IsGenericParameter)
 					return -1; // t1
-#endif
 				if (t1.HasElementType && t2.HasElementType)
 					return CompareCloserType (
 						t1.GetElementType (),

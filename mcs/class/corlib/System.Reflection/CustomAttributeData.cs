@@ -27,8 +27,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if NET_2_0
-
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -39,10 +37,21 @@ namespace System.Reflection {
 
 	[ComVisible (true)]
 	[Serializable]
-	public sealed class CustomAttributeData {
+#if NET_4_0
+	public
+#else
+	public sealed
+#endif
+	class CustomAttributeData {
 		ConstructorInfo ctorInfo;
 		IList<CustomAttributeTypedArgument> ctorArgs;
 		IList<CustomAttributeNamedArgument> namedArgs;
+
+#if NET_4_0
+		protected CustomAttributeData ()
+		{
+		}
+#endif
 
 		internal CustomAttributeData (ConstructorInfo ctorInfo, object [] ctorArgs, object [] namedArgs)
 		{
@@ -56,20 +65,32 @@ namespace System.Reflection {
 		}
 
 		[ComVisible (true)]
-		public ConstructorInfo Constructor {
+		public
+#if NET_4_0
+		virtual
+#endif
+		ConstructorInfo Constructor {
 			get {
 				return ctorInfo;
 			}
 		}
 
 		[ComVisible (true)]
-		public IList<CustomAttributeTypedArgument> ConstructorArguments {
+		public
+#if NET_4_0
+		virtual
+#endif
+		IList<CustomAttributeTypedArgument> ConstructorArguments {
 			get {
 				return ctorArgs;
 			}
 		}
 
-		public IList<CustomAttributeNamedArgument> NamedArguments {
+		public
+#if NET_4_0
+		virtual
+#endif
+		IList<CustomAttributeNamedArgument> NamedArguments {
 			get {
 				return namedArgs;
 			}
@@ -161,6 +182,4 @@ namespace System.Reflection {
 	}
 
 }
-
-#endif
 

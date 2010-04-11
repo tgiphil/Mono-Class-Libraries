@@ -38,32 +38,34 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Collections;
+using System.Collections.Generic;
 using System.Configuration.Assemblies;
 
 using Mono.Security;
 
 namespace System.Reflection {
 
-#if NET_2_0
+#pragma warning disable 659 // overrides Equals but not GetHashCode
+
 	[ComVisible (true)]
 	[ComDefaultInterfaceAttribute (typeof (_Assembly))]
-#endif
 	[Serializable]
 	[ClassInterface(ClassInterfaceType.None)]
 #if NET_2_1
 	public partial class Assembly : ICustomAttributeProvider, _Assembly {
+#elif NET_4_0
+	public abstract partial class Assembly : ICustomAttributeProvider, _Assembly, IEvidenceFactory, ISerializable {
 #else
 	public partial class Assembly : ICustomAttributeProvider, _Assembly, IEvidenceFactory, ISerializable {
 #endif
-
 		internal class ResolveEventHolder {
 			public event ModuleResolveEventHandler ModuleResolve;
 		}
 
 		// Note: changes to fields must be reflected in _MonoReflectionAssembly struct (object-internals.h)
-#pragma warning disable 169
+#pragma warning disable 649
 		private IntPtr _mono_assembly;
-#pragma warning restore 169
+#pragma warning restore 649
 
 		private ResolveEventHolder resolve_event_holder;
 		private Evidence _evidence;
@@ -75,7 +77,12 @@ namespace System.Reflection {
 		private bool fromByteArray;
 		private string assemblyName;
 
-		internal Assembly () 
+#if NET_4_0
+		protected
+#else
+		internal
+#endif
+		Assembly () 
 		{
 			resolve_event_holder = new ResolveEventHolder ();
 		}
@@ -129,7 +136,7 @@ namespace System.Reflection {
 			}
 		}
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		public virtual Evidence Evidence {
 			[SecurityPermission (SecurityAction.Demand, ControlEvidence = true)]
 			get { return UnprotectedGetEvidence (); }
@@ -148,11 +155,6 @@ namespace System.Reflection {
 			return _evidence;
 		}
 
-		public bool GlobalAssemblyCache {
-			get {
-				return get_global_assembly_cache ();
-			}
-		}
 #endif
 		internal bool FromByteArray {
 			set { fromByteArray = value; }
@@ -174,14 +176,12 @@ namespace System.Reflection {
 			}
 		}
 
-#if NET_1_1
 		[ComVisible (false)]
 		public virtual string ImageRuntimeVersion {
 			get {
 				return InternalImageRuntimeVersion ();
 			}
 		}
-#endif
 
 		[SecurityPermission (SecurityAction.LinkDemand, SerializationFormatter = true)]
 		public virtual void GetObjectData (SerializationInfo info, StreamingContext context)
@@ -191,13 +191,6 @@ namespace System.Reflection {
 
 			UnitySerializationHolder.GetAssemblyData (this, info, context);
 		}
-
-#if ONLY_1_1
-		public new Type GetType ()
-		{
-			return base.GetType ();
-		}
-#endif
 
 		public virtual bool IsDefined (Type attributeType, bool inherit)
 		{
@@ -271,15 +264,11 @@ namespace System.Reflection {
 				return info.ReferencedAssembly.GetManifestResourceStream (name);
 			if ((info.FileName != null) && (info.ResourceLocation == 0)) {
 				if (fromByteArray)
-#if NET_2_0
 					throw new FileNotFoundException (info.FileName);
-#else
-					return null;
-#endif
 
 				string location = Path.GetDirectoryName (Location);
 				string filename = Path.Combine (location, info.FileName);
-#if NET_2_1 && !MONOTOUCH
+#if MOONLIGHT
 				// we don't control the content of 'info.FileName' so we want to make sure we keep to ourselves
 				filename = Path.GetFullPath (filename);
 				if (!filename.StartsWith (location))
@@ -298,7 +287,6 @@ namespace System.Reflection {
 				unsafe {
 					stream = new UnmanagedMemoryStream ((byte*) data, size);
 				}
-
 				/* 
 				 * The returned pointer points inside metadata, so
 				 * we have to increase the refcount of the module, and decrease
@@ -343,16 +331,6 @@ namespace System.Reflection {
 
 		public virtual Type GetType (String name) {
 			return GetType (name, false, false);
-		}
-
-		public Type GetType (string name, bool throwOnError, bool ignoreCase)
-		{
-			if (name == null)
-				throw new ArgumentNullException (name);
-			if (name.Length == 0)
-			throw new ArgumentException ("name", "Name cannot be empty");
-
-			return InternalGetType (null, name, throwOnError, ignoreCase);
 		}
 
 		[MonoTODO ("copiedName == true is not supported")]
@@ -401,22 +379,12 @@ namespace System.Reflection {
 			throw new ArgumentNullException ("type");
 		}
 
-		public Assembly GetSatelliteAssembly (CultureInfo culture)
-		{
-			return GetSatelliteAssembly (culture, null, true);
-		}
-
-		public Assembly GetSatelliteAssembly (CultureInfo culture, Version version)
-		{
-			return GetSatelliteAssembly (culture, version, true);
-		}
-
 		internal Assembly GetSatelliteAssemblyNoThrow (CultureInfo culture, Version version)
 		{
 			return GetSatelliteAssembly (culture, version, false);
 		}
 
-		private Assembly GetSatelliteAssembly (CultureInfo culture, Version version, bool throwOnError)
+		internal Assembly GetSatelliteAssembly (CultureInfo culture, Version version, bool throwOnError)
 		{
 			if (culture == null)
 				throw new ArgumentException ("culture");
@@ -441,7 +409,7 @@ namespace System.Reflection {
 			// Try the assembly directory
 			string location = Path.GetDirectoryName (Location);
 			string fullName = Path.Combine (location, Path.Combine (culture.Name, aname.Name + ".dll"));
-#if NET_2_1 && !MONOTOUCH
+#if MOONLIGHT
 			// it's unlikely that culture.Name or aname.Name could contain stuff like ".." but...
 			fullName = Path.GetFullPath (fullName);
 			if (!fullName.StartsWith (location)) {
@@ -461,6 +429,9 @@ namespace System.Reflection {
 			return LoadFrom (assemblyFile, false);
 		}
 
+#if NET_4_0
+		[Obsolete]
+#endif
 		public static Assembly LoadFrom (String assemblyFile, Evidence securityEvidence)
 		{
 			Assembly a = LoadFrom (assemblyFile, false);
@@ -473,8 +444,9 @@ namespace System.Reflection {
 			return a;
 		}
 
-#if NET_1_1
-
+#if NET_4_0
+		[Obsolete]
+#endif
 		[MonoTODO("This overload is not currently implemented")]
 		// FIXME: What are we missing?
 		public static Assembly LoadFrom (String assemblyFile, Evidence securityEvidence, byte[] hashValue, AssemblyHashAlgorithm hashAlgorithm)
@@ -486,6 +458,9 @@ namespace System.Reflection {
 			throw new NotImplementedException ();
 		}
 
+#if NET_4_0
+		[Obsolete]
+#endif
 		public static Assembly LoadFile (String path, Evidence securityEvidence)
 		{
 			if (path == null)
@@ -500,13 +475,15 @@ namespace System.Reflection {
 		{
 			return LoadFile (path, null);
 		}
-#endif
 
 		public static Assembly Load (String assemblyString)
 		{
 			return AppDomain.CurrentDomain.Load (assemblyString);
 		}
-		
+
+#if NET_4_0
+		[Obsolete]
+#endif		
 		public static Assembly Load (String assemblyString, Evidence assemblySecurity)
 		{
 			return AppDomain.CurrentDomain.Load (assemblyString, assemblySecurity);
@@ -517,6 +494,9 @@ namespace System.Reflection {
 			return AppDomain.CurrentDomain.Load (assemblyRef);
 		}
 
+#if NET_4_0
+		[Obsolete]
+#endif
 		public static Assembly Load (AssemblyName assemblyRef, Evidence assemblySecurity)
 		{
 			return AppDomain.CurrentDomain.Load (assemblyRef, assemblySecurity);
@@ -532,13 +512,15 @@ namespace System.Reflection {
 			return AppDomain.CurrentDomain.Load (rawAssembly, rawSymbolStore);
 		}
 
+#if NET_4_0
+		[Obsolete]
+#endif
 		public static Assembly Load (Byte[] rawAssembly, Byte[] rawSymbolStore,
 					     Evidence securityEvidence)
 		{
 			return AppDomain.CurrentDomain.Load (rawAssembly, rawSymbolStore, securityEvidence);
 		}
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
 		public static Assembly ReflectionOnlyLoad (byte[] rawAssembly)
 		{
 			return AppDomain.CurrentDomain.Load (rawAssembly, null, null, true);
@@ -556,10 +538,9 @@ namespace System.Reflection {
 			
 			return LoadFrom (assemblyFile, true);
 		}
-#endif
 
-#if NET_2_0
-		[Obsolete ("")]
+#if NET_4_0
+		[Obsolete]
 #endif
 		public static Assembly LoadWithPartialName (string partialName)
 		{
@@ -573,13 +554,17 @@ namespace System.Reflection {
 		}
 
 		[MonoTODO ("Not implemented")]
-		public Module LoadModule (string moduleName, byte [] rawModule, byte [] rawSymbolStore)
+		public
+#if NET_4_0
+		virtual
+#endif
+		Module LoadModule (string moduleName, byte [] rawModule, byte [] rawSymbolStore)
 		{
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_0
-		[Obsolete ("")]
+#if NET_4_0
+		[Obsolete]
 #endif
 		public static Assembly LoadWithPartialName (string partialName, Evidence securityEvidence)
 		{
@@ -623,7 +608,11 @@ namespace System.Reflection {
 			}
 		}
 
-		public Object CreateInstance (String typeName, Boolean ignoreCase,
+		public
+#if NET_4_0
+		virtual
+#endif
+		Object CreateInstance (String typeName, Boolean ignoreCase,
 					      BindingFlags bindingAttr, Binder binder,
 					      Object[] args, CultureInfo culture,
 					      Object[] activationAttributes)
@@ -644,45 +633,9 @@ namespace System.Reflection {
 			return GetLoadedModules (false);
 		}
 
-		// FIXME: Currently, the two sets of modules are equal
-		public Module[] GetLoadedModules (bool getResourceModules)
-		{
-			return GetModules (getResourceModules);
-		}
-
 		public Module[] GetModules ()
 		{
 			return GetModules (false);
-		}
-
-		public Module GetModule (String name)
-		{
-			if (name == null)
-				throw new ArgumentNullException ("name");
-			if (name.Length == 0)
-				throw new ArgumentException ("Name can't be empty");
-
-			Module[] modules = GetModules (true);
-			foreach (Module module in modules) {
-				if (module.ScopeName == name)
-					return module;
-			}
-
-			return null;
-		}
-
-		public Module[] GetModules (bool getResourceModules) {
-			Module[] modules = GetModulesInternal ();
-
-			if (!getResourceModules) {
-				ArrayList result = new ArrayList (modules.Length);
-				foreach (Module m in modules)
-					if (!m.IsResource ())
-						result.Add (m);
-				return (Module[])result.ToArray (typeof (Module));
-			}
-			else
-				return modules;
 		}
 
 		public virtual ManifestResourceInfo GetManifestResourceInfo (String resourceName)
@@ -718,27 +671,39 @@ namespace System.Reflection {
 		// The following functions are only for the Mono Debugger.
 		//
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-		[MonoTODO ("Always returns zero")]
+		[MonoTODO ("Currently it always returns zero")]
 		[ComVisible (false)]
-		public long HostContext {
+		public
+#if NET_4_0
+		virtual
+#endif
+		long HostContext {
 			get { return 0; }
-		}
-
-		[ComVisible (false)]
-		public Module ManifestModule {
-			get {
-				return GetManifestModule ();
-			}
 		}
 
 		internal virtual Module GetManifestModule () {
 			return GetManifestModuleInternal ();
 		}
 
+		public override bool Equals (object o)
+		{
+			if (((object) this) == o)
+				return true;
+
+			if (o == null)
+				return false;
+			
+			Assembly other = (Assembly) o;
+			return other._mono_assembly == _mono_assembly;
+		}
+		
+#if NET_4_0
+		public virtual IList<CustomAttributeData> GetCustomAttributesData () {
+			return CustomAttributeData.GetCustomAttributes (this);
+		}
 #endif
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		// Code Access Security
 
 		internal void Resolve () 
@@ -814,5 +779,85 @@ namespace System.Reflection {
 			}
 		}
 #endif
+
+#if NET_4_0
+		static Exception CreateNIE ()
+		{
+			return new NotImplementedException ("Derived classes must implement it");
+		}
+
+		public virtual Type GetType (string name, bool throwOnError, bool ignoreCase)
+		{
+			throw CreateNIE ();
+		}
+
+		public virtual Module GetModule (String name)
+		{
+			throw CreateNIE ();
+		}
+
+		public virtual AssemblyName[] GetReferencedAssemblies ()
+		{
+			throw CreateNIE ();
+		}
+
+		public virtual Module[] GetModules (bool getResourceModules)
+		{
+			throw CreateNIE ();
+		}
+
+		[MonoTODO ("Always returns the same as GetModules")]
+		public virtual Module[] GetLoadedModules (bool getResourceModules)
+		{
+			throw CreateNIE ();
+		}
+
+		public virtual Assembly GetSatelliteAssembly (CultureInfo culture)
+		{
+			throw CreateNIE ();
+		}
+
+		public virtual Assembly GetSatelliteAssembly (CultureInfo culture, Version version)
+		{
+			throw CreateNIE ();
+		}
+
+		public virtual Module ManifestModule {
+			get { throw CreateNIE (); }
+		}
+
+		public virtual bool GlobalAssemblyCache {
+			get { throw CreateNIE (); }
+		}
+
+		public virtual bool IsDynamic {
+			get { return false; }
+		}
+
+		public override int GetHashCode ()
+		{
+			return base.GetHashCode ();
+		}
+
+		public static bool operator == (Assembly left, Assembly right)
+		{
+			if ((object)left == (object)right)
+				return true;
+			if ((object)left == null ^ (object)right == null)
+				return false;
+			return left.Equals (right);
+		}
+
+		public static bool operator != (Assembly left, Assembly right)
+		{
+			if ((object)left == (object)right)
+				return false;
+			if ((object)left == null ^ (object)right == null)
+				return true;
+			return !left.Equals (right);
+		}
+#endif
 	}
 }
+
+#pragma warning restore 659

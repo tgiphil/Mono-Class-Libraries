@@ -8,6 +8,7 @@
  *
  */
 
+using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -153,6 +154,10 @@ namespace System
 			{
 				throw new System.NotImplementedException();
 			}
+		}
+		public int get_core_clr_security_level ()
+		{
+			throw new System.NotImplementedException();
 		}
 
 	}

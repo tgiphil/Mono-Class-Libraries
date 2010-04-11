@@ -30,13 +30,14 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if NET_2_0
-
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace System.Collections.Generic {
 	[Serializable]
+	[DebuggerDisplay ("Count={Count}")]
+	[DebuggerTypeProxy (typeof (CollectionDebuggerView<>))]
 	public class List <T> : IList <T>, IList, ICollection {
 		T [] _items;
 		int _size;
@@ -562,7 +563,7 @@ namespace System.Collections.Generic {
 		
 		public void Sort ()
 		{
-			Array.Sort<T> (_items, 0, _size, Comparer <T>.Default);
+			Array.Sort<T> (_items, 0, _size);
 			_version++;
 		}
 		public void Sort (IComparer <T> comparer)
@@ -573,7 +574,10 @@ namespace System.Collections.Generic {
 
 		public void Sort (Comparison <T> comparison)
 		{
-			Array.Sort<T> (_items, _size, comparison);
+			if (comparison == null)
+				throw new ArgumentNullException ("comparison");
+
+			Array.SortImpl<T> (_items, _size, comparison);
 			_version++;
 		}
 		
@@ -813,4 +817,3 @@ namespace System.Collections.Generic {
 		}
 	}
 }
-#endif

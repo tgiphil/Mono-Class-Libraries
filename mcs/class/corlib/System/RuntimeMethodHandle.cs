@@ -33,17 +33,11 @@ using System.Runtime.Serialization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
-
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
-#endif
 
 namespace System
 {
-#if NET_2_0
 	[ComVisible (true)]
-#endif
-	[MonoTODO ("Serialization needs tests")]
 	[Serializable]
 	public partial struct RuntimeMethodHandle : ISerializable
 	{
@@ -89,7 +83,6 @@ namespace System
 			return GetFunctionPointer (value);
 		}
 
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
 		public override bool Equals (object obj)
 		{
@@ -119,6 +112,5 @@ namespace System
 		{
 			return !left.Equals (right);
 		}
-#endif
 	}
 }

@@ -45,27 +45,23 @@ using System.Collections;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 
-#if NET_2_0
 using System.Collections.Generic;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using Mono.Globalization.Unicode;
-#endif
 
 namespace System
 {
 	[Serializable]
-#if NET_2_0
 	[ComVisible (true)]
 	public sealed partial class String : IConvertible, ICloneable, IEnumerable, IComparable, IComparable<String>, IEquatable <String>, IEnumerable<char>
-#else
-	public sealed partial class String : IConvertible, ICloneable, IEnumerable, IComparable
-#endif
 	{
 		[NonSerialized] private int length;
 		[NonSerialized] private char start_char;
 
 		public static readonly String Empty = "";
+
+		internal static readonly int LOS_limit = GetLOSLimit ();
 
 		public static unsafe bool Equals (string a, string b)
 		{
@@ -129,17 +125,13 @@ namespace System
 			return !Equals (a, b);
 		}
 
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
-#endif
 		public override bool Equals (Object obj)
 		{
 			return Equals (this, obj as String);
 		}
 
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
-#endif
 		public bool Equals (String value)
 		{
 			return Equals (this, value);
@@ -226,7 +218,6 @@ namespace System
 			return InternalSplit (separator, count, 0);
 		}
 
-#if NET_2_0
 		[ComVisible (false)]
 		[MonoDocumentationNote ("code should be moved to managed")]
 		public String[] Split (char[] separator, int count, StringSplitOptions options)
@@ -326,22 +317,13 @@ namespace System
 		{
 			return Split (separator, Int32.MaxValue, options);
 		}
-#endif
 
 		public String Substring (int startIndex)
 		{
-#if NET_2_0
 			if (startIndex == 0)
 				return this;
 			if (startIndex < 0 || startIndex > this.length)
 				throw new ArgumentOutOfRangeException ("startIndex");
-#else
-			if (startIndex < 0)
-				throw new ArgumentOutOfRangeException ("startIndex", "Cannot be negative.");
-
-			if (startIndex > this.length)
-				throw new ArgumentOutOfRangeException ("length", "Cannot exceed length of string.");
-#endif
 
 			return SubstringUnchecked (startIndex, this.length - startIndex);
 		}
@@ -352,16 +334,12 @@ namespace System
 				throw new ArgumentOutOfRangeException ("length", "Cannot be negative.");
 			if (startIndex < 0)
 				throw new ArgumentOutOfRangeException ("startIndex", "Cannot be negative.");
-#if NET_2_0
 			if (startIndex > this.length)
 				throw new ArgumentOutOfRangeException ("startIndex", "Cannot exceed length of string.");
-#endif
 			if (startIndex > this.length - length)
 				throw new ArgumentOutOfRangeException ("length", "startIndex + length > this.length");
-#if NET_2_0
 			if (startIndex == 0 && length == this.length)
 				return this;
-#endif
 
 			return SubstringUnchecked (startIndex, length);
 		}
@@ -382,9 +360,7 @@ namespace System
 
 		private static readonly char[] WhiteChars = {
 			(char) 0x9, (char) 0xA, (char) 0xB, (char) 0xC, (char) 0xD,
-#if NET_2_0
 			(char) 0x85, (char) 0x1680, (char) 0x2028, (char) 0x2029,
-#endif
 			(char) 0x20, (char) 0xA0, (char) 0x2000, (char) 0x2001, (char) 0x2002, (char) 0x2003, (char) 0x2004,
 			(char) 0x2005, (char) 0x2006, (char) 0x2007, (char) 0x2008, (char) 0x2009, (char) 0x200A, (char) 0x200B,
 			(char) 0x3000, (char) 0xFEFF,
@@ -478,14 +454,12 @@ namespace System
 				}
 				else {
 					if (c != 0xA0 && c != 0xFEFF && c != 0x3000) {
-#if NET_2_0 || NET_2_1
 						if (c != 0x85 && c != 0x1680 && c != 0x2028 && c != 0x2029
 #if NET_2_1
 						    // On Silverlight this whitespace participates in Trim
 						    && c != 0x202f && c != 0x205f
 #endif
 							)
-#endif
 							if (c < 0x2000 || c > 0x200B)
 								return pos;
 					}
@@ -590,7 +564,7 @@ namespace System
 			// ENHANCE: Might call internal_compare_switch directly instead of doing all checks twice
 			return culture.CompareInfo.Compare (strA, indexA, len1, strB, indexB, len2, compopts);
 		}
-#if NET_2_0
+
 		public static int Compare (string strA, string strB, StringComparison comparisonType)
 		{
 			switch (comparisonType) {
@@ -667,7 +641,6 @@ namespace System
 
 			return culture.CompareInfo.Compare (strA, indexA, len1, strB, indexB, len2, options);
 		}
-#endif
 
 		public int CompareTo (Object value)
 		{
@@ -782,12 +755,7 @@ namespace System
 			return CultureInfo.CurrentCulture.CompareInfo.IsSuffix (this, value, CompareOptions.None);
 		}
 
-#if NET_2_0
-		public
-#else
-		internal
-#endif
-		bool EndsWith (String value, bool ignoreCase, CultureInfo culture)
+		public bool EndsWith (String value, bool ignoreCase, CultureInfo culture)
 		{
 			if (value == null)
 				throw new ArgumentNullException ("value");
@@ -881,7 +849,6 @@ namespace System
 			return -1;
 		}
 
-#if NET_2_0
 		public int IndexOf (string value, StringComparison comparisonType)
 		{
 			return IndexOf (value, 0, this.Length, comparisonType);
@@ -912,7 +879,6 @@ namespace System
 				throw new ArgumentException (msg, "comparisonType");
 			}
 		}
-#endif
 
 		internal int IndexOfOrdinal (string value, int startIndex, int count, CompareOptions options)
 		{
@@ -983,8 +949,6 @@ namespace System
 			return -1;
 		}
 
-#if NET_2_0
-
 		public int LastIndexOf (string value, StringComparison comparisonType)
 		{
 			if (this.Length == 0)
@@ -1018,7 +982,6 @@ namespace System
 				throw new ArgumentException (msg, "comparisonType");
 			}
 		}
-#endif
 
 		internal int LastIndexOfOrdinal (string value, int startIndex, int count, CompareOptions options)
 		{
@@ -1201,11 +1164,7 @@ namespace System
 		public int IndexOf (String value, int startIndex, int count)
 		{
 			if (value == null)
-#if NET_2_0
 				throw new ArgumentNullException ("value");
-#else
-				throw new ArgumentNullException ("string2");
-#endif
 			if (startIndex < 0 || startIndex > this.length)
 				throw new ArgumentOutOfRangeException ("startIndex", "Cannot be negative, and should not exceed length of string.");
 			if (count < 0 || startIndex > this.length - count)
@@ -1394,11 +1353,7 @@ namespace System
 		public int LastIndexOf (String value, int startIndex, int count)
 		{
 			if (value == null)
-#if NET_2_0
 				throw new ArgumentNullException ("value");
-#else
-				throw new ArgumentNullException ("string2");
-#endif
 
 			// -1 > startIndex > for string (0 > startIndex >= for char)
 			if ((startIndex < -1) || (startIndex > this.Length))
@@ -1426,7 +1381,6 @@ namespace System
 			return CultureInfo.CurrentCulture.CompareInfo.LastIndexOf (this, value, startIndex, count);
 		}
 
-#if NET_2_0
 		public bool Contains (String value)
 		{
 			return IndexOf (value) != -1;
@@ -1437,7 +1391,7 @@ namespace System
 			return (value == null) || (value.Length == 0);
 		}
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		public string Normalize ()
 		{
 			return Normalization.Normalize (this, 0);
@@ -1486,7 +1440,6 @@ namespace System
 
 			return Remove (startIndex, this.length - startIndex);
 		}
-#endif
 
 		public String PadLeft (int totalWidth)
 		{
@@ -1554,7 +1507,6 @@ namespace System
 			return CultureInfo.CurrentCulture.CompareInfo.IsPrefix (this, value, CompareOptions.None);
 		}
 
-#if NET_2_0
 		[ComVisible (false)]
 		public bool StartsWith (string value, StringComparison comparisonType)
 		{
@@ -1604,14 +1556,8 @@ namespace System
 				throw new ArgumentException (msg, "comparisonType");
 			}
 		}
-#endif
 
-#if NET_2_0
-		public
-#else
-		internal
-#endif
-		bool StartsWith (String value, bool ignoreCase, CultureInfo culture)
+		public bool StartsWith (String value, bool ignoreCase, CultureInfo culture)
 		{
 			if (culture == null)
 				culture = CultureInfo.CurrentCulture;
@@ -1777,11 +1723,7 @@ namespace System
 			return culture.TextInfo.ToLower (this);
 		}
 
-#if NET_2_0
 		public unsafe String ToLowerInvariant ()
-#else
-		internal unsafe String ToLowerInvariant ()
-#endif
 		{
 			if (length == 0)
 				return String.Empty;
@@ -1817,11 +1759,7 @@ namespace System
 			return culture.TextInfo.ToUpper (this);
 		}
 
-#if NET_2_0
 		public unsafe String ToUpperInvariant ()
-#else
-		internal unsafe String ToUpperInvariant ()
-#endif
 		{
 			if (length == 0)
 				return String.Empty;
@@ -2030,7 +1968,6 @@ namespace System
 			return Concat (s1, s2, s3);
 		}
 
-#if ! BOOTSTRAP_WITH_OLDLIB
 		[CLSCompliant(false)]
 		public static String Concat (Object arg0, Object arg1, Object arg2,
 					     Object arg3, __arglist)
@@ -2068,7 +2005,6 @@ namespace System
 
 			return Concat (s1, s2, s3, s4);			
 		}
-#endif
 
 		public unsafe static String Concat (String str0, String str1)
 		{
@@ -2399,17 +2335,10 @@ namespace System
 			return Convert.ToInt64 (this, provider);
 		}
 
-#if ONLY_1_1
-#pragma warning disable 3019
-		[CLSCompliant (false)]
-#endif
 		sbyte IConvertible.ToSByte (IFormatProvider provider)
 		{
 			return Convert.ToSByte (this, provider);
 		}
-#if ONLY_1_1
-#pragma warning restore 3019
-#endif
 
 		float IConvertible.ToSingle (IFormatProvider provider)
 		{
@@ -2423,41 +2352,20 @@ namespace System
 			return Convert.ToType (this, targetType, provider, false);
 		}
 
-#if ONLY_1_1
-#pragma warning disable 3019
-		[CLSCompliant (false)]
-#endif
 		ushort IConvertible.ToUInt16 (IFormatProvider provider)
 		{
 			return Convert.ToUInt16 (this, provider);
 		}
-#if ONLY_1_1
-#pragma warning restore 3019
-#endif
 
-#if ONLY_1_1
-#pragma warning disable 3019
-		[CLSCompliant (false)]
-#endif
 		uint IConvertible.ToUInt32 (IFormatProvider provider)
 		{
 			return Convert.ToUInt32 (this, provider);
 		}
-#if ONLY_1_1
-#pragma warning restore 3019
-#endif
 
-#if ONLY_1_1
-#pragma warning disable 3019
-		[CLSCompliant (false)]
-#endif
 		ulong IConvertible.ToUInt64 (IFormatProvider provider)
 		{
 			return Convert.ToUInt64 (this, provider);
 		}
-#if ONLY_1_1
-#pragma warning restore 3019
-#endif
 
 		public int Length {
 			get {
@@ -2470,12 +2378,10 @@ namespace System
 			return new CharEnumerator (this);
 		}
 
-#if NET_2_0
 		IEnumerator<char> IEnumerable<char>.GetEnumerator ()
 		{
 			return new CharEnumerator (this);
 		}
-#endif
 
 		IEnumerator IEnumerable.GetEnumerator ()
 		{
@@ -2592,9 +2498,7 @@ namespace System
 			length = newLength;
 		}
 
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
-#endif
 		// When modifying it, GetCaseInsensitiveHashCode() should be modified as well.
 		public unsafe override int GetHashCode ()
 		{
@@ -2613,6 +2517,99 @@ namespace System
 			}
 		}
 
+#if MOONLIGHT || NET_4_0
+		public static bool IsNullOrWhiteSpace (string value)
+		{
+			if (value == null)
+				return true;
+			foreach (char c in value)
+				if (!Char.IsWhiteSpace (c))
+					return false;
+			return true;
+		}
+
+		[ComVisible(false)]
+		public static string Concat (IEnumerable<string> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException ("values");
+
+			var stringList = new List<string> ();
+			int len = 0;
+			foreach (var v in values){
+				if (v == null)
+					continue;
+				len += v.Length;
+				stringList.Add (v);
+			}
+			return ConcatInternal (stringList.ToArray (), len);
+		}
+
+		[ComVisibleAttribute(false)]
+		public static string Concat<T> (IEnumerable<T> values)
+		{
+			if (values == null)
+				throw new ArgumentNullException ("values");
+
+			var stringList = new List<string> ();
+			int len = 0;
+			foreach (var v in values){
+				string sr = v.ToString ();
+				len += sr.Length;
+				stringList.Add (sr);
+			}
+			return ConcatInternal (stringList.ToArray (), len);
+		}
+
+		[ComVisibleAttribute(false)]
+		public static string Join (string separator, IEnumerable<string> values)
+		{
+			if (separator == null)
+				return Concat (values);
+			
+			if (values == null)
+				throw new ArgumentNullException ("values");
+			
+			var stringList = new List<string> ();
+			foreach (var v in values)
+				stringList.Add (v);
+
+			return JoinUnchecked (separator, stringList.ToArray (), 0, stringList.Count);
+		}
+
+		[ComVisibleAttribute(false)]
+		public static string Join (string separator, params object [] values)
+		{
+			if (separator == null)
+				return Concat (values);
+			
+			if (values == null)
+				throw new ArgumentNullException ("values");
+
+			var strCopy = new string [values.Length];
+			int i = 0;
+			foreach (var v in values)
+				strCopy [i++] = v.ToString ();
+
+			return JoinUnchecked (separator, strCopy, 0, strCopy.Length);
+		}
+		
+		[ComVisible (false)]
+		public static string Join<T> (string separator, IEnumerable<T> values)
+		{
+			if (separator == null)
+				return Concat<T> (values);
+				
+			if (values == null)
+				throw new ArgumentNullException ("values");
+			
+			var stringList = new List<string> ();
+			foreach (var v in values)
+				stringList.Add (v.ToString ());
+
+			return JoinUnchecked (separator, stringList.ToArray (), 0, stringList.Count);
+		}
+#endif
 		internal unsafe int GetCaseInsensitiveHashCode ()
 		{
 			fixed (char * c = this) {
@@ -2646,11 +2643,9 @@ namespace System
 					length++;
 			} catch (NullReferenceException) {
 				throw new ArgumentOutOfRangeException ("ptr", "Value does not refer to a valid string.");
-#if NET_2_0
 			} catch (AccessViolationException) {
 				throw new ArgumentOutOfRangeException ("ptr", "Value does not refer to a valid string.");
-#endif
-			}
+		}
 
 			return CreateString (value, 0, length, null);
 		}
@@ -2672,13 +2667,9 @@ namespace System
 			bool isDefaultEncoding;
 
 			if (isDefaultEncoding = (enc == null)) {
-#if NET_2_0
 				if (value == null)
 					throw new ArgumentNullException ("value");
 				if (length == 0)
-#else
-				if (value == null || length == 0)
-#endif
 					return String.Empty;
 
 				enc = Encoding.Default;
@@ -2691,19 +2682,12 @@ namespace System
 					try {
 						memcpy (bytePtr, (byte*) (value + startIndex), length);
 					} catch (NullReferenceException) {
-#if !NET_2_0
-						if (!isDefaultEncoding)
-							throw;
-#endif
-
 						throw new ArgumentOutOfRangeException ("ptr", "Value, startIndex and length do not refer to a valid string.");
-#if NET_2_0
 					} catch (AccessViolationException) {
 						if (!isDefaultEncoding)
 							throw;
 
 						throw new ArgumentOutOfRangeException ("value", "Value, startIndex and length do not refer to a valid string.");
-#endif
 					}
 
 			// GetString () is called even when length == 0

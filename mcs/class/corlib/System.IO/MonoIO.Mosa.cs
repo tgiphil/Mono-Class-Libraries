@@ -76,6 +76,18 @@ namespace System.IO
 		{
 			throw new System.NotImplementedException();
 		}
+		public static string FindFirst (string path, string pattern, out FileAttributes result_attr, out MonoIOError error, out IntPtr handle)
+		{
+			throw new System.NotImplementedException();
+		}
+		public static string FindNext (IntPtr handle, out FileAttributes result_attr, out MonoIOError error)
+		{
+			throw new System.NotImplementedException();
+		}
+		public static int FindClose (IntPtr handle)
+		{
+			throw new System.NotImplementedException();
+		}
 		public static bool GetFileStat (string path,
 		out MonoIOStat stat,
 		out MonoIOError error)

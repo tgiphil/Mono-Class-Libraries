@@ -31,16 +31,16 @@
 //
 
 using System.Text;
+using System.Threading;
+using System.Globalization;
 
 namespace System
 {
 	[Serializable]
-#if NET_2_0
 	[System.Runtime.InteropServices.ComVisible (true)]
-#endif
-	public struct TimeSpan : IComparable
-#if NET_2_0
-		, IComparable<TimeSpan>, IEquatable <TimeSpan>
+	public struct TimeSpan : IComparable, IComparable<TimeSpan>, IEquatable <TimeSpan>
+#if NET_4_0
+				 , IFormattable
 #endif
 	{
 #if MONOTOUCH
@@ -70,20 +70,20 @@ namespace System
 
 		public TimeSpan (int hours, int minutes, int seconds)
 		{
-			_ticks = CalculateTicks (0, hours, minutes, seconds, 0);
+			CalculateTicks (0, hours, minutes, seconds, 0, true, out _ticks);
 		}
 
 		public TimeSpan (int days, int hours, int minutes, int seconds)
 		{
-			_ticks = CalculateTicks (days, hours, minutes, seconds, 0);
+			CalculateTicks (days, hours, minutes, seconds, 0, true, out _ticks);
 		}
 
 		public TimeSpan (int days, int hours, int minutes, int seconds, int milliseconds)
 		{
-			_ticks = CalculateTicks (days, hours, minutes, seconds, milliseconds);
+			CalculateTicks (days, hours, minutes, seconds, milliseconds, true, out _ticks);
 		}
 
-		internal static long CalculateTicks (int days, int hours, int minutes, int seconds, int milliseconds)
+		internal static bool CalculateTicks (int days, int hours, int minutes, int seconds, int milliseconds, bool throwExc, out long result)
 		{
 			// there's no overflow checks for hours, minutes, ...
 			// so big hours/minutes values can overflow at some point and change expected values
@@ -91,6 +91,8 @@ namespace System
 			int minsec = (minutes * 60);
 			long t = ((long)(hrssec + minsec + seconds) * 1000L + (long)milliseconds);
 			t *= 10000;
+
+			result = 0;
 
 			bool overflow = false;
 			// days is problematic because it can overflow but that overflow can be 
@@ -125,10 +127,14 @@ namespace System
 				}
 			}
 
-			if (overflow)
-				throw new ArgumentOutOfRangeException (Locale.GetText ("The timespan is too big or too small."));
+			if (overflow) {
+				if (throwExc)
+					throw new ArgumentOutOfRangeException (Locale.GetText ("The timespan is too big or too small."));
+				return false;
+			}
 
-			return t;
+			result = t;
+			return true;
 		}
 
 		public int Days {
@@ -230,7 +236,6 @@ namespace System
 			return Compare (this, (TimeSpan) value);
 		}
 
-#if NET_2_0
 		public int CompareTo (TimeSpan value)
 		{
 			return Compare (this, value);
@@ -240,7 +245,6 @@ namespace System
 		{
 			return obj._ticks == _ticks;
 		}
-#endif
 
 		public TimeSpan Duration ()
 		{
@@ -338,24 +342,138 @@ namespace System
 				throw new ArgumentNullException ("s");
 			}
 
+			TimeSpan result;
 			Parser p = new Parser (s);
-			return p.Execute ();
+			p.Execute (false, out result);
+			return result;
 		}
 
-#if NET_2_0
 		public static bool TryParse (string s, out TimeSpan result)
 		{
 			if (s == null) {
 				result = TimeSpan.Zero;
 				return false;
 			}
-			try {
-				result = Parse (s);
-				return true;
-			} catch {
+
+			Parser p = new Parser (s);
+			return p.Execute (true, out result);
+		}
+
+#if NET_4_0
+		public static TimeSpan Parse (string s, IFormatProvider formatProvider)
+		{
+			if (s == null)
+				throw new ArgumentNullException ("s");
+
+			TimeSpan result;
+			Parser p = new Parser (s, formatProvider);
+			p.Execute (false, out result);
+			return result;
+		}
+
+		public static bool TryParse (string s, IFormatProvider formatProvider, out TimeSpan result)
+		{
+			if (s == null || s.Length == 0) {
 				result = TimeSpan.Zero;
 				return false;
 			}
+
+			Parser p = new Parser (s, formatProvider);
+			return p.Execute (true, out result);
+		}
+
+		public static TimeSpan ParseExact (string input, string format, IFormatProvider formatProvider)
+		{
+			if (format == null)
+				throw new ArgumentNullException ("format");
+
+			return ParseExact (input, new string [] { format }, formatProvider, TimeSpanStyles.None);
+		}
+
+		public static TimeSpan ParseExact (string input, string format, IFormatProvider formatProvider, TimeSpanStyles styles)
+		{
+			if (format == null)
+				throw new ArgumentNullException ("format");
+
+			return ParseExact (input, new string [] { format }, formatProvider, styles);
+		}
+
+		public static TimeSpan ParseExact (string input, string [] formats, IFormatProvider formatProvider)
+		{
+			return ParseExact (input, formats, formatProvider, TimeSpanStyles.None);
+		}
+
+		public static TimeSpan ParseExact (string input, string [] formats, IFormatProvider formatProvider, TimeSpanStyles styles)
+		{
+			if (input == null)
+				throw new ArgumentNullException ("input");
+			if (formats == null)
+				throw new ArgumentNullException ("formats");
+
+			// All the errors found during the parsing process are reported as FormatException.
+			TimeSpan result;
+			if (!TryParseExact (input, formats, formatProvider, styles, out result))
+				throw new FormatException ("Invalid format.");
+
+			return result;
+		}
+
+		public static bool TryParseExact (string input, string format, IFormatProvider formatProvider, out TimeSpan result)
+		{
+			return TryParseExact (input, new string [] { format }, formatProvider, TimeSpanStyles.None, out result);
+		}
+
+		public static bool TryParseExact (string input, string format, IFormatProvider formatProvider, TimeSpanStyles styles,
+				out TimeSpan result)
+		{
+			return TryParseExact (input, new string [] { format }, formatProvider, styles, out result);
+		}
+
+		public static bool TryParseExact (string input, string [] formats, IFormatProvider formatProvider, out TimeSpan result)
+		{
+			return TryParseExact (input, formats, formatProvider, TimeSpanStyles.None, out result);
+		}
+
+		public static bool TryParseExact (string input, string [] formats, IFormatProvider formatProvider, TimeSpanStyles styles,
+			out TimeSpan result)
+		{
+			result = TimeSpan.Zero;
+
+			if (formats == null || formats.Length == 0)
+				return false;
+
+			Parser p = new Parser (input, formatProvider);
+			p.Exact = true;
+
+			foreach (string format in formats) {
+				if (format == null || format.Length == 0)
+					return false; // wrong format, return immediately.
+
+				switch (format) {
+					case "g":
+						p.AllMembersRequired = false;
+						p.CultureSensitive = true;
+						p.UseColonAsDaySeparator = true;
+						break;
+					case "G":
+						p.AllMembersRequired = true;
+						p.CultureSensitive = true;
+						p.UseColonAsDaySeparator = true;
+						break;
+					case "c":
+						p.AllMembersRequired = false;
+						p.CultureSensitive = false;
+						p.UseColonAsDaySeparator = false;
+						break;
+					default: // custom format
+						throw new NotImplementedException ();
+				}
+
+				if (p.Execute (true, out result))
+					return true;
+			}
+
+			return false;
 		}
 #endif
 
@@ -401,6 +519,74 @@ namespace System
 
 			return sb.ToString ();
 		}
+
+#if NET_4_0
+		public string ToString (string format)
+		{
+			return ToString (format, null);
+		}
+
+		public string ToString (string format, IFormatProvider formatProvider)
+		{
+			if (format == null || format.Length == 0 || format == "c") // Default version
+				return ToString ();
+
+			if (format != "g" && format != "G")
+				throw new FormatException ("The format is not recognized.");
+
+			NumberFormatInfo number_info = null;
+			if (formatProvider != null)
+				number_info = (NumberFormatInfo)formatProvider.GetFormat (typeof (NumberFormatInfo));
+			if (number_info == null)
+				number_info = Thread.CurrentThread.CurrentCulture.NumberFormat;
+
+			string decimal_separator = number_info.NumberDecimalSeparator;
+			int days, hours, minutes, seconds, milliseconds, fractional;
+
+			days = Math.Abs (Days);
+			hours = Math.Abs (Hours);
+			minutes = Math.Abs (Minutes);
+			seconds = Math.Abs (Seconds);
+			milliseconds = Math.Abs (Milliseconds);
+			fractional = (int) Math.Abs (_ticks % TicksPerSecond);
+
+			// Set Capacity depending on whether it's long or shot format
+			StringBuilder sb = new StringBuilder (format == "g" ? 16 : 32);
+			if (_ticks < 0)
+				sb.Append ('-');
+
+			switch (format) {
+				case "g": // short version
+					if (days != 0) {
+						sb.Append (days.ToString ());
+						sb.Append (':');
+					}
+					sb.Append (hours.ToString ());
+					sb.Append (':');
+					sb.Append (minutes.ToString ("D2"));
+					sb.Append (':');
+					sb.Append (seconds.ToString ("D2"));
+					if (milliseconds != 0) {
+						sb.Append (decimal_separator);
+						sb.Append (milliseconds.ToString ("D3"));
+					}
+					break;
+				case "G": // long version
+					sb.Append (days.ToString ("D1"));
+					sb.Append (':');
+					sb.Append (hours.ToString ("D2"));
+					sb.Append (':');
+					sb.Append (minutes.ToString ("D2"));
+					sb.Append (':');
+					sb.Append (seconds.ToString ("D2"));
+					sb.Append (decimal_separator);
+					sb.Append (fractional.ToString ("D7"));
+					break;
+			}
+
+			return sb.ToString ();
+		}
+#endif
 
 		public static TimeSpan operator + (TimeSpan t1, TimeSpan t2)
 		{
@@ -452,19 +638,67 @@ namespace System
 			return t;
 		}
 
+		enum ParseError {
+			None,
+			Format,
+			Overflow
+		}
+
 		// Class Parser implements parser for TimeSpan.Parse
 		private class Parser
 		{
 			private string _src;
 			private int _cur = 0;
 			private int _length;
-			private bool formatError;
+			ParseError parse_error;
+#if NET_4_0
+			bool parsed_ticks;
+			NumberFormatInfo number_format;
+			int parsed_numbers_count;
+			bool parsed_days_separator;
+
+			public bool Exact; // no fallback, strict pattern.
+			public bool AllMembersRequired;
+			public bool CultureSensitive = true;
+			public bool UseColonAsDaySeparator = true;
+#endif
 
 			public Parser (string src)
 			{
 				_src = src;
 				_length = _src.Length;
+#if NET_4_0
+				number_format = GetNumberFormatInfo (null);
+#endif
 			}
+
+#if NET_4_0
+			// Reset state data, so we can execute another parse over the input.
+			void Reset ()
+			{
+				_cur = 0;
+				parse_error = ParseError.None;
+				parsed_ticks = parsed_days_separator = false;
+				parsed_numbers_count = 0;
+			}
+
+			public Parser (string src, IFormatProvider formatProvider) :
+				this (src)
+			{
+				number_format = GetNumberFormatInfo (formatProvider);
+			}
+
+			NumberFormatInfo GetNumberFormatInfo (IFormatProvider formatProvider)
+			{
+				NumberFormatInfo format = null;
+				if (formatProvider != null)
+					format = (NumberFormatInfo) formatProvider.GetFormat (typeof (NumberFormatInfo));
+				if (format == null)
+					format = Thread.CurrentThread.CurrentCulture.NumberFormat;
+
+				return format;
+			}
+#endif
 	
 			public bool AtEnd {
 				get {
@@ -510,21 +744,32 @@ namespace System
 				if (optional && AtEnd)
 					return 0;
 
-				int res = 0;
+				long res = 0;
 				int count = 0;
 
 				while (!AtEnd && Char.IsDigit (_src, _cur)) {
-					checked {
-						res = res * 10 + _src[_cur] - '0';
+					res = res * 10 + _src[_cur] - '0';
+#if NET_4_0
+					// more than one preceding zero will case an OverflowException
+					if (res > Int32.MaxValue || (count >= 1 && res == 0)) {
+#else
+					if (res > Int32.MaxValue) {
+#endif
+						SetParseError (ParseError.Overflow);
+						break;
 					}
 					_cur++;
 					count++;
 				}
 
 				if (!optional && (count == 0))
-					formatError = true;
+					SetParseError (ParseError.Format);
+#if NET_4_0
+				if (count > 0)
+					parsed_numbers_count++;
+#endif
 
-				return res;
+				return (int)res;
 			}
 
 			// Parse optional dot
@@ -540,18 +785,58 @@ namespace System
 				return false;
 			}	
 
-			// Parse optional (LAMESPEC) colon
-			private void ParseOptColon ()
+#if NET_4_0
+			// This behaves pretty much like ParseOptDot, but we need to have it
+			// as a separated routine for both days and decimal separators.
+			private bool ParseOptDaysSeparator ()
+			{
+				if (AtEnd)
+					return false;
+
+				if (_src[_cur] == '.') {
+					_cur++;
+					parsed_days_separator = true;
+					return true;
+				}
+				return false;
+			}
+
+			// Just as ParseOptDot, but for decimal separator
+			private bool ParseOptDecimalSeparator ()
+			{
+				if (AtEnd)
+					return false;
+
+				// we may need to provide compatibility with old versions using '.'
+				// for culture insensitve and non exact formats.
+				if (!Exact || !CultureSensitive)
+					if (_src [_cur] == '.') {
+						_cur++;
+						return true;
+					}
+
+				string decimal_separator = number_format.NumberDecimalSeparator;
+				if (CultureSensitive && String.Compare (_src, _cur, decimal_separator, 0, decimal_separator.Length) == 0) {
+					_cur += decimal_separator.Length;
+					return true;
+				}
+
+				return false;
+			}
+#endif
+
+			private void ParseColon (bool optional)
 			{
 				if (!AtEnd) {
 					if (_src[_cur] == ':')
 						_cur++;
-					else 
-						formatError = true;
+					else if (!optional)
+						SetParseError (ParseError.Format);
 				}
 			}
 
 			// Parse [1..7] digits, representing fractional seconds (ticks)
+			// In 4.0 more than 7 digits will cause an OverflowException
 			private long ParseTicks ()
 			{
 				long mag = 1000000;
@@ -566,12 +851,171 @@ namespace System
 				}
 
 				if (!digitseen)
-					formatError = true;
+					SetParseError (ParseError.Format);
+#if NET_4_0
+				else if (!AtEnd && Char.IsDigit (_src, _cur))
+					SetParseError (ParseError.Overflow);
+
+				parsed_ticks = true;
+#endif
 
 				return res;
 			}
 
-			public TimeSpan Execute ()
+			void SetParseError (ParseError error)
+			{
+				// We preserve the very first error.
+				if (parse_error != ParseError.None)
+					return;
+
+				parse_error = error;
+			}
+
+#if NET_4_0
+			bool CheckParseSuccess (bool tryParse)
+#else
+			bool CheckParseSuccess (int hours, int minutes, int seconds, bool tryParse)
+#endif
+			{
+				// We always report the first error, but for 2.0 we need to give a higher
+				// precence to per-element overflow (as opposed to int32 overflow).
+#if NET_4_0
+				if (parse_error == ParseError.Overflow) {
+#else
+				if (parse_error == ParseError.Overflow || hours > 23 || minutes > 59 || seconds > 59) {
+#endif
+					if (tryParse)
+						return false;
+					throw new OverflowException (
+						Locale.GetText ("Invalid time data."));
+				}
+
+				if (parse_error == ParseError.Format) {
+					if (tryParse)
+						return false;
+					throw new FormatException (
+						Locale.GetText ("Invalid format for TimeSpan.Parse."));
+				}
+
+				return true;
+			}
+
+#if NET_4_0
+			// We are using a different parse approach in 4.0, due to some changes in the behaviour
+			// of the parse routines.
+			// The input string is documented as:
+			// 	Parse [ws][-][dd.]hh:mm:ss[.ff][ws]
+			//
+			// There are some special cases as part of 4.0, however:
+			// 1. ':' *can* be used as days separator, instead of '.', making valid the format 'dd:hh:mm:ss'
+			// 2. A input in the format 'hh:mm:ss' will end up assigned as 'dd.hh:mm' if the first int has a value
+			// exceeding the valid range for hours: 0-23.
+			// 3. The decimal separator can be retrieved from the current culture, as well as keeping support
+			// for the '.' value as part of keeping compatibility.
+			//
+			// So we take the approach to parse, if possible, 4 integers, and depending on both how many were
+			// actually parsed and what separators were read, assign the values to days/hours/minutes/seconds.
+			//
+			public bool Execute (bool tryParse, out TimeSpan result)
+			{
+				bool sign;
+				int value1, value2, value3, value4;
+				int days, hours, minutes, seconds;
+				long ticks = 0;
+
+				result = TimeSpan.Zero;
+				value1 = value2 = value3 = value4 = 0;
+				days = hours = minutes = seconds = 0;
+
+				Reset ();
+
+				ParseWhiteSpace ();
+				sign = ParseSign ();
+
+				// Parse 4 integers, making only the first one non-optional.
+				value1 = ParseInt (false);
+				if (!ParseOptDaysSeparator ()) // Parse either day separator or colon
+					ParseColon (false);
+				value2 = ParseInt (true);
+				ParseColon (true);
+				value3 = ParseInt (true);
+				ParseColon (true);
+				value4 = ParseInt (true);
+
+				// We know the precise separator for ticks, so there's no need to guess.
+				if (ParseOptDecimalSeparator ())
+					ticks = ParseTicks ();
+
+				ParseWhiteSpace ();
+
+				if (!AtEnd)
+					SetParseError (ParseError.Format);
+
+				if (Exact)
+					// In Exact mode we cannot allow both ':' and '.' as day separator.
+					if (UseColonAsDaySeparator && parsed_days_separator ||
+						AllMembersRequired && (parsed_numbers_count < 4 || !parsed_ticks))
+						SetParseError (ParseError.Format);
+
+				switch (parsed_numbers_count) {
+					case 1:
+						days = value1;
+						break;
+					case 2: // Two elements are valid only if they are *exactly* in the format: 'hh:mm'
+						if (parsed_days_separator)
+							SetParseError (ParseError.Format);
+						else {
+							hours = value1;
+							minutes = value2;
+						}
+						break;
+					case 3: // Assign the first value to days if we parsed a day separator or the value
+						// is not in the valid range for hours.
+						if (parsed_days_separator || value1 > 23) {
+							days = value1;
+							hours = value2;
+							minutes = value3;
+						} else {
+							hours = value1;
+							minutes = value2;
+							seconds = value3;
+						}
+						break;
+					case 4: // We are either on 'dd.hh:mm:ss' or 'dd:hh:mm:ss'
+						if (!UseColonAsDaySeparator && !parsed_days_separator)
+							SetParseError (ParseError.Format);
+						else {
+							days = value1;
+							hours = value2;
+							minutes = value3;
+							seconds = value4;
+						}
+						break;
+				}
+
+				if (hours > 23 || minutes > 59 || seconds > 59)
+					SetParseError (ParseError.Overflow);
+
+				if (!CheckParseSuccess (tryParse))
+					return false;
+
+				long t;
+				if (!TimeSpan.CalculateTicks (days, hours, minutes, seconds, 0, false, out t))
+					return false;
+
+				try {
+					t = checked ((sign) ? (-t - ticks) : (t + ticks));
+				} catch (OverflowException) {
+					if (tryParse)
+						return false;
+					throw;
+				}
+
+				result = new TimeSpan (t);
+				return true;
+			}
+#else
+			public bool Execute (bool tryParse, out TimeSpan result)
 			{
 				bool sign;
 				int days;
@@ -579,6 +1023,8 @@ namespace System
 				int minutes;
 				int seconds;
 				long ticks;
+
+				result = TimeSpan.Zero;
 
 				// documented as...
 				// Parse [ws][-][dd.]hh:mm:ss[.ff][ws]
@@ -594,10 +1040,11 @@ namespace System
 					hours = days;
 					days = 0;
 				}
-				ParseOptColon();
+				ParseColon(false);
 				minutes = ParseInt (true);
-				ParseOptColon ();
+				ParseColon (true);
 				seconds = ParseInt (true);
+
 				if ( ParseOptDot () ) {
 					ticks = ParseTicks ();
 				}
@@ -607,22 +1054,27 @@ namespace System
 				ParseWhiteSpace ();
 	
 				if (!AtEnd)
-					formatError = true;
+					SetParseError (ParseError.Format);
 
-				// Overflow has presceance over FormatException
-				if (hours > 23 || minutes > 59 || seconds > 59) {
-					throw new OverflowException (
-						Locale.GetText ("Invalid time data."));
-				}
-				else if (formatError) {
-					throw new FormatException (
-						Locale.GetText ("Invalid format for TimeSpan.Parse."));
+				if (!CheckParseSuccess (hours, minutes, seconds, tryParse))
+					return false;
+
+				long t;
+				if (!TimeSpan.CalculateTicks (days, hours, minutes, seconds, 0, false, out t))
+					return false;
+
+				try {
+					t = checked ((sign) ? (-t - ticks) : (t + ticks));
+				} catch (OverflowException) {
+					if (tryParse)
+						return false;
+					throw;
 				}
 
-				long t = TimeSpan.CalculateTicks (days, hours, minutes, seconds, 0);
-				t = checked ((sign) ? (-t - ticks) : (t + ticks));
-				return new TimeSpan (t);
+				result = new TimeSpan (t);
+				return true;
 			}
+#endif
 		}
 	}
 }

@@ -30,11 +30,10 @@ namespace System.Threading.Tasks
 	[FlagsAttribute, System.SerializableAttribute]
 	public enum TaskCreationOptions
 	{
-		None = 0x0,
-		PreferFairness = 0x1,
-		RespectParentCancellation = 0x2,
-		LongRunning = 0x8,
-		DetachedFromParent = 0x10
+		None             = 0x0,
+		PreferFairness   = 0x1,
+		LongRunning      = 0x2,
+		AttachedToParent = 0x4
 	}
 }
 #endif

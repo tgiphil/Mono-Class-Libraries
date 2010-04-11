@@ -31,10 +31,7 @@ namespace System
 				throw new System.NotImplementedException();
 			}
 		}
-#if NET_1_1 
-		static 
-#endif 
-		public bool HasShutdownStarted
+		static public bool HasShutdownStarted
 		{
 			get
 			{
@@ -122,6 +119,10 @@ namespace System
 			throw new System.NotImplementedException();
 		}
 		internal static string internalGetHome ()
+		{
+			throw new System.NotImplementedException();
+		}
+		internal static int GetPageSize ()
 		{
 			throw new System.NotImplementedException();
 		}

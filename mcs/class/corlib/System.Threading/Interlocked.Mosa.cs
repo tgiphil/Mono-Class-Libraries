@@ -11,10 +11,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
-#endif
 
 namespace System.Threading
 {

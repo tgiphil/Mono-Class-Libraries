@@ -48,7 +48,7 @@ namespace System
 		{
 			throw new System.NotImplementedException();
 		}
-		public virtual bool IsInstanceOfType (object o)
+		static bool IsInstanceOfType (Type type, object o)
 		{
 			throw new System.NotImplementedException();
 		}
@@ -96,7 +96,7 @@ namespace System
 		{
 			throw new System.NotImplementedException();
 		}
-		public virtual Type MakePointerType ()
+		static Type MakePointerType (Type type)
 		{
 			throw new System.NotImplementedException();
 		}

@@ -30,6 +30,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -89,10 +90,19 @@ namespace System
 								       Type[] types,
 								       ParameterModifier[] modifiers)
 		{
+			ConstructorInfo[] methods = GetConstructors (bindingAttr);
+			return GetConstructorImpl (methods, bindingAttr, binder, callConvention, types, modifiers);
+		}
+
+		internal static ConstructorInfo GetConstructorImpl (ConstructorInfo[] methods, BindingFlags bindingAttr,
+								       Binder binder,
+								       CallingConventions callConvention,
+								       Type[] types,
+								       ParameterModifier[] modifiers)
+		{
 			if (bindingAttr == BindingFlags.Default)
 				bindingAttr = BindingFlags.Public | BindingFlags.Instance;
 
-			ConstructorInfo[] methods = GetConstructors (bindingAttr);
 			ConstructorInfo found = null;
 			MethodBase[] match;
 			int count = 0;
@@ -341,11 +351,7 @@ namespace System
 						     ParameterModifier[] modifiers,
 						     CultureInfo culture, string[] namedParameters)
 		{
-#if NET_2_0
 			const string bindingflags_arg = "bindingFlags";
-#else
-			const string bindingflags_arg = "invokeAttr";
-#endif
 
 
 			if ((invokeAttr & BindingFlags.CreateInstance) != 0) {
@@ -419,10 +425,6 @@ namespace System
 						if (System.Reflection.Missing.Value == args [i] && (parameters [i].Attributes & ParameterAttributes.HasDefault) != ParameterAttributes.HasDefault)
 							throw new ArgumentException ("Used Missing.Value for argument without default value", "parameters");
 					}
-					bool hasParamArray = parameters.Length > 0 ? Attribute.IsDefined (parameters [parameters.Length - 1], 
-						typeof (ParamArrayAttribute)) : false;
-					if (hasParamArray)
-						ReorderParamArrayArguments (ref args, m);
 					object result = m.Invoke (target, invokeAttr, binder, args, culture);
 					binder.ReorderArgumentArray (ref args, state);
 					return result;
@@ -439,10 +441,8 @@ namespace System
 			} else if ((invokeAttr & BindingFlags.SetField) != 0) {
 				FieldInfo f = GetField (name, invokeAttr);
 				if (f != null) {
-#if NET_2_0
 					if (args == null)
 						throw new ArgumentNullException ("providedArgs");
-#endif
 					if ((args == null) || args.Length != 1)
 						throw new ArgumentException ("Only the field value can be specified to set a field value.", bindingflags_arg);
 					f.SetValue (target, args [0]);
@@ -471,11 +471,6 @@ namespace System
 				if (m == null) {
 					throwMissingFieldException = true;
 				} else {
-					ParameterInfo[] parameters = m.GetParameters();
-					bool hasParamArray = parameters.Length > 0 ? Attribute.IsDefined (parameters [parameters.Length - 1], 
-						typeof (ParamArrayAttribute)) : false;
-					if (hasParamArray)
-						ReorderParamArrayArguments (ref args, m);
 					object result = m.Invoke (target, invokeAttr, binder, args, culture);
 					binder.ReorderArgumentArray (ref args, state);
 					return result;
@@ -499,11 +494,6 @@ namespace System
 				if (m == null) {
 					throwMissingFieldException = true;
 				} else {
-					ParameterInfo[] parameters = m.GetParameters();
-					bool hasParamArray = parameters.Length > 0 ? Attribute.IsDefined (parameters [parameters.Length - 1], 
-						typeof (ParamArrayAttribute)) : false;
-					if (hasParamArray)
-						ReorderParamArrayArguments (ref args, m);
 					object result = m.Invoke (target, invokeAttr, binder, args, culture);
 					binder.ReorderArgumentArray (ref args, state);
 					return result;
@@ -590,11 +580,7 @@ namespace System
 
 		public override MemberTypes MemberType {
 			get {
-				if (DeclaringType != null
-#if NET_2_0
-					&& !IsGenericParameter
-#endif
-					)
+				if (DeclaringType != null && !IsGenericParameter)
 					return MemberTypes.NestedType;
 				else
 					return MemberTypes.TypeInfo;
@@ -646,7 +632,6 @@ namespace System
 			return getFullName (false, false);
 		}
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public extern override Type [] GetGenericArguments ();
 
@@ -685,9 +670,22 @@ namespace System
 
 			return res;
 		}
+
+#if NET_4_0
+		public override IList<CustomAttributeData> GetCustomAttributesData () {
+			return CustomAttributeData.GetCustomAttributes (this);
+		}
+
+
+		public override Array GetEnumValues () {
+			if (!IsEnum)
+				throw new ArgumentException ("Type is not an enumeration", "enumType");
+
+			return Enum.GetValues (this);
+		}
 #endif
 
-		private MethodBase CheckMethodSecurity (MethodBase mb)
+		static MethodBase CheckMethodSecurity (MethodBase mb)
 		{
 #if NET_2_1
 			return mb;
@@ -705,23 +703,26 @@ namespace System
 #endif
 		}
 
-		void ReorderParamArrayArguments(ref object[] args, MethodBase method)
+#if NET_4_0
+		//seclevel { transparent = 0, safe-critical = 1, critical = 2}
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		public extern int get_core_clr_security_level ();
+
+		public override bool IsSecurityTransparent
 		{
-			ParameterInfo[] parameters = method.GetParameters();
-			object[] newArgs = new object [parameters.Length];
-			Array paramArray = Array.CreateInstance(parameters[parameters.Length - 1].ParameterType.GetElementType(), 
-				args.Length - (parameters.Length - 1));
-			int paramArrayCount = 0;
-			for (int i = 0; i < args.Length; i++) {
-				if (i < (parameters.Length - 1))
-					newArgs [i] = args [i];
-				else {
-					paramArray.SetValue (args [i], paramArrayCount);
-					paramArrayCount ++;
-				}
-			}
-			newArgs [parameters.Length - 1] = paramArray;
-			args = newArgs;
+			get { return get_core_clr_security_level () == 0; }
 		}
+
+		public override bool IsSecurityCritical
+		{
+			get { return get_core_clr_security_level () > 0; }
+		}
+
+		public override bool IsSecuritySafeCritical
+		{
+			get { return get_core_clr_security_level () == 1; }
+		}
+#endif
+
 	}
 }

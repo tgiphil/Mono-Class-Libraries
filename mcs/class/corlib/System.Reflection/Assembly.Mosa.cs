@@ -19,6 +19,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Collections;
+using System.Collections.Generic;
 using System.Configuration.Assemblies;
 
 using Mono.Security;
@@ -49,7 +50,7 @@ namespace System.Reflection
 				throw new System.NotImplementedException();
 			}
 		}
-		private bool get_global_assembly_cache ()
+		internal bool get_global_assembly_cache ()
 		{
 			throw new System.NotImplementedException();
 		}
@@ -109,7 +110,7 @@ namespace System.Reflection
 		{
 			throw new System.NotImplementedException();
 		}
-		public AssemblyName[] GetReferencedAssemblies ()
+		internal static AssemblyName[] GetReferencedAssemblies (Assembly module)
 		{
 			throw new System.NotImplementedException();
 		}

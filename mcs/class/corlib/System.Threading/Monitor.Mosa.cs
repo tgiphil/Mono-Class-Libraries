@@ -10,11 +10,8 @@
 
 using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Contexts;
-
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
-#endif
 
 namespace System.Threading
 {

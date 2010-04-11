@@ -39,10 +39,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace System.Reflection.Emit {
-#if NET_2_0
 	[ComVisible (true)]
 	[ComDefaultInterface (typeof (_EnumBuilder))]
-#endif
 	[ClassInterface (ClassInterfaceType.None)]
 	public sealed partial class EnumBuilder : Type, _EnumBuilder {
 		private TypeBuilder _tb;
@@ -62,6 +60,17 @@ namespace System.Reflection.Emit {
 		internal TypeBuilder GetTypeBuilder ()
 		{
 			return _tb;
+		}
+
+		internal override bool IsCompilerContext {
+			get {
+				return _tb.IsCompilerContext;
+			}
+		}
+
+		internal override Type InternalResolve ()
+		{
+			return _tb.InternalResolve (); 
 		}
 
 		public override Assembly Assembly {
@@ -156,11 +165,7 @@ namespace System.Reflection.Emit {
 
 		public FieldBuilder DefineLiteral (string literalName, object literalValue)
 		{
-#if NET_2_0
 			Type fieldType = this;
-#else
-			Type fieldType = _underlyingType;
-#endif
 			FieldBuilder fieldBuilder = _tb.DefineField (literalName, 
 				fieldType, (FieldAttributes.Literal | 
 				(FieldAttributes.Static | FieldAttributes.Public)));
@@ -181,9 +186,7 @@ namespace System.Reflection.Emit {
 				modifiers);
 		}
 
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public override ConstructorInfo[] GetConstructors(BindingFlags bindingAttr)
 		{
 			return _tb.GetConstructors (bindingAttr);
@@ -234,9 +237,7 @@ namespace System.Reflection.Emit {
 			return _tb.GetInterface (name, ignoreCase);
 		}
 
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public override InterfaceMapping GetInterfaceMap (Type interfaceType)
 		{
 			return _tb.GetInterfaceMap (interfaceType);
@@ -348,7 +349,6 @@ namespace System.Reflection.Emit {
 			return _tb.IsDefined (attributeType, inherit);
 		}
 
-#if NET_2_0
 		public override Type MakeArrayType ()
 		{
 			return  new ArrayType (this, 0);
@@ -370,16 +370,13 @@ namespace System.Reflection.Emit {
 		{
 			return new PointerType (this);
 		}
-#endif
 
 		public void SetCustomAttribute (CustomAttributeBuilder customBuilder)
 		{
 			_tb.SetCustomAttribute (customBuilder);
 		}
 
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public void SetCustomAttribute (ConstructorInfo con, byte[] binaryAttribute)
 		{
 			SetCustomAttribute (new CustomAttributeBuilder (con, binaryAttribute));

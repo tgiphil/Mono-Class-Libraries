@@ -9,10 +9,7 @@
  */
 
 using System.Runtime.CompilerServices;
-
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
-#endif
 
 namespace System
 {

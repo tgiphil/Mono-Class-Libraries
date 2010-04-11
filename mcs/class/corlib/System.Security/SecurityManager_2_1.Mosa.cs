@@ -8,7 +8,7 @@
  *
  */
 
-#if NET_2_1 && !MONOTOUCH
+#if MOONLIGHT
 
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -28,5 +28,3 @@ namespace System.Security
 
 	}
 }
-
-#endif

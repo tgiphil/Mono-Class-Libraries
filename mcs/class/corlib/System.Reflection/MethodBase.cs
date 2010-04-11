@@ -35,10 +35,8 @@ using System.Runtime.InteropServices;
 
 namespace System.Reflection {
 
-#if NET_2_0
 	[ComVisible (true)]
 	[ComDefaultInterfaceAttribute (typeof (_MethodBase))]
-#endif
 	[Serializable]
 	[ClassInterface(ClassInterfaceType.None)]
 	public abstract partial class MethodBase: MemberInfo, _MethodBase {
@@ -61,21 +59,17 @@ namespace System.Reflection {
 		public static MethodBase GetMethodFromHandle (RuntimeMethodHandle handle)
 		{
 			MethodBase res = GetMethodFromIntPtr (handle.Value, IntPtr.Zero);
-#if NET_2_0
 			Type t = res.DeclaringType;
 			if (t.IsGenericType || t.IsGenericTypeDefinition)
 				throw new ArgumentException ("Cannot resolve method because it's declared in a generic class.");
-#endif
 			return res;
 		}
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
 		[ComVisible (false)]
 		public static MethodBase GetMethodFromHandle (RuntimeMethodHandle handle, RuntimeTypeHandle declaringType)
 		{
 			return GetMethodFromIntPtr (handle.Value, declaringType.Value);
 		}
-#endif
 
 		public abstract MethodImplAttributes GetMethodImplementationFlags();
 
@@ -87,19 +81,8 @@ namespace System.Reflection {
 		//
 		internal virtual int GetParameterCount ()
 		{
-			ParameterInfo [] pi = GetParameters ();
-			if (pi == null)
-				return 0;
-			
-			return pi.Length;
+			throw new NotImplementedException ("must be implemented");
 		}
-
-#if ONLY_1_1
-		public new Type GetType ()
-		{
-			return base.GetType ();
-		}
-#endif
 
 		[DebuggerHidden]
 		[DebuggerStepThrough]		
@@ -198,7 +181,6 @@ namespace System.Reflection {
 			throw new Exception ("Method is not a builder method");
 		}
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
 		[ComVisible (true)]
 		public virtual Type [] GetGenericArguments ()
 		{
@@ -222,9 +204,6 @@ namespace System.Reflection {
 				return false;
 			}
 		}
-#endif
-
-#if NET_2_0
 
 		internal static MethodBody GetMethodBody (IntPtr handle) {
 			return GetMethodBodyInternal (handle);
@@ -232,6 +211,35 @@ namespace System.Reflection {
 
 		public virtual MethodBody GetMethodBody () {
 			throw new NotSupportedException ();
+		}
+
+#if NET_4_0
+		public override bool Equals (object obj)
+		{
+			return obj == this;
+		}
+
+		public override int GetHashCode ()
+		{
+			return base.GetHashCode ();
+		}
+
+		public static bool operator == (MethodBase left, MethodBase right)
+		{
+			if ((object)left == (object)right)
+				return true;
+			if ((object)left == null ^ (object)right == null)
+				return false;
+			return left.Equals (right);
+		}
+
+		public static bool operator != (MethodBase left, MethodBase right)
+		{
+			if ((object)left == (object)right)
+				return false;
+			if ((object)left == null ^ (object)right == null)
+				return true;
+			return !left.Equals (right);
 		}
 #endif
 

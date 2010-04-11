@@ -101,7 +101,6 @@ namespace System
 
 		#region Fields
 
-		private Thread _thread;
 		private NumberFormatInfo _nfi;
 
 		private bool _NaN;
@@ -317,8 +316,7 @@ namespace System
 			_cbuf = new char [0];
 			if (current == null)
 				return;
-			_thread = current;
-			CurrentCulture = _thread.CurrentCulture;
+			CurrentCulture = current.CurrentCulture;
 		}
 
 		private void Init (string format)

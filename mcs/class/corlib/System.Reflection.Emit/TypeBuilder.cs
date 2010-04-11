@@ -45,10 +45,8 @@ using System.Diagnostics.SymbolStore;
 
 namespace System.Reflection.Emit
 {
-#if NET_2_0
 	[ComVisible (true)]
 	[ComDefaultInterface (typeof (_TypeBuilder))]
-#endif
 	[ClassInterface (ClassInterfaceType.None)]
 	public sealed partial class TypeBuilder : Type, _TypeBuilder
 	{
@@ -74,11 +72,7 @@ namespace System.Reflection.Emit
 		private int class_size;
 		private PackingSize packing_size;
 		private IntPtr generic_container;
-#if NET_2_0 || BOOTSTRAP_NET_2_0
 		private GenericTypeParameterBuilder[] generic_params;
-#else
-		private Object generic_params; /* so offsets don't change */
-#endif
 		private RefEmitPermissionSet[] permissions;
 		private Type created;
 		#endregion
@@ -95,16 +89,13 @@ namespace System.Reflection.Emit
 			return attrs;
 		}
 		
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-#endif
-
 		internal TypeBuilder (ModuleBuilder mb, TypeAttributes attr, int table_idx)
 		{
 			this.parent = null;
 			this.attrs = attr;
 			this.class_size = UnspecifiedTypeSize;
 			this.table_idx = table_idx;
-			fullname = this.tname = table_idx == 1 ? "<Module>" : "type_"+table_idx;
+			fullname = this.tname = table_idx == 1 ? "<Module>" : "type_" + table_idx.ToString ();
 			this.nspace = String.Empty;
 			pmodule = mb;
 			setup_internal_class (this);
@@ -167,7 +158,8 @@ namespace System.Reflection.Emit
 			get { return nesting_type; }
 		}
 
-/*		public override bool IsSubclassOf (Type c)
+		[ComVisible (true)]
+		public override bool IsSubclassOf (Type c)
 		{
 			Type t;
 			if (c == null)
@@ -181,14 +173,14 @@ namespace System.Reflection.Emit
 				t = t.BaseType;
 			}
 			return false;
-		}*/
+		}
 
 		public override Type UnderlyingSystemType {
 			get {
 				if (is_created)
 					return created.UnderlyingSystemType;
 
-				if (IsEnum && !IsCompilerContext) {
+				if (!IsCompilerContext && IsEnum) {
 					if (underlying_type != null)
 						return underlying_type;
 					throw new InvalidOperationException (
@@ -275,9 +267,7 @@ namespace System.Reflection.Emit
 #endif
 		}
 
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public void AddInterfaceImplementation (Type interfaceType)
 		{
 			if (interfaceType == null)
@@ -424,9 +414,7 @@ namespace System.Reflection.Emit
 			return res;
 		}
 
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public TypeBuilder DefineNestedType (string name, TypeAttributes attr, Type parent, Type[] interfaces)
 		{
 			return DefineNestedType (name, attr, parent, interfaces, PackingSize.Unspecified, UnspecifiedTypeSize);
@@ -442,23 +430,14 @@ namespace System.Reflection.Emit
 			return DefineNestedType (name, attr, parent, null, packSize, UnspecifiedTypeSize);
 		}
 
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public ConstructorBuilder DefineConstructor (MethodAttributes attributes, CallingConventions callingConvention, Type[] parameterTypes)
 		{
 			return DefineConstructor (attributes, callingConvention, parameterTypes, null, null);
 		}
 
-#if NET_2_0
 		[ComVisible (true)]
-#endif
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-		public
-#else
-		internal
-#endif
-		ConstructorBuilder DefineConstructor (MethodAttributes attributes, CallingConventions callingConvention, Type[] parameterTypes, Type[][] requiredCustomModifiers, Type[][] optionalCustomModifiers)
+		public ConstructorBuilder DefineConstructor (MethodAttributes attributes, CallingConventions callingConvention, Type[] parameterTypes, Type[][] requiredCustomModifiers, Type[][] optionalCustomModifiers)
 		{
 			check_not_created ();
 			ConstructorBuilder cb = new ConstructorBuilder (this, attributes,
@@ -476,9 +455,7 @@ namespace System.Reflection.Emit
 			return cb;
 		}
 
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public ConstructorBuilder DefineDefaultConstructor (MethodAttributes attributes)
 		{
 			Type parent_type;
@@ -488,6 +465,7 @@ namespace System.Reflection.Emit
 			else
 				parent_type = pmodule.assemblyb.corlib_object_type;
 
+			parent_type = parent_type.InternalResolve ();
 			ConstructorInfo parent_constructor =
 				parent_type.GetConstructor (
 					BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
@@ -535,12 +513,7 @@ namespace System.Reflection.Emit
 				null, null, parameterTypes, null, null);
 		}
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-		public
-#else
-		internal
-#endif
-		MethodBuilder DefineMethod (string name, MethodAttributes attributes, CallingConventions callingConvention, Type returnType, Type[] returnTypeRequiredCustomModifiers, Type[] returnTypeOptionalCustomModifiers, Type[] parameterTypes, Type[][] parameterTypeRequiredCustomModifiers, Type[][] parameterTypeOptionalCustomModifiers)
+		public MethodBuilder DefineMethod (string name, MethodAttributes attributes, CallingConventions callingConvention, Type returnType, Type[] returnTypeRequiredCustomModifiers, Type[] returnTypeOptionalCustomModifiers, Type[] parameterTypes, Type[][] parameterTypeRequiredCustomModifiers, Type[][] parameterTypeOptionalCustomModifiers)
 		{
 			check_name ("name", name);
 			check_not_created ();
@@ -569,12 +542,7 @@ namespace System.Reflection.Emit
 				null, null, nativeCallConv, nativeCharSet);
 		}
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-		public
-#else
-		internal
-#endif
-		MethodBuilder DefinePInvokeMethod (
+		public MethodBuilder DefinePInvokeMethod (
 						string name, 
 						string dllName, 
 						string entryName, MethodAttributes attributes, 
@@ -622,7 +590,6 @@ namespace System.Reflection.Emit
 				nativeCallConv, nativeCharSet);
 		}
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
 		public MethodBuilder DefineMethod (string name, MethodAttributes attributes)
 		{
 			return DefineMethod (name, attributes, CallingConventions.Standard);
@@ -632,7 +599,6 @@ namespace System.Reflection.Emit
 		{
 			return DefineMethod (name, attributes, callingConvention, null, null);
 		}
-#endif
 
 		public void DefineMethodOverride (MethodInfo methodInfoBody, MethodInfo methodInfoDeclaration)
 		{
@@ -655,12 +621,7 @@ namespace System.Reflection.Emit
 			return DefineField (fieldName, type, null, null, attributes);
 		}
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-		public
-#else
-		internal
-#endif
-		FieldBuilder DefineField (string fieldName, Type type, Type[] requiredCustomModifiers, Type[] optionalCustomModifiers, FieldAttributes attributes)
+		public FieldBuilder DefineField (string fieldName, Type type, Type[] requiredCustomModifiers, Type[] optionalCustomModifiers, FieldAttributes attributes)
 		{
 			check_name ("fieldName", fieldName);
 			if (type == typeof (void))
@@ -696,12 +657,7 @@ namespace System.Reflection.Emit
 			return DefineProperty (name, attributes, returnType, null, null, parameterTypes, null, null);
 		}
 
-#if NET_2_0
-		public 
-#else
-		internal
-#endif
-		PropertyBuilder DefineProperty (string name, PropertyAttributes attributes, Type returnType, Type[] returnTypeRequiredCustomModifiers, Type[] returnTypeOptionalCustomModifiers, Type[] parameterTypes, Type[][] parameterTypeRequiredCustomModifiers, Type[][] parameterTypeOptionalCustomModifiers)
+		public  PropertyBuilder DefineProperty (string name, PropertyAttributes attributes, Type returnType, Type[] returnTypeRequiredCustomModifiers, Type[] returnTypeOptionalCustomModifiers, Type[] parameterTypes, Type[][] parameterTypeRequiredCustomModifiers, Type[][] parameterTypeOptionalCustomModifiers)
 		{
 			check_name ("name", name);
 			if (parameterTypes != null)
@@ -724,9 +680,7 @@ namespace System.Reflection.Emit
 			return res;
 		}
 
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public ConstructorBuilder DefineTypeInitializer()
 		{
 			return DefineConstructor (MethodAttributes.Public |
@@ -854,9 +808,7 @@ namespace System.Reflection.Emit
 			}
 		}
 
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public override ConstructorInfo[] GetConstructors (BindingFlags bindingAttr)
 		{
 			if (is_created)
@@ -1120,11 +1072,7 @@ namespace System.Reflection.Emit
 						match = (bindingAttr & BindingFlags.Public) != 0;
 						break;
 					case MethodAttributes.Assembly:
-#if NET_2_0
 						match = (bindingAttr & BindingFlags.NonPublic) != 0;
-#else
-						match = false;
-#endif
 						break;
 					case MethodAttributes.Private:
 						match = false;
@@ -1350,13 +1298,10 @@ namespace System.Reflection.Emit
 
 		protected override bool HasElementTypeImpl ()
 		{
-#if NET_2_0
 			// a TypeBuilder can never represent an array, pointer
 			if (!is_created)
 				return false;
-#else
-			check_created ();
-#endif
+
 			return created.HasElementType;
 		}
 
@@ -1395,12 +1340,17 @@ namespace System.Reflection.Emit
 		// FIXME: I doubt just removing this still works.
 		protected override bool IsValueTypeImpl ()
 		{
-			return ((type_is_subtype_of (this, pmodule.assemblyb.corlib_value_type, false) || type_is_subtype_of (this, typeof(System.ValueType), false)) &&
-				this != pmodule.assemblyb.corlib_value_type &&
-				this != pmodule.assemblyb.corlib_enum_type);
+			if (this == pmodule.assemblyb.corlib_value_type || this == pmodule.assemblyb.corlib_enum_type)
+				return false;
+			Type parent_type = parent;
+			while (parent_type != null) {
+				if (parent_type == pmodule.assemblyb.corlib_value_type)
+					return true;
+				parent_type = parent_type.BaseType;
+			}
+			return false;
 		}
 		
-#if NET_2_0
 		public override Type MakeArrayType ()
 		{
 			return new ArrayType (this, 0);
@@ -1418,18 +1368,33 @@ namespace System.Reflection.Emit
 			return new ByRefType (this);
 		}
 
-		[MonoTODO]
 		public override Type MakeGenericType (params Type [] typeArguments)
 		{
-			return base.MakeGenericType (typeArguments);
+			//return base.MakeGenericType (typeArguments);
+
+			if (!IsGenericTypeDefinition)
+				throw new InvalidOperationException ("not a generic type definition");
+			if (typeArguments == null)
+				throw new ArgumentNullException ("typeArguments");
+
+			if (generic_params.Length != typeArguments.Length)
+				throw new ArgumentException (String.Format ("The type or method has {0} generic parameter(s) but {1} generic argument(s) where provided. A generic argument must be provided for each generic parameter.", generic_params.Length, typeArguments.Length), "typeArguments");
+
+			foreach (Type t in typeArguments) {
+				if (t == null)
+					throw new ArgumentNullException ("typeArguments");				
+			}
+
+			Type[] copy = new Type [typeArguments.Length];
+			typeArguments.CopyTo (copy, 0);
+			return pmodule.assemblyb.MakeGenericType (this, copy);
 		}
 
 		public override Type MakePointerType ()
 		{
 			return new PointerType (this);
 		}
-#endif
-		
+
 		public override RuntimeTypeHandle TypeHandle {
 			get {
 				check_created ();
@@ -1531,11 +1496,9 @@ namespace System.Reflection.Emit
 					}
 				}
 				return;
-#if NET_2_0
 			} else if (attrname == "System.Runtime.CompilerServices.SpecialNameAttribute") {
 				attrs |= TypeAttributes.SpecialName;
 				return;
-#endif
 			} else if (attrname == "System.SerializableAttribute") {
 				attrs |= TypeAttributes.Serializable;
 				return;
@@ -1557,9 +1520,7 @@ namespace System.Reflection.Emit
 			}
 		}
 
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public void SetCustomAttribute (ConstructorInfo con, byte[] binaryAttribute)
 		{
 			SetCustomAttribute (new CustomAttributeBuilder (con, binaryAttribute));
@@ -1626,7 +1587,6 @@ namespace System.Reflection.Emit
 		{
 			check_not_created ();
 
-#if NET_2_0
 			if (parent == null) {
 				if ((attrs & TypeAttributes.Interface) != 0) {
 					if ((attrs & TypeAttributes.Abstract) == 0)
@@ -1638,11 +1598,6 @@ namespace System.Reflection.Emit
 			} else {
 				this.parent = parent;
 			}
-#else
-			if (parent == null)
-				throw new ArgumentNullException ("parent");
-			this.parent = parent;
-#endif
 
 			// will just set the parent-related bits if called a second time
 			setup_internal_class (this);
@@ -1652,9 +1607,7 @@ namespace System.Reflection.Emit
 			return pmodule.get_next_table_index (obj, table, inc);
 		}
 
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public override InterfaceMapping GetInterfaceMap (Type interfaceType)
 		{
 			if (created == null)
@@ -1663,10 +1616,16 @@ namespace System.Reflection.Emit
 			return created.GetInterfaceMap (interfaceType);
 		}
 
-		internal bool IsCompilerContext {
+		internal override bool IsCompilerContext {
 			get {
 				return pmodule.assemblyb.IsCompilerContext;
 			}
+		}
+
+		internal override Type InternalResolve ()
+		{
+			check_created ();
+			return created;
 		}
 
 		internal bool is_created {
@@ -1713,15 +1672,6 @@ namespace System.Reflection.Emit
 			return base.IsAssignableFrom (c);
 		}
 
-#if NET_2_0
-		[ComVisible (true)]
-#endif
-		[MonoTODO]
-		public override bool IsSubclassOf (Type c)
-		{
-			return base.IsSubclassOf (c);
-		}
-
 		[MonoTODO ("arrays")]
 		internal bool IsAssignableTo (Type c)
 		{
@@ -1749,7 +1699,6 @@ namespace System.Reflection.Emit
 				return c.IsAssignableFrom (parent);
 		}
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
 		public bool IsCreated ()
 		{
 			return is_created;
@@ -1826,8 +1775,18 @@ namespace System.Reflection.Emit
 
 		public static ConstructorInfo GetConstructor (Type type, ConstructorInfo constructor)
 		{
+			/*FIXME I would expect the same checks of GetMethod here*/
 			if (type == null)
 				throw new ArgumentException ("Type is not generic", "type");
+
+			if (!type.IsGenericType)
+				throw new ArgumentException ("Type is not a generic type", "type");
+
+			if (type.IsGenericTypeDefinition)
+				throw new ArgumentException ("Type cannot be a generic type definition", "type");
+
+			if (constructor == null)
+				throw new NullReferenceException (); //MS raises this instead of an ArgumentNullException
 
 			ConstructorInfo res = type.GetConstructor (constructor);
 			if (res == null)
@@ -1861,6 +1820,9 @@ namespace System.Reflection.Emit
 			if (!IsValidGetMethodType (type))
 				throw new ArgumentException ("type is not TypeBuilder but " + type.GetType (), "type");
 
+			if (type is TypeBuilder && type.ContainsGenericParameters)
+				type = type.MakeGenericType (type.GetGenericArguments ());
+
 			if (!type.IsGenericType)
 				throw new ArgumentException ("type is not a generic type", "type");
 
@@ -1868,6 +1830,8 @@ namespace System.Reflection.Emit
 				throw new ArgumentException ("method declaring type is not a generic type definition", "method");
 			if (method.DeclaringType != type.GetGenericTypeDefinition ())
 				throw new ArgumentException ("method declaring type is not the generic type definition of type", "method");
+			if (method == null)
+				throw new NullReferenceException (); //MS raises this instead of an ArgumentNullException
 
 			MethodInfo res = type.GetMethod (method);
 			if (res == null)
@@ -1878,13 +1842,21 @@ namespace System.Reflection.Emit
 
 		public static FieldInfo GetField (Type type, FieldInfo field)
 		{
+			if (!type.IsGenericType)
+				throw new ArgumentException ("Type is not a generic type", "type");
+
+			if (type.IsGenericTypeDefinition)
+				throw new ArgumentException ("Type cannot be a generic type definition", "type");
+
+			if (field is FieldOnTypeBuilderInst)
+				throw new ArgumentException ("The specified field must be declared on a generic type definition.", "field");
+
 			FieldInfo res = type.GetField (field);
 			if (res == null)
 				throw new System.Exception ("field not found");
 			else
 				return res;
 		}
-#endif
 
 		void _TypeBuilder.GetIDsOfNames([In] ref Guid riid, IntPtr rgszNames, uint cNames, uint lcid, IntPtr rgDispId)
 		{

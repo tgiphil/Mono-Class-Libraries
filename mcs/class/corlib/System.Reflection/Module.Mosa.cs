@@ -14,22 +14,21 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using System.Security;
 using System.Security.Permissions;
+using System.Collections.Generic;
 
 namespace System.Reflection
 {
 	public partial class Module
 	{
-		public int MetadataToken {
-			get
-			{
-				throw new System.NotImplementedException();
-			}
+		internal static int get_MetadataToken (Module module)
+		{
+			throw new System.NotImplementedException();
 		}
 		internal static int GetMDStreamVersion (IntPtr module_handle)
 		{
 			throw new System.NotImplementedException();
 		}
-		private Type[] InternalGetTypes ()
+		internal Type[] InternalGetTypes ()
 		{
 			throw new System.NotImplementedException();
 		}
@@ -41,7 +40,7 @@ namespace System.Reflection
 		{
 			throw new System.NotImplementedException();
 		}
-		private Type GetGlobalType ()
+		internal Type GetGlobalType ()
 		{
 			throw new System.NotImplementedException();
 		}

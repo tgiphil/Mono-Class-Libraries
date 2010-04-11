@@ -35,20 +35,13 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [Serializable]
-#if NET_2_0
 [ComVisible (true)]
-#endif
-public abstract partial class Encoding
-#if NET_2_0
-	: ICloneable
-#endif
+public abstract partial class Encoding : ICloneable
 {
 	// Code page used by this encoding.
 	internal int codePage;
 	internal int windows_code_page;
-#if NET_2_0
 	bool is_readonly = true;
-#endif
 
 	// Constructor.
 	protected Encoding ()
@@ -64,7 +57,6 @@ public abstract partial class Encoding
 	{
 		this.codePage = windows_code_page = codePage;
 
-#if NET_2_0
 		switch (codePage) {
 		default:
 			// MS has "InternalBestFit{Decoder|Encoder}Fallback
@@ -87,7 +79,6 @@ public abstract partial class Encoding
 			encoder_fallback = EncoderFallback.StandardSafeFallback;
 			break;
 		}
-#endif
 	}
 
 	// until we change the callers:
@@ -95,7 +86,6 @@ public abstract partial class Encoding
 		return arg;
 	}
 
-#if NET_2_0
 	DecoderFallback decoder_fallback;
 	EncoderFallback encoder_fallback;
 
@@ -140,7 +130,6 @@ public abstract partial class Encoding
 		if (d != null)
 			decoder_fallback = d;
 	}
-#endif
 
 	// Convert between two encodings.
 	public static byte[] Convert (Encoding srcEncoding, Encoding dstEncoding,
@@ -185,13 +174,9 @@ public abstract partial class Encoding
 	{
 		Encoding enc = (value as Encoding);
 		if (enc != null) {
-#if NET_2_0
 			return codePage == enc.codePage &&
 				DecoderFallback.Equals (enc.DecoderFallback) &&
 				EncoderFallback.Equals (enc.EncoderFallback);
-#else
-			return (codePage == enc.codePage);
-#endif
 		} else {
 			return false;
 		}
@@ -208,16 +193,11 @@ public abstract partial class Encoding
 
 		if (s.Length == 0)
 			return 0;
-#if NET_2_0
 		unsafe {
 			fixed (char* cptr = s) {
 				return GetByteCount (cptr, s.Length);
 			}
 		}
-#else
-		char[] chars = s.ToCharArray ();
-		return GetByteCount (chars, 0, chars.Length);
-#endif
 	}
 	public virtual int GetByteCount (char[] chars)
 	{
@@ -238,7 +218,6 @@ public abstract partial class Encoding
 	{
 		if (s == null)
 			throw new ArgumentNullException ("s");
-#if NET_2_0
 		if (charIndex < 0 || charIndex > s.Length)
 			throw new ArgumentOutOfRangeException ("charIndex", _("ArgRange_Array"));
 		if (charCount < 0 || charIndex > (s.Length - charCount))
@@ -258,16 +237,12 @@ public abstract partial class Encoding
 				}
 			}
 		}
-#else
-		return GetBytes (s.ToCharArray(), charIndex, charCount, bytes, byteIndex);
-#endif
 	}
 	public virtual byte[] GetBytes (String s)
 	{
 		if (s == null)
 			throw new ArgumentNullException ("s");
 
-#if NET_2_0
 		if (s.Length == 0)
 			return new byte [0];
 		int byteCount = GetByteCount (s);
@@ -283,14 +258,8 @@ public abstract partial class Encoding
 				}
 			}
 		}
-#else
-		char[] chars = s.ToCharArray ();
-		int numBytes = GetByteCount (chars, 0, chars.Length);
-		byte[] bytes = new byte [numBytes];
-		GetBytes (chars, 0, chars.Length, bytes, 0);
-		return bytes;
-#endif
 	}
+
 	public virtual byte[] GetBytes (char[] chars, int index, int count)
 	{
 		int numBytes = GetByteCount (chars, index, count);
@@ -463,13 +432,11 @@ public abstract partial class Encoding
 			case UTF8Encoding.UTF8_CODE_PAGE:
 				return UTF8;
 
-#if NET_2_0
 			case UTF32Encoding.UTF32_CODE_PAGE:
 				return UTF32;
 
 			case UTF32Encoding.BIG_UTF32_CODE_PAGE:
 				return BigEndianUTF32;
-#endif
 
 			case UnicodeEncoding.UNICODE_CODE_PAGE:
 				return Unicode;
@@ -477,19 +444,17 @@ public abstract partial class Encoding
 			case UnicodeEncoding.BIG_UNICODE_CODE_PAGE:
 				return BigEndianUnicode;
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 			case Latin1Encoding.ISOLATIN_CODE_PAGE:
 				return ISOLatin1;
 #endif
 			default: break;
 		}
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		// Try to obtain a code page handler from the I18N handler.
 		Encoding enc = (Encoding)(InvokeI18N ("GetEncoding", codepage));
 		if (enc != null) {
-#if NET_2_0
 			enc.is_readonly = true;
-#endif
 			return enc;
 		}
 
@@ -501,9 +466,7 @@ public abstract partial class Encoding
 		Type type = assembly.GetType (cpName);
 		if (type != null) {
 			enc = (Encoding)(Activator.CreateInstance (type));
-#if NET_2_0
 			enc.is_readonly = true;
-#endif
 			return enc;
 		}
 
@@ -512,9 +475,7 @@ public abstract partial class Encoding
 		type = Type.GetType (cpName);
 		if (type != null) {
 			enc = (Encoding)(Activator.CreateInstance (type));
-#if NET_2_0
 			enc.is_readonly = true;
-#endif
 			return enc;
 		}
 #endif // !NET_2_1
@@ -525,7 +486,6 @@ public abstract partial class Encoding
 
 #if !ECMA_COMPAT
 
-#if NET_2_0
 	[ComVisible (false)]
 	public virtual object Clone ()
 	{
@@ -534,7 +494,7 @@ public abstract partial class Encoding
 		return e;
 	}
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 
 	public static Encoding GetEncoding (int codepage,
 		EncoderFallback encoderFallback, DecoderFallback decoderFallback)
@@ -605,7 +565,7 @@ public abstract partial class Encoding
 		return encoding_infos;
 	}
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 	[ComVisible (false)]
 	public bool IsAlwaysNormalized ()
 	{
@@ -619,8 +579,6 @@ public abstract partial class Encoding
 		return form == NormalizationForm.FormC && this is ASCIIEncoding;
 	}
 #endif // NET_2_1
-
-#endif
 
 	// Table of builtin web encoding names and the corresponding code pages.
 	private static readonly object[] encodings =
@@ -645,15 +603,14 @@ public abstract partial class Encoding
 
 			UnicodeEncoding.BIG_UNICODE_CODE_PAGE,
 			"unicodefffe", "utf_16be",
-#if NET_2_0
+
 			UTF32Encoding.UTF32_CODE_PAGE,
 			"utf_32", "UTF_32LE", "ucs_4",
 
 			UTF32Encoding.BIG_UTF32_CODE_PAGE,
 			"UTF_32BE",
-#endif
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 			Latin1Encoding.ISOLATIN_CODE_PAGE,
 			"iso_8859_1", "latin1"
 #endif // !NET_2_1
@@ -682,7 +639,7 @@ public abstract partial class Encoding
 			if (converted == ((string)encodings [i]))
 				return GetEncoding (code);
 		}
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		// Try to obtain a web encoding handler from the I18N handler.
 		Encoding enc = (Encoding)(InvokeI18N ("GetEncoding", name));
 		if (enc != null) {
@@ -716,11 +673,7 @@ public abstract partial class Encoding
 	// Get a hash code for this instance.
 	public override int GetHashCode ()
 	{
-#if NET_2_0
 		return DecoderFallback.GetHashCode () << 24 + EncoderFallback.GetHashCode () << 16 + codePage;
-#else
-		return codePage;
-#endif
 	}
 
 	// Get the maximum number of bytes needed to encode a
@@ -854,11 +807,9 @@ public abstract partial class Encoding
 	static volatile Encoding utf8EncodingWithoutMarkers;
 	static volatile Encoding unicodeEncoding;
 	static volatile Encoding isoLatin1Encoding;
-#if NET_2_0
 	static volatile Encoding utf8EncodingUnsafe;
 	static volatile Encoding utf32Encoding;
 	static volatile Encoding bigEndianUTF32Encoding;
-#endif
 
 	static readonly object lockobj = new object ();
 
@@ -920,14 +871,14 @@ public abstract partial class Encoding
 								case 3: code_page = UTF8Encoding.UTF8_CODE_PAGE; break;
 								case 4: code_page = UnicodeEncoding.UNICODE_CODE_PAGE; break;
 								case 5: code_page = UnicodeEncoding.BIG_UNICODE_CODE_PAGE; break;
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 								case 6: code_page = Latin1Encoding.ISOLATIN_CODE_PAGE; break;
 #endif
 								}
 								defaultEncoding = GetEncoding (code_page);
 							}
 						} catch (NotSupportedException) {
-#if NET_2_1 && !MONOTOUCH
+#if MOONLIGHT
 							defaultEncoding = UTF8;
 #else
 							// code_page is not supported on underlying platform
@@ -936,15 +887,13 @@ public abstract partial class Encoding
 						} catch (ArgumentException) {
 							// code_page_name is not a valid code page, or is 
 							// not supported by underlying OS
-#if NET_2_1 && !MONOTOUCH
+#if MOONLIGHT
 							defaultEncoding = UTF8;
 #else
 							defaultEncoding = UTF8Unmarked;
 #endif
 						}
-#if NET_2_0
 						defaultEncoding.is_readonly = true;
-#endif						
 					}
 				}
 			}
@@ -953,7 +902,7 @@ public abstract partial class Encoding
 		}
 	}
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 
 	// Get the ISO Latin1 encoding object.
 	private static Encoding ISOLatin1
@@ -1036,7 +985,6 @@ public abstract partial class Encoding
 	//
 	internal static Encoding UTF8UnmarkedUnsafe {
 		get {
-#if NET_2_0
 			if (utf8EncodingUnsafe == null) {
 				lock (lockobj){
 					if (utf8EncodingUnsafe == null){
@@ -1049,9 +997,6 @@ public abstract partial class Encoding
 			}
 
 			return utf8EncodingUnsafe;
-#else
-			return UTF8Unmarked;
-#endif
 		}
 	}
 	
@@ -1072,7 +1017,6 @@ public abstract partial class Encoding
 		}
 	}
 
-#if NET_2_0
 	// Get the standard little-endian UTF-32 encoding object.
 	public static Encoding UTF32
 	{
@@ -1106,7 +1050,6 @@ public abstract partial class Encoding
 			return bigEndianUTF32Encoding;
 		}
 	}
-#endif
 
 	// Forwarding decoder implementation.
 	private sealed class ForwardingDecoder : Decoder
@@ -1117,11 +1060,9 @@ public abstract partial class Encoding
 		public ForwardingDecoder (Encoding enc)
 		{
 			encoding = enc;
-#if NET_2_0
 			DecoderFallback fallback = encoding.DecoderFallback;
 			if (fallback != null)
 				Fallback = fallback;
-#endif
 		}
 
 		// Override inherited methods.
@@ -1147,11 +1088,9 @@ public abstract partial class Encoding
 		public ForwardingEncoder (Encoding enc)
 		{
 			encoding = enc;
-#if NET_2_0
 			EncoderFallback fallback = encoding.EncoderFallback;
 			if (fallback != null)
 				Fallback = fallback;
-#endif
 		}
 
 		// Override inherited methods.
@@ -1168,7 +1107,6 @@ public abstract partial class Encoding
 
 	} // class ForwardingEncoder
 
-#if NET_2_0
 	[CLSCompliantAttribute(false)]
 	[ComVisible (false)]
 	public unsafe virtual int GetByteCount (char *chars, int count)
@@ -1255,8 +1193,6 @@ public abstract partial class Encoding
 		
 		return b.Length;
 	}
-#endif
-
 }; // class Encoding
 
 }; // namespace System.Text

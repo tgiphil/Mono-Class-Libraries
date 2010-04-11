@@ -1,11 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{06695DD7-F76D-4899-8CFA-46D61172CDD2}</ProjectGuid>
+    <ProjectGuid>{046e36ff-1e58-44a4-ae1f-f122e1bc7d42}</ProjectGuid>
     <OutputType>library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>corlib</RootNamespace>
@@ -44,8 +44,10 @@
     <Compile Include="Microsoft.Win32\RegistryKeyPermissionCheck.cs" />
     <Compile Include="Microsoft.Win32\Registry.cs" />
     <Compile Include="Microsoft.Win32\RegistryHive.cs" />
+    <Compile Include="Microsoft.Win32\RegistryOptions.cs" />
     <Compile Include="Microsoft.Win32\RegistryValueKind.cs" />
     <Compile Include="Microsoft.Win32\RegistryValueOptions.cs" />
+    <Compile Include="Microsoft.Win32\RegistryView.cs" />
     <Compile Include="Microsoft.Win32\UnixRegistryApi.cs" />
     <Compile Include="Microsoft.Win32\Win32RegistryApi.cs" />
     <Compile Include="Microsoft.Win32\Win32ResultCode.cs" />
@@ -54,6 +56,7 @@
     <Compile Include="Microsoft.Win32.SafeHandles\SafeHandleZeroOrMinusOneIsInvalid.cs" />
     <Compile Include="Microsoft.Win32.SafeHandles\SafeHandleMinusOneIsInvalid.cs" />
     <Compile Include="Microsoft.Win32.SafeHandles\SafeFileHandle.cs" />
+    <Compile Include="Microsoft.Win32.SafeHandles\SafeRegistryHandle.cs" />
     <Compile Include="Microsoft.Win32.SafeHandles\SafeWaitHandle.cs" />
     <Compile Include="Mono.Globalization.Unicode\CodePointIndexer.cs" />
     <Compile Include="Mono.Globalization.Unicode\MSCompatUnicodeTable.cs" />
@@ -195,6 +198,8 @@
     <Compile Include="System\Guid.cs" />
     <Compile Include="System\IAppDomainSetup.cs" />
     <Compile Include="System\IAsyncResult.cs" />
+    <Compile Include="System\IObservable.cs" />
+    <Compile Include="System\IObserver.cs" />
     <Compile Include="System\ICloneable.cs" />
     <Compile Include="System\IComparable.cs" />
     <Compile Include="System\IEquatable.cs" />
@@ -205,6 +210,7 @@
     <Compile Include="System\IFormatProvider.cs" />
     <Compile Include="System\IFormattable.cs" />
     <Compile Include="System\IndexOutOfRangeException.cs" />
+    <Compile Include="System\InsufficientExecutionStackException.cs" />
     <Compile Include="System\InsufficientMemoryException.cs" />
     <Compile Include="System\Int16.cs" />
     <Compile Include="System\Int32.cs" />
@@ -217,7 +223,6 @@
     <Compile Include="System\IServiceProvider.cs" />
     <Compile Include="System\KnownTerminals.cs" />
     <Compile Include="System\Lazy.cs" />
-    <Compile Include="System\LazyExecutionMode.cs" />
     <Compile Include="System\LoaderOptimization.cs" />
     <Compile Include="System\LoaderOptimizationAttribute.cs" />
     <Compile Include="System\LocalDataStoreSlot.cs" />
@@ -289,6 +294,8 @@
     <Compile Include="System\TimeoutException.cs" />
     <Compile Include="..\..\build\common\MonoTODOAttribute.cs" />
     <Compile Include="System\Type.cs" />
+    <Compile Include="System\TypeSpec.cs" />
+    <Compile Include="System\TypeAccessException.cs" />
     <Compile Include="System\TypeCode.cs" />
     <Compile Include="System\TypedReference.cs" />
     <Compile Include="System\TypeInitializationException.cs" />
@@ -337,6 +344,7 @@
     <Compile Include="System.Collections\ReadOnlyCollectionBase.cs" />
     <Compile Include="System.Collections\SortedList.cs" />
     <Compile Include="System.Collections\Stack.cs" />
+    <Compile Include="System.Collections\StructuralComparisons.cs" />
     <Compile Include="System.Configuration.Assemblies\AssemblyHash.cs" />
     <Compile Include="System.Configuration.Assemblies\AssemblyHashAlgorithm.cs" />
     <Compile Include="System.Configuration.Assemblies\AssemblyVersionCompatibility.cs" />
@@ -358,6 +366,16 @@
     <Compile Include="System.Diagnostics\StackFrame.cs" />
     <Compile Include="System.Diagnostics\StackTrace.cs" />
     <Compile Include="System.Diagnostics.CodeAnalysis\SuppressMessageAttribute.cs" />
+    <Compile Include="System.Diagnostics.Contracts\Contract.cs" />
+    <Compile Include="System.Diagnostics.Contracts\ContractClassAttribute.cs" />
+    <Compile Include="System.Diagnostics.Contracts\ContractClassForAttribute.cs" />
+    <Compile Include="System.Diagnostics.Contracts\ContractFailedEventArgs.cs" />
+    <Compile Include="System.Diagnostics.Contracts\ContractFailureKind.cs" />
+    <Compile Include="System.Diagnostics.Contracts\ContractInvariantMethodAttribute.cs" />
+    <Compile Include="System.Diagnostics.Contracts\ContractPublicPropertyNameAttribute.cs" />
+    <Compile Include="System.Diagnostics.Contracts\ContractReferenceAssemblyAttribute.cs" />
+    <Compile Include="System.Diagnostics.Contracts\ContractRuntimeIgnoredAttribute.cs" />
+    <Compile Include="System.Diagnostics.Contracts\ContractVerificationAttribute.cs" />
     <Compile Include="System.Diagnostics.Contracts\PureAttribute.cs" />
     <Compile Include="System.Diagnostics.SymbolStore\ISymbolBinder.cs" />
     <Compile Include="System.Diagnostics.SymbolStore\ISymbolBinder1.cs" />
@@ -384,6 +402,7 @@
     <Compile Include="System.Globalization\CompareInfo.cs" />
     <Compile Include="System.Globalization\CompareOptions.cs" />
     <Compile Include="System.Globalization\CultureInfo.cs" />
+    <Compile Include="System.Globalization\CultureNotFoundException.cs" />
     <Compile Include="System.Globalization\CultureTypes.cs" />
     <Compile Include="System.Globalization\DateTimeFormatInfo.cs" />
     <Compile Include="System.Globalization\DateTimeStyles.cs" />
@@ -410,6 +429,7 @@
     <Compile Include="System.Globalization\TextElementEnumerator.cs" />
     <Compile Include="System.Globalization\TextInfo.cs" />
     <Compile Include="System.Globalization\ThaiBuddhistCalendar.cs" />
+    <Compile Include="System.Globalization\TimeSpanStyles.cs" />
     <Compile Include="System.Globalization\UmAlQuraCalendar.cs" />
     <Compile Include="System.Globalization\UnicodeCategory.cs" />
     <Compile Include="System.IO\BinaryReader.cs" />
@@ -524,11 +544,13 @@
     <Compile Include="System.Reflection\Missing.cs" />
     <Compile Include="System.Reflection\Module.cs" />
     <Compile Include="System.Reflection\ModuleResolveEventHandler.cs" />
+    <Compile Include="System.Reflection\MonoAssembly.cs" />
     <Compile Include="System.Reflection\MonoGenericClass.cs" />
     <Compile Include="System.Reflection\MonoGenericMethod.cs" />
     <Compile Include="System.Reflection\MonoEvent.cs" />
     <Compile Include="System.Reflection\MonoField.cs" />
     <Compile Include="System.Reflection\MonoMethod.cs" />
+    <Compile Include="System.Reflection\MonoModule.cs" />
     <Compile Include="System.Reflection\MonoProperty.cs" />
     <Compile Include="System.Reflection\ObfuscateAssemblyAttribute.cs" />
     <Compile Include="System.Reflection\ObfuscationAttribute.cs" />
@@ -608,10 +630,13 @@
     <Compile Include="System.Resources\SatelliteContractVersionAttribute.cs" />
     <Compile Include="System.Resources\UltimateResourceFallbackLocation.cs" />
     <Compile Include="System.Resources\Win32Resources.cs" />
+    <Compile Include="System.Runtime\AssemblyTargetedPatchBandAttribute.cs" />
     <Compile Include="System.Runtime\GCLatencyMode.cs" />
     <Compile Include="System.Runtime\GCSettings.cs" />
     <Compile Include="System.Runtime\MemoryFailPoint.cs" />
+    <Compile Include="System.Runtime\TargetedPatchingOptOutAttribute.cs" />
     <Compile Include="System.Runtime.CompilerServices\AccessedThroughPropertyAttribute.cs" />
+    <Compile Include="System.Runtime.CompilerServices\ReferenceAssemblyAttribute.cs" />
     <Compile Include="System.Runtime.CompilerServices\CallConvCdecl.cs" />
     <Compile Include="System.Runtime.CompilerServices\CallConvFastcall.cs" />
     <Compile Include="System.Runtime.CompilerServices\CallConvThiscall.cs" />
@@ -1120,6 +1145,7 @@
     <Compile Include="System.Runtime.Versioning\ResourceConsumptionAttribute.cs" />
     <Compile Include="System.Runtime.Versioning\ResourceExposureAttribute.cs" />
     <Compile Include="System.Runtime.Versioning\ResourceScope.cs" />
+    <Compile Include="System.Runtime.Versioning\TargetFrameworkAttribute.cs" />
     <Compile Include="System.Runtime.Versioning\VersioningHelper.cs" />
     <Compile Include="System.Security\AllowPartiallyTrustedCallersAttribute.cs" />
     <Compile Include="System.Security\CodeAccessPermission.cs" />
@@ -1144,6 +1170,8 @@
     <Compile Include="System.Security\SecurityException.cs" />
     <Compile Include="System.Security\SecurityManager.cs" />
     <Compile Include="System.Security\SecurityManager_2_1.cs" />
+    <Compile Include="System.Security\SecurityRuleSet.cs" />
+    <Compile Include="System.Security\SecurityRulesAttribute.cs" />
     <Compile Include="System.Security\SecuritySafeCriticalAttribute.cs" />
     <Compile Include="System.Security\SecurityState.cs" />
     <Compile Include="System.Security\SecurityTransparentAttribute.cs" />
@@ -1218,6 +1246,7 @@
     <Compile Include="System.Security.AccessControl\ResourceType.cs" />
     <Compile Include="System.Security.AccessControl\SecurityInfos.cs" />
     <Compile Include="System.Security.AccessControl\SystemAcl.cs" />
+    <Compile Include="..\System.Core\System.Security.Cryptography\Aes.cs" />
     <Compile Include="System.Security.Cryptography\AsymmetricAlgorithm.cs" />
     <Compile Include="System.Security.Cryptography\AsymmetricKeyExchangeDeformatter.cs" />
     <Compile Include="System.Security.Cryptography\AsymmetricKeyExchangeFormatter.cs" />
@@ -1466,6 +1495,7 @@
     <Compile Include="System.Threading\HostExecutionContextManager.cs" />
     <Compile Include="System.Threading\Interlocked.cs" />
     <Compile Include="System.Threading\IOCompletionCallback.cs" />
+    <Compile Include="System.Threading\LazyThreadSafetyMode.cs" />
     <Compile Include="System.Threading\LockCookie.cs" />
     <Compile Include="System.Threading\LockQueue.cs" />
     <Compile Include="System.Threading\LockRecursionException.cs" />
@@ -1479,6 +1509,7 @@
     <Compile Include="System.Threading\ReaderWriterLock.cs" />
     <Compile Include="System.Threading\RegisteredWaitHandle.cs" />
     <Compile Include="System.Threading\SendOrPostCallback.cs" />
+    <Compile Include="..\System\System.Threading\SemaphoreFullException.cs" />
     <Compile Include="System.Threading\SynchronizationContext.cs" />
     <Compile Include="System.Threading\SynchronizationLockException.cs" />
     <Compile Include="System.Threading\Thread.cs" />
@@ -1497,6 +1528,7 @@
     <Compile Include="System.Threading\WaitHandle.cs" />
     <Compile Include="System.Threading\WaitHandleCannotBeOpenedException.cs" />
     <Compile Include="System.Threading\WaitOrTimerCallback.cs" />
+    <Compile Include="System.Collections.Generic\CollectionDebuggerView.cs" />
     <Compile Include="System.Collections.Generic\Dictionary.cs" />
     <Compile Include="System.Collections.Generic\ICollection.cs" />
     <Compile Include="System.Collections.Generic\IEnumerable.cs" />
@@ -1537,32 +1569,32 @@
     <Compile Include="System.Collections.Concurrent\ConcurrentDictionary.cs" />
     <Compile Include="System.Collections.Concurrent\Partitioner.cs" />
     <Compile Include="System.Collections.Concurrent\ConcurrentQueue.cs" />
-    <Compile Include="System.Collections.Concurrent\ConcurrentBag.cs" />
     <Compile Include="System.Collections.Concurrent\ConcurrentSkipList.cs" />
-    <Compile Include="System.Collections.Concurrent\Partitionners\ListPartitioner.cs" />
-    <Compile Include="System.Collections.Concurrent\Partitionners\EnumerablePartitioner.cs" />
+    <Compile Include="System.Collections.Concurrent\Partitioners\ListPartitioner.cs" />
+    <Compile Include="System.Collections.Concurrent\Partitioners\EnumerablePartitioner.cs" />
     <Compile Include="System.Collections.Concurrent\IProducerConsumerCollection.cs" />
     <Compile Include="System.Collections.Concurrent\ConcurrentStack.cs" />
     <Compile Include="System.Threading\LazyInitializer.cs" />
-    <Compile Include="System.Threading\ParallelOptions.cs" />
-    <Compile Include="System.Threading\Parallel.cs" />
     <Compile Include="System.Threading\CountdownEvent.cs" />
     <Compile Include="System.Threading\CancellationTokenSource.cs" />
     <Compile Include="System.Threading\Snzi.cs" />
     <Compile Include="System.Threading\CancellationToken.cs" />
-    <Compile Include="System.Threading\ICancelableOperation.cs" />
-    <Compile Include="System.Threading\ParallelLoopResult.cs" />
     <Compile Include="System.Threading\CSnzi.cs" />
     <Compile Include="System.Threading\SpinWait.cs" />
     <Compile Include="System.Threading\SemaphoreSlim.cs" />
     <Compile Include="System.Threading\CancellationTokenRegistration.cs" />
-    <Compile Include="System.Threading\ParallelLoopState.cs" />
     <Compile Include="System.Threading\SpinLock.cs" />
     <Compile Include="System.Threading\AtomicBoolean.cs" />
     <Compile Include="System.Threading\ManualResetEventSlim.cs" />
     <Compile Include="System.Threading\ThreadLocal.cs" />
     <Compile Include="System.Threading\Watch.cs" />
+    <Compile Include="System.Threading.Tasks\ParallelOptions.cs" />
+    <Compile Include="System.Threading.Tasks\Parallel.cs" />
+    <Compile Include="System.Threading.Tasks\ParallelLoopResult.cs" />
+    <Compile Include="System.Threading.Tasks\ParallelLoopState.cs" />
     <Compile Include="System\AggregateException.cs" />
+    <Compile Include="System.Threading.Tasks\SimpleConcurrentBag.cs" />
+    <Compile Include="System.Threading.Tasks\UnobservedTaskExceptionEventArgs.cs" />
     <Compile Include="Microsoft.Win32\Win32RegistryApi.Mosa.cs" />
     <Compile Include="Mono.Globalization.Unicode\MSCompatUnicodeTable.Mosa.cs" />
     <Compile Include="Mono.Globalization.Unicode\Normalization.Mosa.cs" />
@@ -1628,7 +1660,6 @@
     <Compile Include="System.Reflection.Emit\DynamicMethod.Mosa.cs" />
     <Compile Include="System.Reflection.Emit\EnumBuilder.Mosa.cs" />
     <Compile Include="System.Reflection.Emit\GenericTypeParameterBuilder.Mosa.cs" />
-    <Compile Include="System.Reflection.Emit\MethodBuilder.Mosa.cs" />
     <Compile Include="System.Reflection.Emit\ModuleBuilder.Mosa.cs" />
     <Compile Include="System.Reflection.Emit\SignatureHelper.Mosa.cs" />
     <Compile Include="System.Reflection.Emit\TypeBuilder.Mosa.cs" />

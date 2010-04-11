@@ -16,7 +16,7 @@ using System.Security.Permissions;
 using System.Security.Policy;
 using System.Configuration.Assemblies;
 using System.Text;
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Activation;
 #endif

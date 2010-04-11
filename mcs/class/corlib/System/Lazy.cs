@@ -3,6 +3,7 @@
 //
 // Authors:
 //  Zoltan Varga (vargaz@gmail.com)
+//  Marek Safar (marek.safar@gmail.com)
 //
 // Copyright (C) 2009 Novell
 //
@@ -33,103 +34,176 @@ using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Threading;
+using System.Diagnostics;
 
 namespace System
 {
 	[SerializableAttribute]
 	[ComVisibleAttribute(false)]
-	[HostProtectionAttribute(SecurityAction.LinkDemand, Synchronization = true, 
-							 ExternalThreading = true)]
-	public class Lazy<T> : ISerializable
+	[HostProtectionAttribute(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
+	public class Lazy<T> 
 	{
 		T value;
 		bool inited;
-		LazyExecutionMode mode;
+		LazyThreadSafetyMode mode;
 		Func<T> factory;
 		object monitor;
+		Exception exception;
 
-		public Lazy () : this (LazyExecutionMode.NotThreadSafe) {
+		public Lazy ()
+			: this (LazyThreadSafetyMode.ExecutionAndPublication)
+		{
 		}
 
-		public Lazy (Func<T> valueFactory) : this (valueFactory, LazyExecutionMode.NotThreadSafe) {
+		public Lazy (Func<T> valueFactory)
+			: this (valueFactory, LazyThreadSafetyMode.ExecutionAndPublication)
+		{
 		}
 
-		public Lazy (LazyExecutionMode mode) {
-			this.mode = mode;
-			if (mode != LazyExecutionMode.NotThreadSafe)
-				monitor = new Object ();
+		public Lazy (bool isThreadSafe)
+			: this (() => Activator.CreateInstance<T> (), isThreadSafe ? LazyThreadSafetyMode.ExecutionAndPublication : LazyThreadSafetyMode.None)
+		{
+		}
+		
+		public Lazy (Func<T> valueFactory, bool isThreadSafe)
+			: this (valueFactory, isThreadSafe ? LazyThreadSafetyMode.ExecutionAndPublication : LazyThreadSafetyMode.None)
+		{
 		}
 
-		public Lazy (Func<T> valueFactory, LazyExecutionMode mode) {
+		public Lazy (LazyThreadSafetyMode mode)
+			: this (() => Activator.CreateInstance<T> (), mode)
+		{
+		}
+
+		
+
+		public Lazy (Func<T> valueFactory, LazyThreadSafetyMode mode)
+		{
 			if (valueFactory == null)
 				throw new ArgumentNullException ("valueFactory");
 			this.factory = valueFactory;
+			if (mode != LazyThreadSafetyMode.None)
+				monitor = new object ();
 			this.mode = mode;
-			if (mode != LazyExecutionMode.NotThreadSafe)
-				monitor = new Object ();
 		}
 
-		[MonoTODO]
-		protected Lazy (SerializationInfo info, StreamingContext context) {
-			throw new NotImplementedException ();
-		}
-
-		[MonoTODO]
-		public virtual void GetObjectData (SerializationInfo info, StreamingContext context) {
-			throw new NotImplementedException ();
-		}
-
-		public override string ToString () {
-			if (!IsValueCreated)
-				return "Value is not created";
-			return Value.ToString ();
-		}
-
-		[MonoTODO]
+		// Don't trigger expensive initialization
+		[DebuggerBrowsable (DebuggerBrowsableState.Never)]
 		public T Value {
 			get {
 				if (inited)
 					return value;
+				if (exception != null)
+					throw exception;
 
 				return InitValue ();
 			}
 		}
 
 		T InitValue () {
-			if (mode == LazyExecutionMode.NotThreadSafe) {
-				value = CreateValue ();
-				inited = true;
-			} else {
-				// We treat AllowMultipleThread... as EnsureSingleThread...
-				lock (monitor) {
-					if (inited)
-						return value;
-					T v = CreateValue ();
+			switch (mode) {
+			case LazyThreadSafetyMode.None: {
+				var init_factory = factory;
+				if (init_factory == null) 
+					throw exception = new InvalidOperationException ("The initialization function tries to access Value on this instance");
+				try {
+					factory = null;
+					T v = init_factory ();
 					value = v;
 					Thread.MemoryBarrier ();
 					inited = true;
+				} catch (Exception ex) {
+					exception = ex;
+					throw;
+				}
+				break;
+			} 
+			case LazyThreadSafetyMode.PublicationOnly: {
+				var init_factory = factory;
+				T v;
+
+				//exceptions are ignored
+				if (init_factory != null)
+					v = init_factory ();
+				else
+					v = default (T);
+
+				lock (monitor) {
+					if (inited)
+						return value;
+					value = v;
+					Thread.MemoryBarrier ();
+					inited = true;
+					factory = null;
+				}
+				break;
+			}
+			case LazyThreadSafetyMode.ExecutionAndPublication: {
+				lock (monitor) {
+					if (inited)
+						return value;
+
+					if (factory == null)
+						throw exception = new InvalidOperationException ("The initialization function tries to access Value on this instance");
+
+					var init_factory = factory;
+					try {
+						factory = null;
+						T v = init_factory ();
+						value = v;
+						Thread.MemoryBarrier ();
+						inited = true;
+					} catch (Exception ex) {
+						exception = ex;
+						throw;
+					}
+				}
+				break;
+			}
+			default:
+				throw new InvalidOperationException ("Invalid LazyThreadSafetyMode " + mode);
+			}
+
+			if (monitor == null) {
+				value = factory ();
+				inited = true;
+			} else {
+				lock (monitor) {
+					if (inited)
+						return value;
+
+					if (factory == null)
+						throw new InvalidOperationException ("The initialization function tries to access Value on this instance");
+
+					var init_factory = factory;
+					try {
+						factory = null;
+						T v = init_factory ();
+						value = v;
+						Thread.MemoryBarrier ();
+						inited = true;
+					} catch {
+						factory = init_factory;
+						throw;
+					}
 				}
 			}
 
 			return value;
 		}
 
-		T CreateValue () {
-			if (factory == null) {
-				try {
-					return Activator.CreateInstance<T> ();
-				} catch (MissingMethodException) {
-					throw new MissingMemberException ("The lazily-initialized type does not have a public, parameterless constructor.");
-				}
-			} else {
-				return factory ();
-			}
-		}			
-
 		public bool IsValueCreated {
 			get {
 				return inited;
 			}
+		}
+
+		public override string ToString ()
+		{
+			if (inited)
+				return value.ToString ();
+			else
+				return "Value is not created";
 		}
 	}		
 }

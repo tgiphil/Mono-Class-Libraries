@@ -8,7 +8,7 @@
  *
  */
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 
 using System.Collections;
 using System.Globalization;
@@ -53,5 +53,3 @@ namespace System.Security
 
 	}
 }
-
-#endif

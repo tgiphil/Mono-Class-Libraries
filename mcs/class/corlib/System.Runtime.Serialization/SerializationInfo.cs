@@ -38,9 +38,7 @@ using System.Collections;
 
 namespace System.Runtime.Serialization
 {
-#if NET_2_0
 	[System.Runtime.InteropServices.ComVisibleAttribute (true)]
-#endif
 	public sealed class SerializationInfo
 	{
 		Hashtable serialized = new Hashtable ();
@@ -151,6 +149,11 @@ namespace System.Runtime.Serialization
 				return entry.Value;
 		}
 
+		internal bool HasKey (string name)
+		{
+			return serialized [name] != null;
+		}
+		
 		public void SetType (Type type)
 		{
 			if (type == null)

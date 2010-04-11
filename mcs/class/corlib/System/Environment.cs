@@ -42,18 +42,9 @@ using System.Runtime.InteropServices;
 
 namespace System {
 
-#if NET_2_0
 	[ComVisible (true)]
-#endif
-#if NET_2_0
 	public static partial class Environment {
-#else
-	public sealed partial class Environment {
 
-		private Environment ()
-		{
-		}
-#endif
 		/*
 		 * This is the version number of the corlib-runtime interface. When
 		 * making changes to this interface (by changing the layout
@@ -63,21 +54,16 @@ namespace System {
 		 * Changes which are already detected at runtime, like the addition
 		 * of icalls, do not require an increment.
 		 */
-		private const int mono_corlib_version = 82;
+#pragma warning disable 169
+		private const int mono_corlib_version = 90;
+#pragma warning restore 169
 
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public enum SpecialFolder
-		{	// TODO: Determine if these windoze style folder identifiers 
-			//       have unix/linux counterparts
-#if NET_2_0
+		{	
 			MyDocuments = 0x05,
-#endif
-#if NET_1_1
 			Desktop = 0x00,
 			MyComputer = 0x11,
-#endif
 			Programs = 0x02,
 			Personal = 0x05,
 			Favorites = 0x06,
@@ -98,6 +84,43 @@ namespace System {
 			ProgramFiles = 0x26,
 			MyPictures = 0x27,
 			CommonProgramFiles = 0x2b,
+#if NET_4_0 || MOONLIGHT
+			MyVideos = 0x0e,
+#endif
+#if NET_4_0
+			NetworkShortcuts = 0x13,
+			Fonts = 0x14,
+			CommonStartMenu = 0x16,
+			CommonPrograms = 0x17,
+			CommonStartup = 0x18,
+			CommonDesktopDirectory = 0x19,
+			PrinterShortcuts = 0x1b,
+			Windows = 0x24,
+			UserProfile = 0x28,
+			SystemX86 = 0x29,
+			ProgramFilesX86 = 0x2a,
+			CommonProgramFilesX86 = 0x2c,
+			CommonTemplates = 0x2d,
+			CommonDocuments = 0x2e,
+			CommonAdminTools = 0x2f,
+			AdminTools = 0x30,
+			CommonMusic = 0x35,
+			CommonPictures = 0x36,
+			CommonVideos = 0x37,
+			Resources = 0x38,
+			LocalizedResources = 0x39,
+			CommonOemLinks = 0x3a,
+			CDBurning = 0x3b,
+#endif
+		}
+
+#if NET_4_0
+		public
+#endif
+		enum SpecialFolderOption {
+			None = 0,
+			DoNotVerify = 0x4000,
+			Create = 0x8000
 		}
 
 		/// <summary>
@@ -324,7 +347,7 @@ namespace System {
 		/// <summary>
 		/// Return a set of all environment variables and their values
 		/// </summary>
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 		public static IDictionary GetEnvironmentVariables ()
 		{
 			StringBuilder sb = null;
@@ -366,6 +389,14 @@ namespace System {
 		/// folder specified by the "folder" parameter
 		/// </summary>
 		public static string GetFolderPath (SpecialFolder folder)
+		{
+			return GetFolderPath (folder, SpecialFolderOption.None);
+		}
+#if NET_4_0
+		[MonoTODO ("Figure out the folder path for all the new values in SpecialFolder. Use the 'option' argument.")]
+		public
+#endif
+		static string GetFolderPath(SpecialFolder folder, SpecialFolderOption option)
 		{
 			string dir = null;
 
@@ -445,11 +476,10 @@ namespace System {
 			}
 
 			switch (folder) {
-#if NET_1_1
 			// MyComputer is a virtual directory
 			case SpecialFolder.MyComputer:
 				return String.Empty;
-#endif
+
 			// personal == ~
 			case SpecialFolder.Personal:
 #if MONOTOUCH
@@ -463,9 +493,7 @@ namespace System {
 			//use FDO's DATA_HOME. This is *NOT* synced
 			case SpecialFolder.LocalApplicationData:
 				return data;
-#if NET_1_1
 			case SpecialFolder.Desktop:
-#endif
 			case SpecialFolder.DesktopDirectory:
 				return ReadXdgUserDir (config, home, "XDG_DESKTOP_DIR", "Desktop");
 
@@ -506,7 +534,7 @@ namespace System {
 			return GetLogicalDrivesInternal ();
 		}
 
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 
 		public static string GetEnvironmentVariable (string variable, EnvironmentVariableTarget target)
 		{
@@ -616,15 +644,35 @@ namespace System {
 			}
 		}
 
-		[MonoTODO ("Not implemented")]
+#endif
 		[SecurityPermission (SecurityAction.LinkDemand, UnmanagedCode=true)]
 		public static void FailFast (string message)
 		{
 			throw new NotImplementedException ();
 		}
+
+#if NET_4_0 || MOONLIGHT
+		[SecurityCritical]
+		public static void FailFast (string message, Exception exception)
+		{
+			throw new NotImplementedException ();
+		}
 #endif
-#if NET_2_0
+
+#if NET_4_0
+		public static bool Is64BitOperatingSystem {
+			get { return IntPtr.Size == 8; } // FIXME: is this good enough?
+		}
+
+		public static bool Is64BitProcess {
+			get { return Is64BitOperatingSystem; }
+		}
+
+		public static int SystemPageSize {
+			get { return GetPageSize (); }
+		}
 #endif
+
 		// private methods
 
 		internal static bool IsRunningOnWindows {
@@ -649,6 +697,13 @@ namespace System {
 #pragma warning restore 169
 #endif
 
+		static internal bool IsUnix {
+			get {
+				int platform = (int) Environment.Platform;
+
+				return (platform == 4 || platform == 128 || platform == 6);
+			}
+		}
 	}
 }
 

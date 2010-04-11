@@ -8,6 +8,7 @@
  *
  */
 
+using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -41,7 +42,7 @@ namespace System.Reflection
 		{
 			throw new System.NotImplementedException();
 		}
-		internal static MonoMethod get_base_definition (MonoMethod method)
+		internal static MonoMethod get_base_method (MonoMethod method, bool definition)
 		{
 			throw new System.NotImplementedException();
 		}

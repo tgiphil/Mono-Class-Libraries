@@ -40,12 +40,8 @@ namespace System {
 
 	[Serializable]
 	[StructLayout (LayoutKind.Sequential)]
-#if NET_2_0
 	[ComVisible (true)]
 	public struct Guid : IFormattable, IComparable, IComparable<Guid>, IEquatable<Guid> {
-#else
-	public struct Guid : IFormattable, IComparable {
-#endif
 #if MONOTOUCH
 		static Guid () {
 			if (MonoTouchAOTHelper.FalseFlag) {
@@ -365,11 +361,7 @@ namespace System {
 			return false;
 		}
 
-#if NET_2_0
 		public int CompareTo (Guid value)
-#else
-		internal int CompareTo (Guid value)
-#endif
 		{
 			if (_a != value._a) {
 				return Compare (_a, value._a);
@@ -407,12 +399,10 @@ namespace System {
 			return 0;
 		}
 
-#if NET_2_0
 		public bool Equals (Guid g)
 		{
 			return CompareTo (g) == 0;
 		}
-#endif
 
 		public override int GetHashCode ()
 		{

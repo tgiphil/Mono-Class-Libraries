@@ -31,7 +31,7 @@ using System.Runtime.CompilerServices;
 
 [assembly:TypeForwardedTo (typeof(TimeZoneInfo))]
 
-#elif NET_3_5 || (NET_2_1 && !INSIDE_CORLIB)
+#elif NET_3_5 || (MONOTOUCH && !INSIDE_CORLIB) || (MOONLIGHT && INSIDE_CORLIB)
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -45,9 +45,11 @@ using Mono;
 
 namespace System
 {
-#if NET_4_0 || BOOTSRAP_NET_4_0
+#if NET_4_0 || BOOTSTRAP_NET_4_0
 	[TypeForwardedFrom (Consts.AssemblySystemCore_3_5)]
-#endif	
+#elif MOONLIGHT
+	[TypeForwardedFrom (Consts.AssemblySystem_Core)]
+#endif
 	[SerializableAttribute]
 	public sealed partial class TimeZoneInfo : IEquatable<TimeZoneInfo>, ISerializable, IDeserializationCallback
 	{
@@ -358,7 +360,11 @@ namespace System
 			return hash_code;
 		}
 
+#if NET_4_0
+		void ISerializable.GetObjectData (SerializationInfo info, StreamingContext context)
+#else
 		public void GetObjectData (SerializationInfo info, StreamingContext context)
+#endif
 		{
 			throw new NotImplementedException ();
 		}
@@ -512,7 +518,11 @@ namespace System
 			return false;
 		}
 
+#if NET_4_0
+		void IDeserializationCallback.OnDeserialization (object sender)
+#else
 		public void OnDeserialization (object sender)
+#endif
 		{
 			throw new NotImplementedException ();
 		}

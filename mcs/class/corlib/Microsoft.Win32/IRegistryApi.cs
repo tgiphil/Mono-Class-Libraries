@@ -46,6 +46,7 @@ namespace Microsoft.Win32 {
 		void Close (RegistryKey rkey);
 
 		object GetValue (RegistryKey rkey, string name, object default_value, RegistryValueOptions options);
+		RegistryValueKind GetValueKind (RegistryKey rkey, string name);
 		void SetValue (RegistryKey rkey, string name, object value);
 
 		int SubKeyCount (RegistryKey rkey);
@@ -57,9 +58,7 @@ namespace Microsoft.Win32 {
 		string [] GetValueNames (RegistryKey rkey);
 		string ToString (RegistryKey rkey);
 
-#if NET_2_0
 		void SetValue (RegistryKey rkey, string name, object value, RegistryValueKind valueKind);
-#endif
 	}
 }
 

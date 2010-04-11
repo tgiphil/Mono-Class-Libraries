@@ -16,8 +16,6 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-
 namespace System.Reflection
 {
 	 partial class MonoGenericClass
@@ -26,8 +24,10 @@ namespace System.Reflection
 		{
 			throw new System.NotImplementedException();
 		}
+		internal static void register_with_runtime (Type type)
+		{
+			throw new System.NotImplementedException();
+		}
 
 	}
 }
-
-#endif

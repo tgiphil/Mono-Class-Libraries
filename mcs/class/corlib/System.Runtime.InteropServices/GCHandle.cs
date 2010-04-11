@@ -36,9 +36,7 @@ using System.Runtime.InteropServices;
 namespace System.Runtime.InteropServices
 {
 
-#if NET_2_0
 	[ComVisible(true)]
-#endif
 	[MonoTODO("Struct should be [StructLayout(LayoutKind.Sequential)] but will need to be reordered for that.")]
 	public partial struct GCHandle 
 	{
@@ -128,7 +126,6 @@ namespace System.Runtime.InteropServices
 			return new GCHandle (value);
 		}
 
-#if NET_2_0
 		public static bool operator ==(GCHandle a, GCHandle b)
 		{
 			return a.Equals(b);
@@ -161,7 +158,6 @@ namespace System.Runtime.InteropServices
 		{
 			return (IntPtr)value;
 		}
-#endif
 	} 
 }
 

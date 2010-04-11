@@ -39,6 +39,10 @@ namespace System.Threading
 		{
 			throw new System.NotImplementedException();
 		}
+		static void pool_queue (AsyncResult ares)
+		{
+			throw new System.NotImplementedException();
+		}
 
 	}
 }

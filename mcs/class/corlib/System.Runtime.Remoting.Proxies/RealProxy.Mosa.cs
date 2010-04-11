@@ -16,10 +16,7 @@ using System.Runtime.Remoting.Activation;
 using System.Runtime.Remoting.Contexts;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-
-#if NET_2_0
 using System.Runtime.InteropServices;
-#endif
 
 namespace System.Runtime.Remoting.Proxies
 {

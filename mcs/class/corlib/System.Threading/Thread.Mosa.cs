@@ -20,16 +20,33 @@ using System.IO;
 using System.Collections;
 using System.Reflection;
 using System.Security;
-
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
-#endif
 
 namespace System.Threading
 {
+	 partial class InternalThread
+	{
+		private void Thread_free_internal(IntPtr handle)
+		{
+			throw new System.NotImplementedException();
+		}
+
+	}
 	public partial class Thread
 	{
-		private static Thread CurrentThread_internal()
+		private void ConstructInternalThread ()
+		{
+			throw new System.NotImplementedException();
+		}
+		private static byte[] ByteArrayToRootDomain (byte[] arr)
+		{
+			throw new System.NotImplementedException();
+		}
+		private static byte[] ByteArrayToCurrentDomain (byte[] arr)
+		{
+			throw new System.NotImplementedException();
+		}
+		private static InternalThread CurrentInternalThread_internal()
 		{
 			throw new System.NotImplementedException();
 		}
@@ -53,15 +70,7 @@ namespace System.Threading
 		{
 			throw new System.NotImplementedException();
 		}
-		private void Thread_init ()
-		{
-			throw new System.NotImplementedException();
-		}
-		private CultureInfo GetCachedCurrentCulture ()
-		{
-			throw new System.NotImplementedException();
-		}
-		private byte[] GetSerializedCurrentCulture ()
+		private static CultureInfo GetCachedCurrentCulture (InternalThread thread)
 		{
 			throw new System.NotImplementedException();
 		}
@@ -69,15 +78,7 @@ namespace System.Threading
 		{
 			throw new System.NotImplementedException();
 		}
-		private void SetSerializedCurrentCulture (byte[] culture)
-		{
-			throw new System.NotImplementedException();
-		}
-		private CultureInfo GetCachedCurrentUICulture ()
-		{
-			throw new System.NotImplementedException();
-		}
-		private byte[] GetSerializedCurrentUICulture ()
+		private static CultureInfo GetCachedCurrentUICulture (InternalThread thread)
 		{
 			throw new System.NotImplementedException();
 		}
@@ -85,19 +86,15 @@ namespace System.Threading
 		{
 			throw new System.NotImplementedException();
 		}
-		private void SetSerializedCurrentUICulture (byte[] culture)
+		private static string GetName_internal (InternalThread thread)
 		{
 			throw new System.NotImplementedException();
 		}
-		private string GetName_internal ()
+		private static void SetName_internal (InternalThread thread, String name)
 		{
 			throw new System.NotImplementedException();
 		}
-		private void SetName_internal (String name)
-		{
-			throw new System.NotImplementedException();
-		}
-		private void Abort_internal (object stateInfo)
+		private static void Abort_internal (InternalThread thread, object stateInfo)
 		{
 			throw new System.NotImplementedException();
 		}
@@ -105,11 +102,11 @@ namespace System.Threading
 		{
 			throw new System.NotImplementedException();
 		}
-		private void Interrupt_internal ()
+		private static void Interrupt_internal (InternalThread thread)
 		{
 			throw new System.NotImplementedException();
 		}
-		private bool Join_internal(int ms, IntPtr handle)
+		private static bool Join_internal(InternalThread thread, int ms, IntPtr handle)
 		{
 			throw new System.NotImplementedException();
 		}
@@ -125,23 +122,19 @@ namespace System.Threading
 		{
 			throw new System.NotImplementedException();
 		}
-		private void Suspend_internal()
+		private static void Suspend_internal(InternalThread thread)
 		{
 			throw new System.NotImplementedException();
 		}
-		private void Thread_free_internal(IntPtr handle)
+		private static void SetState (InternalThread thread, ThreadState set)
 		{
 			throw new System.NotImplementedException();
 		}
-		private void SetState (ThreadState set)
+		private static void ClrState (InternalThread thread, ThreadState clr)
 		{
 			throw new System.NotImplementedException();
 		}
-		private void ClrState (ThreadState clr)
-		{
-			throw new System.NotImplementedException();
-		}
-		private ThreadState GetState ()
+		private static ThreadState GetState (InternalThread thread)
 		{
 			throw new System.NotImplementedException();
 		}

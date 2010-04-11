@@ -11,7 +11,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 using System.Security.AccessControl;
 using System.IO;
 #endif

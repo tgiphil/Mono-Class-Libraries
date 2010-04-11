@@ -34,7 +34,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 using System.Security.AccessControl;
 using System.IO;
 #endif
@@ -44,7 +44,7 @@ namespace System.Threading
  	internal sealed partial class NativeEventCalls
 	{
 
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 #endif
 	}
 }

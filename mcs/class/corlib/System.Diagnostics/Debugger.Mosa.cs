@@ -11,9 +11,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-#if NET_2_0
 using System.Runtime.InteropServices;
-#endif
 
 namespace System.Diagnostics
 {

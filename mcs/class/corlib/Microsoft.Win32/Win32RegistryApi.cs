@@ -76,6 +76,19 @@ namespace Microsoft.Win32
 			return key.Handle != null;
 		}
 
+		public RegistryValueKind GetValueKind (RegistryKey rkey, string name)
+		{
+			RegistryValueKind type = 0;
+			int size = 0;
+			IntPtr handle = GetHandle (rkey);
+			int result = RegQueryValueEx (handle, name, IntPtr.Zero, ref type, IntPtr.Zero, ref size);
+
+			if (result == Win32ResultCode.FileNotFound || result == Win32ResultCode.MarkedForDeletion) 
+				return RegistryValueKind.Unknown;
+
+			return type;
+		}
+		
 		/// <summary>
 		/// Acctually read a registry value. Requires knowledge of the
 		/// value's type and size.
@@ -135,7 +148,6 @@ namespace Microsoft.Win32
 			return obj;
 		}
 
-#if NET_2_0
 		//
 		// This version has to do extra checking, make sure that the requested
 		// valueKind matches the type of the value being stored
@@ -183,7 +195,6 @@ namespace Microsoft.Win32
 				GenerateException (result);
 			}
 		}
-#endif
 	
 		public void SetValue (RegistryKey rkey, string name, object value)
 		{
@@ -472,13 +483,7 @@ namespace Microsoft.Win32
 
 		public string ToString (RegistryKey rkey)
 		{
-#if NET_2_0
 			return rkey.Name;
-#else			
-			IntPtr handle = GetHandle (rkey);
-			
-			return String.Format ("{0} [0x{1:X}]", rkey.Name, handle.ToInt32 ());
-#endif
 		}
 
 		/// <summary>

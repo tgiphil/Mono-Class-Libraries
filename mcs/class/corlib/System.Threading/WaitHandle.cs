@@ -33,18 +33,13 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Contexts;
 using System.Security.Permissions;
-
-#if NET_2_0
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 using System.Runtime.ConstrainedExecution;
-#endif
 
 namespace System.Threading
 {
-#if NET_2_0
 	[ComVisible (true)]
-#endif
 	public abstract partial class WaitHandle : MarshalByRefObject, IDisposable
 	{
 		
@@ -56,6 +51,14 @@ namespace System.Threading
 			int length = handles.Length;
 			if (length > 64)
 				throw new NotSupportedException ("Too many handles");
+
+			if (handles.Length == 0) {
+				// MS throws different exceptions from the different methods.
+				if (waitAll)
+					throw new ArgumentNullException ("waitHandles");
+				else
+					throw new ArgumentException ();
+			}
 
 #if false
 			//
@@ -72,13 +75,9 @@ namespace System.Threading
 				if (w == null)
 					throw new ArgumentNullException ("waitHandles", "null handle");
 
-#if NET_2_0
 				if (w.safe_wait_handle == null)
 					throw new ArgumentException ("null element found", "waitHandle");
-#else
-				if (w.os_handle == InvalidHandle)
-					throw new ArgumentException ("null element found", "waitHandle");
-#endif
+
 			}
 		}
 #if false
@@ -142,18 +141,14 @@ namespace System.Threading
 		}
 
 		// LAMESPEC: Doesn't specify how to signal failures
-#if NET_2_0
 		[ReliabilityContract (Consistency.WillNotCorruptState, Cer.MayFail)]
-#endif
 		public static int WaitAny(WaitHandle[] waitHandles)
 		{
 			CheckArray (waitHandles, false);
 			return(WaitAny_internal(waitHandles, Timeout.Infinite, false));
 		}
 
-#if NET_2_0
 		[ReliabilityContract (Consistency.WillNotCorruptState, Cer.MayFail)]
-#endif
 		public static int WaitAny(WaitHandle[] waitHandles,
 					  int millisecondsTimeout,
 					  bool exitContext)
@@ -172,7 +167,6 @@ namespace System.Threading
 			}
 		}
 
-#if NET_2_0
 		[ReliabilityContract (Consistency.WillNotCorruptState, Cer.MayFail)]
 		public static int WaitAny(WaitHandle[] waitHandles, TimeSpan timeout)
 		{
@@ -184,10 +178,8 @@ namespace System.Threading
 		{
 			return WaitAny (waitHandles, millisecondsTimeout, false);
 		}
-#endif
-#if NET_2_0
+
 		[ReliabilityContract (Consistency.WillNotCorruptState, Cer.MayFail)]
-#endif
 		public static int WaitAny(WaitHandle[] waitHandles,
 					  TimeSpan timeout, bool exitContext)
 		{
@@ -206,12 +198,8 @@ namespace System.Threading
 			}
 		}
 
-#if NET_2_0
-		protected
-#else
-		public
-#endif
-		WaitHandle() {
+		protected WaitHandle()
+		{
 			// FIXME
 		}
 
@@ -220,9 +208,15 @@ namespace System.Threading
 			GC.SuppressFinalize (this);
 		}
 
+#if NET_4_0
+		public void Dispose ()
+		{
+			Close ();
+		}
+#endif
+
 		public const int WaitTimeout = 258;
 
-#if NET_2_0
 		//
 		// In 2.0 we use SafeWaitHandles instead of IntPtrs
 		//
@@ -394,78 +388,6 @@ namespace System.Threading
 			return WaitAll (waitHandles, timeout, false);
 		}
 		
-#else
-		private IntPtr os_handle = InvalidHandle;
-		
-		public virtual IntPtr Handle {
-			get {
-				return(os_handle);
-			}
-				
-			[SecurityPermission (SecurityAction.LinkDemand, UnmanagedCode = true)]
-			[SecurityPermission (SecurityAction.InheritanceDemand, UnmanagedCode = true)]
-			set {
-				os_handle=value;
-			}
-		}
-
-		internal void CheckDisposed ()
-		{
-			if (disposed || os_handle == InvalidHandle)
-				throw new ObjectDisposedException (GetType ().FullName);
-		}
-		
-		protected virtual void Dispose(bool explicitDisposing) {
-			// Check to see if Dispose has already been called.
-			if (!disposed) {
-				disposed=true;
-				if (os_handle == InvalidHandle)
-					return;
-
-				lock (this) {
-					if (os_handle != InvalidHandle) {
-						NativeEventCalls.CloseEvent_internal (os_handle);
-						os_handle = InvalidHandle;
-					}
-				}
-			}
-		}
-		
-		public virtual bool WaitOne()
-		{
-			CheckDisposed ();
-			return(WaitOne_internal(os_handle, Timeout.Infinite, false));
-		}
-
-		public virtual bool WaitOne(int millisecondsTimeout, bool exitContext)
-		{
-			CheckDisposed ();
-			try {
-				if (exitContext) SynchronizationAttribute.ExitContext ();
-				return(WaitOne_internal(os_handle, millisecondsTimeout, exitContext));
-			}
-			finally {
-				if (exitContext) SynchronizationAttribute.EnterContext ();
-			}
-		}
-
-		public virtual bool WaitOne(TimeSpan timeout, bool exitContext)
-		{
-			CheckDisposed ();
-			long ms = (long) timeout.TotalMilliseconds;
-			if (ms < -1 || ms > Int32.MaxValue)
-				throw new ArgumentOutOfRangeException ("timeout");
-
-			try {
-				if (exitContext) SynchronizationAttribute.ExitContext ();
-				return (WaitOne_internal(os_handle, (int) ms, exitContext));
-			}
-			finally {
-				if (exitContext) SynchronizationAttribute.EnterContext ();
-			}
-		}
-#endif
-
 		protected static readonly IntPtr InvalidHandle = (IntPtr) (-1);
 		bool disposed = false;
 

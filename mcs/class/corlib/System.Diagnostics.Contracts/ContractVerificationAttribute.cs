@@ -1,14 +1,10 @@
 //
-// System.Reflection.Emit/MethodBuilder.cs
+// System.Diagnostics.Contracts.ContractInvariantMethodAttribute.cs
 //
-// Author:
-//   Paolo Molaro (lupus@ximian.com)
+// Authors:
+// 	Gonzalo Paniagua Javier (gonzalo@ximian.com)
 //
-// (C) 2001 Ximian, Inc.  http://www.ximian.com
-//
-
-//
-// Copyright (C) 2004 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -29,25 +25,23 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
+#if NET_2_1 || NET_4_0
 using System;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Globalization;
-using System.Security;
-using System.Security.Permissions;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Diagnostics.SymbolStore;
+namespace System.Diagnostics.Contracts {
+	[Conditional ("CONTRACTS_FULL")]
+	[AttributeUsageAttribute (AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property)]
+	public sealed class ContractVerificationAttribute : Attribute {
+		bool val;	
 
-namespace System.Reflection.Emit
-{
-	public partial class MethodBuilder
-	{
-		
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public override extern MethodInfo MakeGenericMethod (params Type [] typeArguments);
+		public ContractVerificationAttribute (bool value)
+		{
+			val = value;
+		}
 
+		public bool Value {
+			get { return val; }
+		}
 	}
 }
+#endif
+

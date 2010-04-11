@@ -15,14 +15,12 @@ using System.Security;
 using System.Reflection;
 using System.Threading;
 
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 using System.Runtime.InteropServices.ComTypes;
 #endif
-#endif
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 using Mono.Interop;
 #endif
 
@@ -42,12 +40,12 @@ namespace System.Runtime.InteropServices
 		{
 			throw new System.NotImplementedException();
 		}
-		static void copy_to_unmanaged (Array source, int startIndex,
+		internal static void copy_to_unmanaged (Array source, int startIndex,
 		IntPtr destination, int length)
 		{
 			throw new System.NotImplementedException();
 		}
-		static void copy_from_unmanaged (IntPtr source, int startIndex,
+		internal static void copy_from_unmanaged (IntPtr source, int startIndex,
 		Array destination, int length)
 		{
 			throw new System.NotImplementedException();

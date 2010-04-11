@@ -12,11 +12,10 @@ using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-#if NET_2_0
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.ConstrainedExecution;
-#endif
+using System.Reflection.Emit;
 
 namespace System
 {
@@ -70,12 +69,7 @@ namespace System
 		{
 			throw new System.NotImplementedException();
 		}
-#if INSIDE_CORLIB 
-		public 
-#else 
-		internal 
-#endif 
-		object Clone ()
+		public object Clone ()
 		{
 			throw new System.NotImplementedException();
 		}

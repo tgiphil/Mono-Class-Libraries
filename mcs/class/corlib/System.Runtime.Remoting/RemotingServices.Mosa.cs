@@ -25,11 +25,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Runtime.Remoting.Services;
 using System.Security.Permissions;
-
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.Serialization.Formatters;
-#endif
 
 namespace System.Runtime.Remoting
 {

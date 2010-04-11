@@ -13,12 +13,9 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Contexts;
 using System.Security.Permissions;
-
-#if NET_2_0
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 using System.Runtime.ConstrainedExecution;
-#endif
 
 namespace System.Threading
 {
@@ -40,6 +37,6 @@ namespace System.Threading
 		{
 			throw new System.NotImplementedException();
 		}
-		
+
 	}
 }

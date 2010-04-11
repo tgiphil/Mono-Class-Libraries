@@ -33,6 +33,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -103,8 +104,16 @@ namespace System.Reflection {
 
 		public override object GetValue (object obj)
 		{
-			if (!IsStatic && obj == null)
-				throw new TargetException ("Non-static field requires a target");
+			if (!IsStatic) {
+				if (obj == null)
+					throw new TargetException ("Non-static field requires a target");
+				if (!DeclaringType.IsAssignableFrom (obj.GetType ()))
+					throw new ArgumentException (string.Format (
+						"Field {0} defined on type {1} is not a field on the target object which is of type {2}.",
+					 	Name, DeclaringType, obj.GetType ()),
+					 	"obj");
+			}
+			
 			if (!IsLiteral)
 				CheckGeneric ();
 			return GetValueInternal (obj);
@@ -119,8 +128,15 @@ namespace System.Reflection {
 
 		public override void SetValue (object obj, object val, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
 		{
-			if (!IsStatic && obj == null)
-				throw new TargetException ("Non-static field requires a target");
+			if (!IsStatic) {
+				if (obj == null)
+					throw new TargetException ("Non-static field requires a target");
+				if (!DeclaringType.IsAssignableFrom (obj.GetType ()))
+					throw new ArgumentException (string.Format (
+						"Field {0} defined on type {1} is not a field on the target object which is of type {2}.",
+					 	Name, DeclaringType, obj.GetType ()),
+					 	"obj");
+			}
 			if (IsLiteral)
 				throw new FieldAccessException ("Cannot set a constant field");
 			if (binder == null)
@@ -154,16 +170,18 @@ namespace System.Reflection {
 				ToString(), MemberTypes.Field);
 		}
 
-#if NET_2_0
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public override extern object GetRawConstantValue ();
+
+#if NET_4_0
+		public override IList<CustomAttributeData> GetCustomAttributesData () {
+			return CustomAttributeData.GetCustomAttributes (this);
+		}
 #endif
 
 		void CheckGeneric () {
-#if NET_2_0
 			if (DeclaringType.ContainsGenericParameters)
 				throw new InvalidOperationException ("Late bound operations cannot be performed on fields with types for which Type.ContainsGenericParameters is true.");
-#endif
 	    }
 	}
 }

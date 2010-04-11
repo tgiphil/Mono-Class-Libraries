@@ -28,13 +28,12 @@
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace System.Reflection
 {
-#if NET_2_0
 	[ComVisible (true)]
 	[ComDefaultInterfaceAttribute (typeof (_ParameterInfo))]
-#endif
 	[Serializable]
 	[ClassInterfaceAttribute (ClassInterfaceType.None)]
 	public partial class ParameterInfo : ICustomAttributeProvider, _ParameterInfo {
@@ -58,6 +57,21 @@ namespace System.Reflection
 				this.NameImpl = pb.Name;
 				this.PositionImpl = pb.Position - 1;	// ParameterInfo.Position is zero-based
 				this.AttrsImpl = (ParameterAttributes) pb.Attributes;
+			} else {
+				this.NameImpl = null;
+				this.PositionImpl = position - 1;
+				this.AttrsImpl = ParameterAttributes.None;
+			}
+		}
+
+		/*FIXME this constructor looks very broken in the position parameter*/
+		internal ParameterInfo (ParameterInfo pinfo, Type type, MemberInfo member, int position) {
+			this.ClassImpl = type;
+			this.MemberImpl = member;
+			if (pinfo != null) {
+				this.NameImpl = pinfo.Name;
+				this.PositionImpl = pinfo.Position - 1;	// ParameterInfo.Position is zero-based
+				this.AttrsImpl = (ParameterAttributes) pinfo.Attributes;
 			} else {
 				this.NameImpl = null;
 				this.PositionImpl = position - 1;
@@ -127,51 +141,31 @@ namespace System.Reflection
 
 		public bool IsIn {
 			get {
-#if NET_2_0
 				return (Attributes & ParameterAttributes.In) != 0;
-#else
-				return (AttrsImpl & ParameterAttributes.In) != 0;
-#endif
 			}
 		}
 
 		public bool IsLcid {
 			get {
-#if NET_2_0
 				return (Attributes & ParameterAttributes.Lcid) != 0;
-#else
-				return (AttrsImpl & ParameterAttributes.Lcid) != 0;
-#endif
 			}
 		}
 
 		public bool IsOptional {
 			get {
-#if NET_2_0
 				return (Attributes & ParameterAttributes.Optional) != 0;
-#else
-				return (AttrsImpl & ParameterAttributes.Optional) != 0;
-#endif
 			}
 		}
 
 		public bool IsOut {
 			get {
-#if NET_2_0
 				return (Attributes & ParameterAttributes.Out) != 0;
-#else
-				return (AttrsImpl & ParameterAttributes.Out) != 0;
-#endif
 			}
 		}
 
 		public bool IsRetval {
 			get {
-#if NET_2_0
 				return (Attributes & ParameterAttributes.Retval) != 0;
-#else
-				return (AttrsImpl & ParameterAttributes.Retval) != 0;
-#endif
 			}
 		}
 
@@ -187,12 +181,7 @@ namespace System.Reflection
 			get {return PositionImpl;}
 		}
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-		public
-#else
-		internal
-#endif
-		int MetadataToken {
+		public int MetadataToken {
 			get {
 				if (MemberImpl is PropertyInfo) {
 					PropertyInfo prop = (PropertyInfo)MemberImpl;
@@ -206,7 +195,6 @@ namespace System.Reflection
 				}
 				throw new ArgumentException ("Can't produce MetadataToken for member of type " + MemberImpl.GetType ());
 			}
-
 		}
 
 		public virtual object[] GetCustomAttributes (bool inherit)
@@ -253,8 +241,6 @@ namespace System.Reflection
 			return attrs;
 		}			
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-
 		public virtual Type[] GetOptionalCustomModifiers () {
 			Type[] types = GetTypeModifiers (true);
 			if (types == null)
@@ -275,9 +261,13 @@ namespace System.Reflection
 				return DefaultValue;
 			}
 		}
+
+#if NET_4_0
+		public virtual IList<CustomAttributeData> GetCustomAttributesData () {
+			return CustomAttributeData.GetCustomAttributes (this);
+		}
 #endif
 
-#if NET_1_1
 		void _ParameterInfo.GetIDsOfNames ([In] ref Guid riid, IntPtr rgszNames, uint cNames, uint lcid, IntPtr rgDispId)
 		{
 			throw new NotImplementedException ();
@@ -298,6 +288,5 @@ namespace System.Reflection
 		{
 			throw new NotImplementedException ();
 		}
-#endif
 	}
 }

@@ -11,13 +11,11 @@
 using System.Runtime.CompilerServices;
 using System.Security.Permissions;
 
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
 using System.IO;
 using System.Runtime.InteropServices;
 #if !NET_2_1
 using System.Security.AccessControl;
-#endif
 #endif
 
 namespace System.Threading

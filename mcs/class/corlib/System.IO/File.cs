@@ -34,35 +34,36 @@
 
 using System;
 using System.Text;
-#if NET_2_0
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-#endif
-#if NET_2_0 && !NET_2_1
+
+#if NET_2_1
+using System.Security;
+#else
 using System.Security.AccessControl;
 #endif
 
 namespace System.IO
 {
-#if NET_2_0
 	[ComVisible (true)]
-#endif
-	public
-#if NET_2_0
-	static
-#else
-	sealed
-#endif
-	class File
+	public static class File
 	{
-
-#if !NET_2_0
-		private File () {}
+		static void ValidatePath (string path)
+		{
+			if (path == null)
+				throw new ArgumentNullException ("path");
+			if (path.Length == 0)
+				throw new ArgumentException ("path");
+#if MOONLIGHT && !DEBUG
+			// On Moonlight (SL4+) this is possible, with limitations, in "Elevated Trust"
+			throw new SecurityException ("we're not ready to enable this SL4 feature yet");
 #endif
+		}
 
-#if NET_2_0
 		public static void AppendAllText (string path, string contents)
 		{
+			ValidatePath (path);
+
 			using (TextWriter w = new StreamWriter (path, true)) {
 				w.Write (contents);
 			}
@@ -70,11 +71,12 @@ namespace System.IO
 
 		public static void AppendAllText (string path, string contents, Encoding encoding)
 		{
+			ValidatePath (path);
+
 			using (TextWriter w = new StreamWriter (path, true, encoding)) {
 				w.Write (contents);
 			}
 		}
-#endif
 
 		public static StreamWriter AppendText (string path)
 		{
@@ -136,15 +138,15 @@ namespace System.IO
 				FileShare.None, bufferSize);
 		}
 
-#if NET_2_0 && !NET_2_1
-		[MonoTODO ("options not implemented")]
+#if !NET_2_1
+		[MonoLimitation ("FileOptions are ignored")]
 		public static FileStream Create (string path, int bufferSize,
 						 FileOptions options)
 		{
 			return Create (path, bufferSize, options, null);
 		}
 		
-		[MonoTODO ("options and fileSecurity not implemented")]
+		[MonoLimitation ("FileOptions and FileSecurity are ignored")]
 		public static FileStream Create (string path, int bufferSize,
 						 FileOptions options,
 						 FileSecurity fileSecurity)
@@ -196,7 +198,7 @@ namespace System.IO
 			return MonoIO.ExistsFile (path, out error);
 		}
 
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 		public static FileSecurity GetAccessControl (string path)
 		{
 			throw new NotImplementedException ();
@@ -233,14 +235,10 @@ namespace System.IO
 			CheckPathExceptions (path);
 
 			if (!MonoIO.GetFileStat (path, out stat, out error)) {
-#if NET_2_0
 				if (error == MonoIOError.ERROR_PATH_NOT_FOUND || error == MonoIOError.ERROR_FILE_NOT_FOUND)
 					return DefaultLocalFileTime;
 				else
 					throw new IOException (path);
-#else
-				throw CreatePartOfPathNotFoundException (path);
-#endif
 			}
 			return DateTime.FromFileTime (stat.CreationTime);
 		}
@@ -257,14 +255,10 @@ namespace System.IO
 			CheckPathExceptions (path);
 
 			if (!MonoIO.GetFileStat (path, out stat, out error)) {
-#if NET_2_0
 				if (error == MonoIOError.ERROR_PATH_NOT_FOUND || error == MonoIOError.ERROR_FILE_NOT_FOUND)
 					return DefaultLocalFileTime;
 				else
 					throw new IOException (path);
-#else
-				throw CreatePartOfPathNotFoundException (path);
-#endif
 			}
 			return DateTime.FromFileTime (stat.LastAccessTime);
 		}
@@ -281,14 +275,10 @@ namespace System.IO
 			CheckPathExceptions (path);
 
 			if (!MonoIO.GetFileStat (path, out stat, out error)) {
-#if NET_2_0
 				if (error == MonoIOError.ERROR_PATH_NOT_FOUND || error == MonoIOError.ERROR_FILE_NOT_FOUND)
 					return DefaultLocalFileTime;
 				else
 					throw new IOException (path);
-#else
-				throw CreatePartOfPathNotFoundException (path);
-#endif
 			}
 			return DateTime.FromFileTime (stat.LastWriteTime);
 		}
@@ -326,11 +316,7 @@ namespace System.IO
 			string DirName;
 			DirName = Path.GetDirectoryName (destFileName);
 			if (DirName != String.Empty && !Directory.Exists (DirName))
-#if NET_2_0
 				throw new DirectoryNotFoundException (Locale.GetText ("Could not find a part of the path."));
-#else
-				throw new DirectoryNotFoundException (Locale.GetText ("Could not find a part of the path '{0}'.", destFileName));
-#endif
 
 			if (!MonoIO.MoveFile (sourceFileName, destFileName, out error)) {
 				if (error == MonoIOError.ERROR_ALREADY_EXISTS)
@@ -373,7 +359,6 @@ namespace System.IO
 			return new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
 		}
 
-#if NET_2_0
 		public static void Replace (string sourceFileName,
 					    string destinationFileName,
 					    string destinationBackupFileName)
@@ -434,8 +419,8 @@ namespace System.IO
 				throw MonoIO.GetException (error);
 			}
 		}
-#endif
-#if NET_2_0 && !NET_2_1
+
+#if !NET_2_1
 		public static void SetAccessControl (string path,
 						     FileSecurity fileSecurity)
 		{
@@ -514,17 +499,8 @@ namespace System.IO
 				throw new ArgumentException (Locale.GetText ("Path contains invalid chars"));
 		}
 
-#if !NET_2_0
-		private static IOException CreatePartOfPathNotFoundException (string path)
-		{
-			string msg = Locale.GetText ("Part of the path \"{0}\" could not be found.", path);
-			return new IOException (msg);
-		}
-#endif		
-
 		#endregion
 
-#if NET_2_0
 		//
 		// The documentation for this method is most likely wrong, it
 		// talks about doing a "binary read", but the remarks say
@@ -579,11 +555,17 @@ namespace System.IO
 
 		public static string ReadAllText (string path)
 		{
-			return ReadAllText (path, Encoding.UTF8Unmarked);
+			ValidatePath (path);
+
+			using (StreamReader sr = new StreamReader (path)) {
+				return sr.ReadToEnd ();
+			}
 		}
 
 		public static string ReadAllText (string path, Encoding encoding)
 		{
+			ValidatePath (path);
+
 			using (StreamReader sr = new StreamReader (path, encoding)) {
 				return sr.ReadToEnd ();
 			}
@@ -657,6 +639,85 @@ namespace System.IO
 			// we throw the same (instead of a NotImplementedException) because most code should already be
 			// handling this exception to work properly.
 			throw new NotSupportedException (Locale.GetText ("File encryption isn't supported on any file system."));
+		}
+
+#if MOONLIGHT || NET_4_0
+		public static IEnumerable<string> ReadLines (string path)
+		{
+			ValidatePath (path);
+
+			using (StreamReader reader = File.OpenText (path)) {
+				return ReadLines (reader);
+			}
+		}
+
+		public static IEnumerable<string> ReadLines (string path, Encoding encoding)
+		{
+			ValidatePath (path);
+
+			using (StreamReader reader = new StreamReader (path, encoding)) {
+				return ReadLines (reader);
+			}
+		}
+
+		// refactored in order to avoid compiler-generated names for Moonlight tools
+		static IEnumerable<string> ReadLines (StreamReader reader)
+		{
+			string s;
+			while ((s = reader.ReadLine ()) != null)
+				yield return s;
+		}
+
+		public static void AppendAllLines (string path, IEnumerable<string> contents)
+		{
+			ValidatePath (path);
+
+			if (contents == null)
+				return;
+
+			using (TextWriter w = new StreamWriter (path, true)) {
+				foreach (var line in contents)
+					w.Write (line);
+			}
+		}
+
+		public static void AppendAllLines (string path, IEnumerable<string> contents, Encoding encoding)
+		{
+			ValidatePath (path);
+
+			if (contents == null)
+				return;
+
+			using (TextWriter w = new StreamWriter (path, true, encoding)) {
+				foreach (var line in contents)
+					w.Write (line);
+			}
+		}
+
+		public static void WriteAllLines (string path, IEnumerable<string> contents)
+		{
+			ValidatePath (path);
+
+			if (contents == null)
+				return;
+
+			using (TextWriter w = new StreamWriter (path, false)) {
+				foreach (var line in contents)
+					w.Write (line);
+			}
+		}
+
+		public static void WriteAllLines (string path, IEnumerable<string> contents, Encoding encoding)
+		{
+			ValidatePath (path);
+
+			if (contents == null)
+				return;
+
+			using (TextWriter w = new StreamWriter (path, false, encoding)) {
+				foreach (var line in contents)
+					w.Write (line);
+			}
 		}
 #endif
 	}

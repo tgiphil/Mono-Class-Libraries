@@ -13,12 +13,10 @@ using System.Collections;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 
-#if NET_2_0
 using System.Collections.Generic;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using Mono.Globalization.Unicode;
-#endif
 
 namespace System
 {
@@ -69,6 +67,10 @@ namespace System
 			throw new System.NotImplementedException();
 		}
 		private static string InternalIsInterned (string str)
+		{
+			throw new System.NotImplementedException();
+		}
+		private static int GetLOSLimit ()
 		{
 			throw new System.NotImplementedException();
 		}

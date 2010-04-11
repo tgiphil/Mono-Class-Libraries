@@ -50,19 +50,15 @@ using System.Security.Policy;
 using System.Security.Principal;
 using System.Configuration.Assemblies;
 
-#if NET_2_0
 using System.Collections.Generic;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
-#endif
 
 namespace System {
 
-#if NET_2_0
 	[ComVisible (true)]
 #if !NET_2_1
 	[ComDefaultInterface (typeof (_AppDomain))]
-#endif
 #endif
 	[ClassInterface(ClassInterfaceType.None)]
 #if NET_2_1
@@ -85,7 +81,7 @@ namespace System {
 
 		[ThreadStatic]
 		static Hashtable assembly_resolve_in_progress_refonly;
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		// CAS
 		private Evidence _evidence;
 		private PermissionSet _granted;
@@ -116,13 +112,13 @@ namespace System {
 			}
 		}
 
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 		[MonoTODO]
 		public ApplicationTrust ApplicationTrust {
 			get { throw new NotImplementedException (); }
 		}
 #endif
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		public string BaseDirectory {
 			get {
 				string path = SetupInformationNoCopy.ApplicationBase;
@@ -172,7 +168,7 @@ namespace System {
 				return getFriendlyName ();
 			}
 		}
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		public Evidence Evidence {
 			get {
 				// if the host (runtime) hasn't provided it's own evidence...
@@ -241,11 +237,9 @@ namespace System {
 			}
 		}
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 
-#if NET_2_0
 		[Obsolete ("AppDomain.AppendPrivatePath has been deprecated. Please investigate the use of AppDomainSetup.PrivateBinPath instead.")]
-#endif
 		[SecurityPermission (SecurityAction.LinkDemand, ControlAppDomain = true)]
 		public void AppendPrivatePath (string path)
 		{
@@ -267,18 +261,14 @@ namespace System {
 			setup.PrivateBinPath = pp + path;
 		}
 
-#if NET_2_0
 		[Obsolete ("AppDomain.ClearPrivatePath has been deprecated. Please investigate the use of AppDomainSetup.PrivateBinPath instead.")]
-#endif
 		[SecurityPermission (SecurityAction.LinkDemand, ControlAppDomain = true)]
 		public void ClearPrivatePath ()
 		{
 			SetupInformationNoCopy.PrivateBinPath = String.Empty;
 		}
 
-#if NET_2_0
 		[Obsolete ("Use AppDomainSetup.ShadowCopyDirectories")]
-#endif
 		[SecurityPermission (SecurityAction.LinkDemand, ControlAppDomain = true)]
 		public void ClearShadowCopyPath ()
 		{
@@ -291,13 +281,11 @@ namespace System {
 			return Activator.CreateComInstanceFrom (assemblyName, typeName);
 		}
 
-#if NET_1_1
 		public ObjectHandle CreateComInstanceFrom (string assemblyFile, string typeName,
 			byte [] hashValue, AssemblyHashAlgorithm hashAlgorithm)
 		{
 			return Activator.CreateComInstanceFrom (assemblyFile, typeName, hashValue ,hashAlgorithm);
 		}
-#endif
 #endif
 
 		public ObjectHandle CreateInstance (string assemblyName, string typeName)
@@ -316,6 +304,9 @@ namespace System {
 			return Activator.CreateInstance (assemblyName, typeName, activationAttributes);
 		}
 
+#if NET_4_0
+		[Obsolete ("Use an overload that does not take an Evidence parameter")]
+#endif
 		public ObjectHandle CreateInstance (string assemblyName, string typeName, bool ignoreCase, BindingFlags bindingAttr,
 		                                    Binder binder, object[] args, CultureInfo culture, object[] activationAttributes,
 		                                    Evidence securityAttributes)
@@ -339,6 +330,9 @@ namespace System {
 			return (oh != null) ? oh.Unwrap () : null;
 		}
 
+#if NET_4_0
+		[Obsolete ("Use an overload that does not take an Evidence parameter")]
+#endif
 		public object CreateInstanceAndUnwrap (string assemblyName, string typeName, bool ignoreCase,
 		                                       BindingFlags bindingAttr, Binder binder, object[] args, CultureInfo culture,
 		                                       object[] activationAttributes, Evidence securityAttributes)
@@ -347,6 +341,47 @@ namespace System {
 				culture, activationAttributes, securityAttributes);
 			return (oh != null) ? oh.Unwrap () : null;
 		}
+
+#if NET_4_0
+		public ObjectHandle CreateInstance (string assemblyName, string typeName, bool ignoreCase, BindingFlags bindingAttr,
+		                                    Binder binder, object[] args, CultureInfo culture, object[] activationAttributes)
+		{
+			if (assemblyName == null)
+				throw new ArgumentNullException ("assemblyName");
+
+			return Activator.CreateInstance (assemblyName, typeName, ignoreCase, bindingAttr, binder, args,
+				culture, activationAttributes, null);
+		}
+		public object CreateInstanceAndUnwrap (string assemblyName, string typeName, bool ignoreCase,
+		                                       BindingFlags bindingAttr, Binder binder, object[] args, CultureInfo culture,
+		                                       object[] activationAttributes)
+		{
+			ObjectHandle oh = CreateInstance (assemblyName, typeName, ignoreCase, bindingAttr, binder, args,
+				culture, activationAttributes);
+			return (oh != null) ? oh.Unwrap () : null;
+		}
+
+		public ObjectHandle CreateInstanceFrom (string assemblyFile, string typeName, bool ignoreCase,
+		                                        BindingFlags bindingAttr, Binder binder, object[] args, CultureInfo culture,
+		                                        object[] activationAttributes)
+		{
+			if (assemblyFile == null)
+				throw new ArgumentNullException ("assemblyFile");
+
+			return Activator.CreateInstanceFrom (assemblyFile, typeName, ignoreCase, bindingAttr, binder, args,
+			                                     culture, activationAttributes, null);
+		}
+
+		public object CreateInstanceFromAndUnwrap (string assemblyName, string typeName, bool ignoreCase,
+		                                           BindingFlags bindingAttr, Binder binder, object[] args,
+		                                           CultureInfo culture, object[] activationAttributes)
+		{
+			ObjectHandle oh = CreateInstanceFrom (assemblyName, typeName, ignoreCase, bindingAttr, binder, args,
+				culture, activationAttributes);
+
+			return (oh != null) ? oh.Unwrap () : null;
+		}
+#endif
 
 		public ObjectHandle CreateInstanceFrom (string assemblyFile, string typeName)
 		{
@@ -364,6 +399,9 @@ namespace System {
 			return Activator.CreateInstanceFrom (assemblyFile, typeName, activationAttributes);
 		}
 
+#if NET_4_0
+		[Obsolete ("Use an overload that does not take an Evidence parameter")]
+#endif
 		public ObjectHandle CreateInstanceFrom (string assemblyFile, string typeName, bool ignoreCase,
 		                                        BindingFlags bindingAttr, Binder binder, object[] args, CultureInfo culture,
 		                                        object[] activationAttributes, Evidence securityAttributes)
@@ -387,6 +425,9 @@ namespace System {
 			return (oh != null) ? oh.Unwrap () : null;
 		}
 
+#if NET_4_0
+		[Obsolete ("Use an overload that does not take an Evidence parameter")]
+#endif
 		public object CreateInstanceFromAndUnwrap (string assemblyName, string typeName, bool ignoreCase,
 		                                           BindingFlags bindingAttr, Binder binder, object[] args,
 		                                           CultureInfo culture, object[] activationAttributes,
@@ -405,6 +446,9 @@ namespace System {
 			return DefineDynamicAssembly (name, access, null, null, null, null, null, false);
 		}
 
+#if NET_4_0
+		[Obsolete ("Declarative security for assembly level is no longer enforced")]
+#endif
 		public AssemblyBuilder DefineDynamicAssembly (AssemblyName name, AssemblyBuilderAccess access, Evidence evidence)
 		{
 			return DefineDynamicAssembly (name, access, null, evidence, null, null, null, false);
@@ -415,12 +459,18 @@ namespace System {
 			return DefineDynamicAssembly (name, access, dir, null, null, null, null, false);
 		}
 
+#if NET_4_0
+		[Obsolete ("Declarative security for assembly level is no longer enforced")]
+#endif
 		public AssemblyBuilder DefineDynamicAssembly (AssemblyName name, AssemblyBuilderAccess access, string dir,
 		                                              Evidence evidence)
 		{
 			return DefineDynamicAssembly (name, access, dir, evidence, null, null, null, false);
 		}
 
+#if NET_4_0
+		[Obsolete ("Declarative security for assembly level is no longer enforced")]
+#endif
 		public AssemblyBuilder DefineDynamicAssembly (AssemblyName name, AssemblyBuilderAccess access,
 		                                              PermissionSet requiredPermissions,
 		                                              PermissionSet optionalPermissions,
@@ -430,6 +480,9 @@ namespace System {
 				refusedPermissions, false);
 		}
 
+#if NET_4_0
+		[Obsolete ("Declarative security for assembly level is no longer enforced")]
+#endif
 		public AssemblyBuilder DefineDynamicAssembly (AssemblyName name, AssemblyBuilderAccess access, Evidence evidence,
 		                                              PermissionSet requiredPermissions,
 		                                              PermissionSet optionalPermissions,
@@ -439,6 +492,9 @@ namespace System {
 				refusedPermissions, false);
 		}
 
+#if NET_4_0
+		[Obsolete ("Declarative security for assembly level is no longer enforced")]
+#endif
 		public AssemblyBuilder DefineDynamicAssembly (AssemblyName name, AssemblyBuilderAccess access, string dir,
 		                                              PermissionSet requiredPermissions,
 		                                              PermissionSet optionalPermissions,
@@ -448,6 +504,9 @@ namespace System {
 				refusedPermissions, false);
 		}
 
+#if NET_4_0
+		[Obsolete ("Declarative security for assembly level is no longer enforced")]
+#endif
 		public AssemblyBuilder DefineDynamicAssembly (AssemblyName name, AssemblyBuilderAccess access, string dir,
 		                                              Evidence evidence,
 		                                              PermissionSet requiredPermissions,
@@ -458,6 +517,9 @@ namespace System {
 				refusedPermissions, false);
 		}
 
+#if NET_4_0
+		[Obsolete ("Declarative security for assembly level is no longer enforced")]
+#endif
 		public AssemblyBuilder DefineDynamicAssembly (AssemblyName name, AssemblyBuilderAccess access, string dir,
 		                                              Evidence evidence,
 		                                              PermissionSet requiredPermissions,
@@ -475,8 +537,10 @@ namespace System {
 			return ab;
 		}
 
-#if NET_2_0
 		// NET 3.5 method
+#if NET_4_0
+		[Obsolete ("Declarative security for assembly level is no longer enforced")]
+#endif
 		public AssemblyBuilder DefineDynamicAssembly (AssemblyName name, AssemblyBuilderAccess access, string dir,
 		                                              Evidence evidence,
 		                                              PermissionSet requiredPermissions,
@@ -495,7 +559,6 @@ namespace System {
 		public AssemblyBuilder DefineDynamicAssembly (AssemblyName name, AssemblyBuilderAccess access, IEnumerable<CustomAttributeBuilder> assemblyAttributes) {
 			return DefineDynamicAssembly (name, access, null, null, null, null, null, false, assemblyAttributes);
 		}
-#endif
 
 		internal AssemblyBuilder DefineInternalDynamicAssembly (AssemblyName name, AssemblyBuilderAccess access)
 		{
@@ -514,34 +577,53 @@ namespace System {
 
 		public int ExecuteAssembly (string assemblyFile)
 		{
-			return ExecuteAssembly (assemblyFile, null, null);
+			return ExecuteAssembly (assemblyFile, (Evidence)null, null);
 		}
 
+#if NET_4_0
+		[Obsolete ("Use an overload that does not take an Evidence parameter")]
+#endif
 		public int ExecuteAssembly (string assemblyFile, Evidence assemblySecurity)
 		{
 			return ExecuteAssembly (assemblyFile, assemblySecurity, null);
 		}
 
+#if NET_4_0
+		[Obsolete ("Use an overload that does not take an Evidence parameter")]
+#endif
 		public int ExecuteAssembly (string assemblyFile, Evidence assemblySecurity, string[] args)
 		{
 			Assembly a = Assembly.LoadFrom (assemblyFile, assemblySecurity);
 			return ExecuteAssemblyInternal (a, args);
 		}
 
+#if NET_4_0
+		[Obsolete ("Use an overload that does not take an Evidence parameter")]
+#endif
 		public int ExecuteAssembly (string assemblyFile, Evidence assemblySecurity, string[] args, byte[] hashValue, AssemblyHashAlgorithm hashAlgorithm)
 		{
 			Assembly a = Assembly.LoadFrom (assemblyFile, assemblySecurity, hashValue, hashAlgorithm);
 			return ExecuteAssemblyInternal (a, args);
 		}
 
+#if NET_4_0
+		public int ExecuteAssembly (string assemblyFile, string[] args)
+		{
+			Assembly a = Assembly.LoadFrom (assemblyFile, null);
+			return ExecuteAssemblyInternal (a, args);
+		}
+
+		public int ExecuteAssembly (string assemblyFile, string[] args, byte[] hashValue, AssemblyHashAlgorithm hashAlgorithm)
+		{
+			Assembly a = Assembly.LoadFrom (assemblyFile, null, hashValue, hashAlgorithm);
+			return ExecuteAssemblyInternal (a, args);
+		}
+#endif
+
 		int ExecuteAssemblyInternal (Assembly a, string[] args)
 		{
 			if (a.EntryPoint == null)
-#if NET_2_0
 				throw new MissingMethodException ("Entry point not found in assembly '" + a.FullName + "'.");
-#else
-				throw new COMException ("Unspecified error.", -2147467259);
-#endif
 			return ExecuteAssembly (a, args);
 		}
 
@@ -576,6 +658,9 @@ namespace System {
 			return result;
 		}
 
+#if NET_4_0
+		[Obsolete ("Use an overload that does not take an Evidence parameter")]
+#endif
 		public Assembly Load (AssemblyName assemblyRef, Evidence assemblySecurity)
 		{
 			if (assemblyRef == null)
@@ -632,6 +717,9 @@ namespace System {
 			return Load (assemblyString, null, false);
 		}
 
+#if NET_4_0
+		[Obsolete ("Use an overload that does not take an Evidence parameter")]
+#endif
 		public Assembly Load (string assemblyString, Evidence assemblySecurity)
 		{
 			return Load (assemblyString, assemblySecurity, false);
@@ -661,6 +749,9 @@ namespace System {
 			return Load (rawAssembly, rawSymbolStore, null);
 		}
 
+#if NET_4_0
+		[Obsolete ("Use an overload that does not take an Evidence parameter")]
+#endif
 		public Assembly Load (byte[] rawAssembly, byte[] rawSymbolStore, Evidence securityEvidence)
 		{
 			return Load (rawAssembly, rawSymbolStore, securityEvidence, false);
@@ -675,7 +766,10 @@ namespace System {
 			assembly.FromByteArray = true;
 			return assembly;
 		}
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
+#if NET_4_0
+		[Obsolete ("AppDomain policy levels are obsolete")]
+#endif
 		[SecurityPermission (SecurityAction.Demand, ControlPolicy = true)]
 		public void SetAppDomainPolicy (PolicyLevel domainPolicy)
 		{
@@ -692,9 +786,7 @@ namespace System {
 			_granted = ps.PermissionSet;
 		}
 
-#if NET_2_0
 		[Obsolete ("Use AppDomainSetup.SetCachePath")]
-#endif
 		[SecurityPermission (SecurityAction.LinkDemand, ControlAppDomain = true)]
 		public void SetCachePath (string path)
 		{
@@ -711,18 +803,14 @@ namespace System {
 			_principal = null;
 		}
 
-#if NET_2_0
 		[Obsolete ("Use AppDomainSetup.ShadowCopyFiles")]
-#endif
 		[SecurityPermission (SecurityAction.LinkDemand, ControlAppDomain = true)]
 		public void SetShadowCopyFiles()
 		{
 			SetupInformationNoCopy.ShadowCopyFiles = "true";
 		}
 
-#if NET_2_0
 		[Obsolete ("Use AppDomainSetup.ShadowCopyDirectories")]
-#endif
 		[SecurityPermission (SecurityAction.LinkDemand, ControlAppDomain = true)]
 		public void SetShadowCopyPath (string path)
 		{
@@ -810,7 +898,7 @@ namespace System {
 			return _process_guid;
 		}
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 
 		public static AppDomain CreateDomain (string friendlyName)
 		{
@@ -852,6 +940,15 @@ namespace System {
 			} else if (info.ConfigurationFile == null)
 				info.ConfigurationFile = "[I don't have a config file]";
 
+#if !NET_2_1
+			if (info.AppDomainInitializer != null) {
+				if (!info.AppDomainInitializer.Method.IsStatic)
+					throw new ArgumentException ("Non-static methods cannot be invoked as an appdomain initializer");
+			}
+#endif
+
+			info.SerializeNonPrimitives ();
+
 			AppDomain ad = (AppDomain) RemotingServices.GetDomainProxy (createDomain (friendlyName, info));
 			if (securityInfo == null) {
 				// get default domain's Evidence (unless we're are the default!)
@@ -863,11 +960,8 @@ namespace System {
 			else
 				ad._evidence = new Evidence (securityInfo);	// copy
 
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 			if (info.AppDomainInitializer != null) {
-				if (!info.AppDomainInitializer.Method.IsStatic)
-					throw new ArgumentException ("Non-static methods cannot be invoked as an appdomain initializer");
-
 				Loader loader = new Loader (
 					info.AppDomainInitializer.Method.DeclaringType.Assembly.Location);
 				ad.DoCallBack (loader.Load);
@@ -882,7 +976,7 @@ namespace System {
 			return ad;
 		}
 
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 		[Serializable]
 		class Loader {
 
@@ -924,7 +1018,7 @@ namespace System {
 			return CreateDomain (friendlyName, securityInfo, CreateDomainSetup (appBasePath, appRelativeSearchPath, shadowCopyFiles));
 		}
 		
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 		public static AppDomain CreateDomain (string friendlyName, Evidence securityInfo, AppDomainSetup info,
 		                                      PermissionSet grantSet, params StrongName [] fullTrustAssemblies)
 		{
@@ -946,11 +1040,7 @@ namespace System {
 			if (shadowCopyFiles)
 				info.ShadowCopyFiles = "true";
 			else
-#if NET_2_0
 				info.ShadowCopyFiles = "false";
-#else
-				info.ShadowCopyFiles = null;
-#endif
 
 			return info;
 		}
@@ -969,9 +1059,7 @@ namespace System {
 		}
 
 		[SecurityPermission (SecurityAction.Demand, ControlAppDomain = true)]
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.MayCorruptAppDomain, Cer.MayFail)]
-#endif
 		public static void Unload (AppDomain domain)
 		{
 			if (domain == null)
@@ -980,18 +1068,14 @@ namespace System {
 			InternalUnload (domain.getDomainID());
 		}
 
-#if NET_2_0
-		[MonoTODO]
+		[MonoLimitation ("The permission field is ignored")]
 		public void SetData (string name, object data, IPermission permission)
 		{
-			throw new NotImplementedException ();
+			SetData (name, data);
 		}
-#endif
 
 #if !NET_2_1
-#if NET_2_0
 		[Obsolete ("Use AppDomainSetup.DynamicBase")]
-#endif
 		[SecurityPermission (SecurityAction.LinkDemand, ControlAppDomain = true)]
 		public void SetDynamicBase (string path)
 		{
@@ -999,13 +1083,11 @@ namespace System {
 		}
 #endif // !NET_2_1
 
-#if NET_2_0
 		[Obsolete ("AppDomain.GetCurrentThreadId has been deprecated"
 			+ " because it does not provide a stable Id when managed"
 			+ " threads are running on fibers (aka lightweight"
 			+ " threads). To get a stable identifier for a managed"
 			+ " thread, use the ManagedThreadId property on Thread.'")]
-#endif
 		public static int GetCurrentThreadId ()
 		{
 			return Thread.CurrentThreadId;
@@ -1013,7 +1095,7 @@ namespace System {
 
 		public override string ToString ()
 		{
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 			return getFriendlyName ();
 #else
 			StringBuilder sb = new StringBuilder ("Name:");
@@ -1068,7 +1150,7 @@ namespace System {
 		private Assembly DoAssemblyResolve (string name, bool refonly)
 		{
 			ResolveEventHandler del;
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 			if (refonly)
 				del = ReflectionOnlyAssemblyResolve;
 			else
@@ -1190,24 +1272,6 @@ namespace System {
 
 		// End of methods called from the runtime
 		
-#if BOOTSTRAP_WITH_OLDLIB
-		// older MCS/corlib returns:
-		// _AppDomain.cs(138) error CS0592: Attribute 'SecurityPermission' is not valid on this declaration type.
-		// It is valid on 'assembly' 'class' 'constructor' 'method' 'struct'  declarations only.
-		public event AssemblyLoadEventHandler AssemblyLoad;
-
-		public event ResolveEventHandler AssemblyResolve;
-
-		public event EventHandler DomainUnload;
-
-		public event EventHandler ProcessExit;
-
-		public event ResolveEventHandler ResourceResolve;
-
-		public event ResolveEventHandler TypeResolve;
-
-		public event UnhandledExceptionEventHandler UnhandledException;
-#else
 		[method: SecurityPermission (SecurityAction.LinkDemand, ControlAppDomain = true)]
 		public event AssemblyLoadEventHandler AssemblyLoad;
 
@@ -1228,7 +1292,6 @@ namespace System {
 
 		[method: SecurityPermission (SecurityAction.LinkDemand, ControlAppDomain = true)]
 		public event UnhandledExceptionEventHandler UnhandledException;
-#endif
 
 #if NET_4_0 || BOOTSTRAP_NET_4_0
 		[MonoTODO]
@@ -1237,7 +1300,6 @@ namespace System {
 		}
 #endif
 
-#if NET_2_0
         #pragma warning disable 649
 		private AppDomainManager _domain_manager;
         #pragma warning restore 649
@@ -1246,9 +1308,8 @@ namespace System {
 		public AppDomainManager DomainManager {
 			get { return _domain_manager; }
 		}
-#endif
 
-#if NET_2_0 && (!NET_2_1 || MONOTOUCH)
+#if (!MOONLIGHT)
 
 		public event ResolveEventHandler ReflectionOnlyAssemblyResolve;
 
@@ -1300,14 +1361,20 @@ namespace System {
 
 		public int ExecuteAssemblyByName (string assemblyName)
 		{
-			return ExecuteAssemblyByName (assemblyName, null, null);
+			return ExecuteAssemblyByName (assemblyName, (Evidence)null, null);
 		}
 
+#if NET_4_0
+		[Obsolete ("Use an overload that does not take an Evidence parameter")]
+#endif
 		public int ExecuteAssemblyByName (string assemblyName, Evidence assemblySecurity)
 		{
 			return ExecuteAssemblyByName (assemblyName, assemblySecurity, null);
 		}
 
+#if NET_4_0
+		[Obsolete ("Use an overload that does not take an Evidence parameter")]
+#endif
 		public int ExecuteAssemblyByName (string assemblyName, Evidence assemblySecurity, params string[] args)
 		{
 			Assembly a = Assembly.Load (assemblyName, assemblySecurity);
@@ -1315,12 +1382,31 @@ namespace System {
 			return ExecuteAssemblyInternal (a, args);
 		}
 
+#if NET_4_0
+		[Obsolete ("Use an overload that does not take an Evidence parameter")]
+#endif
 		public int ExecuteAssemblyByName (AssemblyName assemblyName, Evidence assemblySecurity, params string[] args)
 		{
 			Assembly a = Assembly.Load (assemblyName, assemblySecurity);
 
 			return ExecuteAssemblyInternal (a, args);
 		}
+
+#if NET_4_0
+		public int ExecuteAssemblyByName (string assemblyName, params string[] args)
+		{
+			Assembly a = Assembly.Load (assemblyName, null);
+
+			return ExecuteAssemblyInternal (a, args);
+		}
+
+		public int ExecuteAssemblyByName (AssemblyName assemblyName, params string[] args)
+		{
+			Assembly a = Assembly.Load (assemblyName, null);
+
+			return ExecuteAssemblyInternal (a, args);
+		}
+#endif
 
 		public bool IsDefaultAppDomain ()
 		{
@@ -1331,9 +1417,9 @@ namespace System {
 		{
 			return GetAssemblies (true);
 		}
-#endif
 
-#if NET_2_1 && !MONOTOUCH
+#else // MOONLIGHT
+
 		public int ExecuteAssemblyByName (string assemblyName)
 		{
 			// critical code in SL that we're not calling in ML
@@ -1341,7 +1427,7 @@ namespace System {
 		}
 #endif
 
-#if NET_1_1 && !NET_2_1
+#if !NET_2_1
 		void _AppDomain.GetIDsOfNames ([In] ref Guid riid, IntPtr rgszNames, uint cNames, uint lcid, IntPtr rgDispId)
 		{
 			throw new NotImplementedException ();
@@ -1361,6 +1447,43 @@ namespace System {
 			IntPtr pVarResult, IntPtr pExcepInfo, IntPtr puArgErr)
 		{
 			throw new NotImplementedException ();
+		}
+#endif
+
+#if NET_4_0 || MOONLIGHT
+		[MonoTODO ("Currently always returns false")]
+		public bool? IsCompatibilitySwitchSet (string value)
+		{
+			if (value == null)
+				throw new ArgumentNullException ("value");
+			// default (at least for SL4) is to return false for unknown values (can't get a null out of it)
+			return false;
+		}
+
+		[MonoTODO ("Currently always returns false")]
+		public static bool MonitoringIsEnabled { 
+			get { return false; }
+			set { throw new NotImplementedException (); }
+		}
+
+		[MonoTODO]
+		public long MonitoringSurvivedMemorySize {
+			get { throw new NotImplementedException (); }
+		}
+
+		[MonoTODO]
+		public static long MonitoringSurvivedProcessMemorySize {
+			get { throw new NotImplementedException (); }
+		}
+
+		[MonoTODO]
+		public long MonitoringTotalAllocatedMemorySize {
+			get { throw new NotImplementedException (); }
+		}
+
+		[MonoTODO]
+		public TimeSpan MonitoringTotalProcessorTime {
+			get { throw new NotImplementedException (); }
 		}
 #endif
 	}

@@ -8,6 +8,7 @@
  *
  */
 
+using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -24,6 +25,10 @@ namespace System.Reflection
 			throw new System.NotImplementedException();
 		}
 		internal static Type[] GetTypeModifiers (MonoProperty prop, bool optional)
+		{
+			throw new System.NotImplementedException();
+		}
+		internal static object get_default_value (MonoProperty prop)
 		{
 			throw new System.NotImplementedException();
 		}

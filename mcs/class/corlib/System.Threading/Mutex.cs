@@ -31,24 +31,20 @@
 using System.Runtime.CompilerServices;
 using System.Security.Permissions;
 
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
 using System.IO;
 using System.Runtime.InteropServices;
 #if !NET_2_1
 using System.Security.AccessControl;
 #endif
-#endif
 
 namespace System.Threading
 {
-#if NET_2_0
 	[ComVisible (true)]
-#endif
 	public sealed partial class Mutex : WaitHandle 
 	{
 
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 		
 		private Mutex (IntPtr handle)
 		{
@@ -56,18 +52,14 @@ namespace System.Threading
 		}
 #endif
 		
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
-#endif
 		public Mutex() {
 			bool created;
 			
 			Handle=CreateMutex_internal(false, null, out created);
 		}
 		
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
-#endif
 		public Mutex(bool initiallyOwned) {
 			bool created;
 			
@@ -75,9 +67,7 @@ namespace System.Threading
 						    out created);
 		}
 
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
-#endif
 		[SecurityPermission (SecurityAction.LinkDemand, UnmanagedCode = true)]
 		public Mutex (bool initiallyOwned, string name)
 		{
@@ -85,16 +75,14 @@ namespace System.Threading
 			Handle = CreateMutex_internal (initiallyOwned, name, out created);
 		}
 
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
-#endif
 		[SecurityPermission (SecurityAction.LinkDemand, UnmanagedCode = true)]
 		public Mutex (bool initiallyOwned, string name, out bool createdNew)
 		{
 			Handle = CreateMutex_internal (initiallyOwned, name, out createdNew);
 		}
 
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 		[MonoTODO ("Implement MutexSecurity")]
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
 		public Mutex (bool initiallyOwned, string name, out bool createdNew, MutexSecurity mutexSecurity)
@@ -141,9 +129,7 @@ namespace System.Threading
 		}
 #endif
 
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
-#endif	
 		public void ReleaseMutex() {
 			bool success = ReleaseMutex_internal(Handle);
 			if (!success) {
@@ -151,7 +137,7 @@ namespace System.Threading
 			}
 		}
 
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 		public void SetAccessControl (MutexSecurity mutexSecurity)
 		{
 			throw new NotImplementedException ();

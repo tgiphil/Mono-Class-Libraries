@@ -16,8 +16,6 @@ using System.Runtime.InteropServices;
 using System.Globalization;
 using System.Runtime.Serialization;
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-
 namespace System.Reflection.Emit
 {
 	public partial class GenericTypeParameterBuilder
@@ -29,4 +27,3 @@ namespace System.Reflection.Emit
 
 	}
 }
-#endif

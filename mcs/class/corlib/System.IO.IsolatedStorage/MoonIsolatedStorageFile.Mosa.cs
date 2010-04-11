@@ -8,7 +8,7 @@
  *
  */
 
-#if NET_2_1 && !MONOTOUCH
+#if MOONLIGHT
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -25,5 +25,3 @@ namespace System.IO.IsolatedStorage
 
 	}
 }
-
-#endif

@@ -8,10 +8,8 @@
  *
  */
 
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
 using System.Reflection;
-#endif
 
 namespace System.Runtime.CompilerServices
 {
@@ -32,6 +30,10 @@ namespace System.Runtime.CompilerServices
 			throw new System.NotImplementedException();
 		}
 		static void RunClassConstructor (IntPtr type)
+		{
+			throw new System.NotImplementedException();
+		}
+		static bool SufficientExecutionStack ()
 		{
 			throw new System.NotImplementedException();
 		}

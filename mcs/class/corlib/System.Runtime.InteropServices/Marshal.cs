@@ -37,27 +37,19 @@ using System.Security;
 using System.Reflection;
 using System.Threading;
 
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 using System.Runtime.InteropServices.ComTypes;
 #endif
-#endif
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 using Mono.Interop;
 #endif
 
 namespace System.Runtime.InteropServices
 {
 	[SuppressUnmanagedCodeSecurity ()]
-	public
-#if NET_2_0
-	static
-#else
-	sealed
-#endif
-	partial class Marshal
+	public static partial class Marshal
 	{
 		/* fields */
 		public static readonly int SystemMaxDBCSCharSize = 2; // don't know what this is
@@ -68,10 +60,6 @@ namespace System.Runtime.InteropServices
 			SystemDefaultCharSize = Environment.OSVersion.Platform == PlatformID.Win32NT ? 2 : 1;
 		}
 
-#if !NET_2_0
-		private Marshal () {}
-#endif
-
 		public static int AddRef (IntPtr pUnk)
 		{
 			if (pUnk == IntPtr.Zero)
@@ -79,9 +67,7 @@ namespace System.Runtime.InteropServices
 			return AddRefInternal (pUnk);
 		}
 
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
-#endif
 		public static IntPtr AllocHGlobal (int cb)
 		{
 			return AllocHGlobal ((IntPtr)cb);
@@ -134,12 +120,10 @@ namespace System.Runtime.InteropServices
 			copy_to_unmanaged (source, startIndex, destination, length);
 		}
 
-#if NET_2_0
 		public static void Copy (IntPtr[] source, int startIndex, IntPtr destination, int length)
 		{
 			copy_to_unmanaged (source, startIndex, destination, length);
 		}
-#endif
 
 		public static void Copy (IntPtr source, byte[] destination, int startIndex, int length)
 		{
@@ -176,7 +160,6 @@ namespace System.Runtime.InteropServices
 			copy_from_unmanaged (source, startIndex, destination, length);
 		}
 
-#if NET_2_0
 		public static void Copy (IntPtr source, IntPtr[] destination, int startIndex, int length)
 		{
 			copy_from_unmanaged (source, startIndex, destination, length);
@@ -187,9 +170,8 @@ namespace System.Runtime.InteropServices
 		{
 			throw new NotImplementedException ();
 		}
-#endif
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		public static object CreateWrapperOfType (object o, Type t)
 		{
 			__ComObject co = o as __ComObject;
@@ -207,8 +189,6 @@ namespace System.Runtime.InteropServices
 			return ComInteropProxy.GetProxy (co.IUnknown, t).GetTransparentProxy ();
 		}
 #endif
-
-#if NET_2_0
 
 		static void ClearBSTR (IntPtr ptr)
 		{
@@ -259,9 +239,8 @@ namespace System.Runtime.InteropServices
 			ClearUnicode (s);
 			FreeHGlobal (s);
 		}
-#endif
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		public static Guid GenerateGuidForType (Type type)
 		{
 			return type.GUID;
@@ -294,13 +273,11 @@ namespace System.Runtime.InteropServices
 			return pItf;
 		}
 
-#if NET_2_0
 		[MonoTODO]
 		public static IntPtr GetComInterfaceForObjectInContext (object o, Type t)
 		{
 			throw new NotImplementedException ();
 		}
-#endif
 
 		[MonoNotSupportedAttribute ("MSDN states user code should never need to call this method.")]
 		public static object GetComObjectData (object obj, object key)
@@ -311,11 +288,7 @@ namespace System.Runtime.InteropServices
 		public static int GetComSlotForMethodInfo (MemberInfo m)
 		{
 			if (m == null)
-#if NET_2_0
 				throw new ArgumentNullException ("m");
-#else
-				throw new ArgumentNullException (null, "Value cannot be null.");
-#endif
 			if (!(m is MethodInfo))
 				throw new ArgumentException ("The MemberInfo must be an interface method.", "m");
 			if (!m.DeclaringType.IsInterface)
@@ -336,9 +309,7 @@ namespace System.Runtime.InteropServices
 		}
 
 		[MonoTODO]
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public static IntPtr GetExceptionPointers()
 		{
 			throw new NotImplementedException ();
@@ -360,14 +331,12 @@ namespace System.Runtime.InteropServices
 		}
 
 		[MonoTODO]
-#if NET_2_0
 		[ReliabilityContract (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		public static int GetHRForLastWin32Error()
 		{
 			throw new NotImplementedException ();
 		}
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 
 		public static IntPtr GetIDispatchForObject (object o)
 		{
@@ -377,13 +346,11 @@ namespace System.Runtime.InteropServices
 			return pUnk;
 		}
 
-#if NET_2_0
 		[MonoTODO]
 		public static IntPtr GetIDispatchForObjectInContext (object o)
 		{
 			throw new NotImplementedException ();
 		}
-#endif
 
 		[MonoTODO]
 		public static IntPtr GetITypeInfoForType (Type t)
@@ -399,18 +366,14 @@ namespace System.Runtime.InteropServices
 			return pUnk;
 		}
 
-#if NET_2_0
 		[MonoTODO]
 		public static IntPtr GetIUnknownForObjectInContext (object o)
 		{
 			throw new NotImplementedException ();
 		}
-#endif
 
 		[MonoTODO]
-#if NET_2_0
 		[Obsolete ("This method has been deprecated")]
-#endif
 		public static IntPtr GetManagedThunkForUnmanagedMethodPtr (IntPtr pfnMethodToWrap, IntPtr pbSignature, int cbSignature)
 		{
 			throw new NotImplementedException ();
@@ -464,9 +427,7 @@ namespace System.Runtime.InteropServices
 		}
 
 		[MonoTODO]
-#if NET_2_0
 		[Obsolete ("This method has been deprecated")]
-#endif
 		public static Thread GetThreadFromFiberCookie (int cookie)
 		{
 			throw new NotImplementedException ();
@@ -491,38 +452,30 @@ namespace System.Runtime.InteropServices
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_0
 		[Obsolete]
-#endif
 		[MonoTODO]
 		public static string GetTypeInfoName (UCOMITypeInfo pTI)
 		{
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_0
 		public static string GetTypeInfoName (ITypeInfo typeInfo)
 		{
 			throw new NotImplementedException ();
 		}
-#endif
 
-#if NET_2_0
 		[Obsolete]
-#endif
 		[MonoTODO]
 		public static Guid GetTypeLibGuid (UCOMITypeLib pTLB)
 		{
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_0
 		[MonoTODO]
 		public static Guid GetTypeLibGuid (ITypeLib typelib)
 		{
 			throw new NotImplementedException ();
 		}
-#endif
 
 		[MonoTODO]
 		public static Guid GetTypeLibGuidForAssembly (Assembly asm)
@@ -530,33 +483,26 @@ namespace System.Runtime.InteropServices
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_0
 		[Obsolete]
-#endif
 		[MonoTODO]
 		public static int GetTypeLibLcid (UCOMITypeLib pTLB)
 		{
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_0
 		[MonoTODO]
 		public static int GetTypeLibLcid (ITypeLib typelib)
 		{
 			throw new NotImplementedException ();
 		}
-#endif
 
-#if NET_2_0
 		[Obsolete]
-#endif
 		[MonoTODO]
 		public static string GetTypeLibName (UCOMITypeLib pTLB)
 		{
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_0
 		[MonoTODO]
 		public static string GetTypeLibName (ITypeLib typelib)
 		{
@@ -573,12 +519,9 @@ namespace System.Runtime.InteropServices
 		{
 			throw new NotImplementedException ();
 		}
-#endif
 
 		[MonoTODO]
-#if NET_2_0
 		[Obsolete ("This method has been deprecated")]
-#endif
 		public static IntPtr GetUnmanagedThunkForManagedMethodPtr (IntPtr pfnMethodToWrap, IntPtr pbSignature, int cbSignature)
 		{
 			throw new NotImplementedException ();
@@ -638,60 +581,46 @@ namespace System.Runtime.InteropServices
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		public static int ReadInt32 (IntPtr ptr)
 		{
 			return ReadInt32 (ptr, 0);
 		}
 
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		[MonoTODO]
 		public static int ReadInt32 ([In, MarshalAs(UnmanagedType.AsAny)] object ptr, int ofs)
 		{
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		public static long ReadInt64 (IntPtr ptr)
 		{
 			return ReadInt64 (ptr, 0);
 		}
 
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		[MonoTODO]
 		public static long ReadInt64 ([In, MarshalAs (UnmanagedType.AsAny)] object ptr, int ofs)
 		{
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		public static IntPtr ReadIntPtr (IntPtr ptr)
 		{
 			return ReadIntPtr (ptr, 0);
 		}
 		
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		[MonoTODO]
 		public static IntPtr ReadIntPtr ([In, MarshalAs (UnmanagedType.AsAny)] object ptr, int ofs)
 		{
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_0
 		[ReliabilityContract (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		public static int Release (IntPtr pUnk)
 		{
 			if (pUnk == IntPtr.Zero)
@@ -699,7 +628,7 @@ namespace System.Runtime.InteropServices
 			return ReleaseInternal (pUnk);
 		}
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 
 		public static int ReleaseComObject (object o)
 		{
@@ -710,9 +639,7 @@ namespace System.Runtime.InteropServices
 			return ReleaseComObjectInternal (o);
 		}
 
-#if NET_2_0
 		[Obsolete]
-#endif
 		[MonoTODO]
 		public static void ReleaseThreadCache()
 		{
@@ -726,9 +653,7 @@ namespace System.Runtime.InteropServices
 		}
 #endif // !NET_2_1
 
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public static int SizeOf (object structure)
 		{
 			return SizeOf (structure.GetType ());
@@ -778,7 +703,7 @@ namespace System.Runtime.InteropServices
 				? StringToHGlobalUni (s) : StringToHGlobalAnsi (s);
 		}
 
-#if NET_2_0 && (!NET_2_1 || MONOTOUCH)
+#if !MOONLIGHT
 		public static IntPtr SecureStringToBSTR (SecureString s)
 		{
 			if (s == null)
@@ -946,21 +871,11 @@ namespace System.Runtime.InteropServices
 			throw new NotImplementedException ();
 		}
 
-#if NET_2_0
-		public
-#else
-		internal
-#endif
-		static Exception GetExceptionForHR (int errorCode) {
+		public static Exception GetExceptionForHR (int errorCode) {
 			return GetExceptionForHR (errorCode, IntPtr.Zero);
 		}
 
-#if NET_2_0
-		public
-#else
-		internal
-#endif
-		static Exception GetExceptionForHR (int errorCode, IntPtr errorInfo) {
+		public static Exception GetExceptionForHR (int errorCode, IntPtr errorInfo) {
 
 			const int E_OUTOFMEMORY = unchecked ((int)0x8007000EL);
 			const int E_INVALIDARG = unchecked ((int)0X80070057);
@@ -977,14 +892,13 @@ namespace System.Runtime.InteropServices
 			return null;
 		}
 
-#if NET_2_0 && (!NET_2_1 || MONOTOUCH)
+#if !MOONLIGHT
 		public static int FinalReleaseComObject (object o)
 		{
 			while (ReleaseComObject (o) != 0);
 			return 0;
 		}
 #endif
-#if NET_2_0
 
 		public static Delegate GetDelegateForFunctionPointer (IntPtr ptr, Type t)
 		{
@@ -1005,6 +919,5 @@ namespace System.Runtime.InteropServices
 			
 			return GetFunctionPointerForDelegateInternal (d);
 		}
-#endif
 	}
 }

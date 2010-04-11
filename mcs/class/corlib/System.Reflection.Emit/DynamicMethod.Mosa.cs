@@ -8,8 +8,6 @@
  *
  */
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-
 using System;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -32,5 +30,3 @@ namespace System.Reflection.Emit
 
 	}
 }
-
-#endif

@@ -34,29 +34,12 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
-#endif
 
 namespace System.Threading
 {
-	public
-#if NET_2_0
-	static
-#else
-	sealed
-#endif
-	partial class Interlocked 
+	public static partial class Interlocked 
 	{
 
-#if !NET_2_0
-		private Interlocked () {}
-#endif
-
-#if NET_2_0
-
-#else
-#endif
 	}
 }

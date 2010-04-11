@@ -28,27 +28,16 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
 using System.Reflection;
-#endif
 
 namespace System.Runtime.CompilerServices
 {
-#if NET_2_0
 	public static partial class RuntimeHelpers
-#else
-	[Serializable]
-	public sealed partial class RuntimeHelpers
-#endif
 	{
-#if NET_2_0
 		public delegate void TryCode (Object userData);
 
 		public delegate void CleanupCode (Object userData, bool exceptionThrown);
-#else
-		private RuntimeHelpers () {}
-#endif
 
 		public static void InitializeArray (Array array, RuntimeFieldHandle fldHandle)
 		{
@@ -58,7 +47,6 @@ namespace System.Runtime.CompilerServices
 			InitializeArray (array, fldHandle.Value);
 		}
 
-#if NET_1_1
 		public static int GetHashCode (object o) {
 			return Object.InternalGetHashCode (o);
 		}
@@ -77,7 +65,6 @@ namespace System.Runtime.CompilerServices
 			else
 				return Object.Equals (o1, o2);
 		}
-#endif
 
 		public static void RunClassConstructor (RuntimeTypeHandle type)
 		{
@@ -87,7 +74,17 @@ namespace System.Runtime.CompilerServices
 			RunClassConstructor (type.Value);
 		}
 
-#if NET_2_0
+#if NET_4_0
+
+		[ReliabilityContract (Consistency.WillNotCorruptState, Cer.MayFail)]
+		public static void EnsureSufficientExecutionStack ()
+		{
+			if (SufficientExecutionStack ())
+				return;
+			throw new InsufficientExecutionStackException ();
+		}
+#endif
+
 		[MonoTODO("Currently a no-op")]
 		public static void ExecuteCodeWithGuaranteedCleanup (TryCode code, CleanupCode backoutCode, Object userData)
 		{
@@ -136,6 +133,5 @@ namespace System.Runtime.CompilerServices
 			RunModuleConstructor (module.Value);
 		}
 
-#endif
 	}
 }

@@ -48,21 +48,11 @@ using System.Text;
 
 namespace System.IO {
 
-#if NET_2_0
 	[ComVisible (true)]
 	public static partial class Path {
 
 		[Obsolete ("see GetInvalidPathChars and GetInvalidFileNameChars methods.")]
 		public static readonly char[] InvalidPathChars;
-#else
-	public sealed partial class Path {
-
-		private Path ()
-		{
-		}
-
-		public static readonly char[] InvalidPathChars;
-#endif
 		public static readonly char AltDirectorySeparatorChar;
 		public static readonly char DirectorySeparatorChar;
 		public static readonly char PathSeparator;
@@ -341,6 +331,7 @@ namespace System.IO {
 			// if the supplied path ends with a separator...
 			char end = path [path.Length - 1];
 
+			var canonicalize = true;
 			if (path.Length >= 2 &&
 				IsDsc (path [0]) &&
 				IsDsc (path [1])) {
@@ -350,11 +341,19 @@ namespace System.IO {
 				if (path [0] != DirectorySeparatorChar)
 					path = path.Replace (AltDirectorySeparatorChar, DirectorySeparatorChar);
 
-				path = CanonicalizePath (path);
 			} else {
-				if (!IsPathRooted (path))
+				if (!IsPathRooted (path)) {
+					
+					// avoid calling expensive CanonicalizePath when possible
+					var start = 0;
+					while ((start = path.IndexOf ('.', start)) != -1) {
+						if (++start == path.Length || path [start] == DirectorySeparatorChar || path [start] == AltDirectorySeparatorChar)
+							break;
+					}
+					canonicalize = start > 0;
+					
 					path = Directory.GetCurrentDirectory () + DirectorySeparatorStr + path;
-				else if (DirectorySeparatorChar == '\\' &&
+				} else if (DirectorySeparatorChar == '\\' &&
 					path.Length >= 2 &&
 					IsDsc (path [0]) &&
 					!IsDsc (path [1])) { // like `\abc\def'
@@ -364,8 +363,10 @@ namespace System.IO {
 					else
 						path = current.Substring (0, current.IndexOf ('\\', current.IndexOf ("\\\\") + 1));
 				}
-				path = CanonicalizePath (path);
 			}
+			
+			if (canonicalize)
+			    path = CanonicalizePath (path);
 
 			// if the original ended with a [Alt]DirectorySeparatorChar then ensure the full path also ends with one
 			if (IsDsc (end) && (path [path.Length - 1] != DirectorySeparatorChar))
@@ -498,7 +499,6 @@ namespace System.IO {
 				(!dirEqualsVolume && path.Length > 1 && path [1] == VolumeSeparatorChar));
 		}
 
-#if NET_2_0
 		public static char[] GetInvalidFileNameChars ()
 		{
 			// return a new array as we do not want anyone to be able to change the values
@@ -546,7 +546,7 @@ namespace System.IO {
 
 			return sb.ToString ();
 		}
-#endif
+
 		// private class methods
 
 		private static int findExtension (string path)
@@ -570,17 +570,8 @@ namespace System.IO {
 			AltDirectorySeparatorChar = MonoIO.AltDirectorySeparatorChar;
 
 			PathSeparator = MonoIO.PathSeparator;
-#if NET_2_0
 			// this copy will be modifiable ("by design")
 			InvalidPathChars = GetInvalidPathChars ();
-#else
-			if (Environment.IsRunningOnWindows) {
-				InvalidPathChars = new char [15] { '\x00', '\x08', '\x10', '\x11', '\x12', '\x14', '\x15', '\x16',
-					'\x17', '\x18', '\x19', '\x22', '\x3C', '\x3E', '\x7C' };
-			} else {
-				InvalidPathChars = new char [1] { '\x00' };
-			}
-#endif
 			// internal fields
 
 			DirectorySeparatorStr = DirectorySeparatorChar.ToString ();
@@ -741,5 +732,51 @@ namespace System.IO {
 
 			return String.Compare (subset, slast, path, slast, subset.Length - slast) == 0;
 		}
+
+#if NET_4_0 || MOONLIGHT
+		public static string Combine (params string [] paths)
+		{
+			if (paths == null)
+				throw new ArgumentNullException ("paths");
+
+			int l = 0;
+			bool need_sep = false;
+			foreach (var s in paths){
+				if (s == null)
+					throw new ArgumentNullException ("One of the paths contains a null value", "paths");
+				if (s.IndexOfAny (InvalidPathChars) != -1)
+					throw new ArgumentException ("Illegal characters in path.");
+				if (l == 0 && s.Length > 0){
+					char p1end = s [s.Length - 1];
+					if (p1end != DirectorySeparatorChar && p1end != AltDirectorySeparatorChar && p1end != VolumeSeparatorChar){
+						need_sep = true;
+						l += DirectorySeparatorStr.Length;
+					}
+				}
+			}
+			var ret = new StringBuilder (l);
+			l = 0;
+			foreach (var s in paths){
+				if (IsPathRooted (s))
+					ret.Length = l = 0;
+				ret.Append (s);
+				if (l == 0 && need_sep)
+					ret.Append (DirectorySeparatorStr);
+				l = 1;
+			}
+
+			return ret.ToString ();
+		}
+
+		public static string Combine (string path1, string path2, string path3)
+		{
+			return Combine (new string [] { path1, path2, path3 });
+		}
+
+		public static string Combine (string path1, string path2, string path3, string path4)
+		{
+			return Combine (new string [] { path1, path2, path3, path4 });
+		}
+#endif
 	}
 }

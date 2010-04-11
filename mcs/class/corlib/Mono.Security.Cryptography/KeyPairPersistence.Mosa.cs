@@ -8,7 +8,7 @@
  *
  */
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 
 using System;
 using System.Globalization;
@@ -24,12 +24,7 @@ using Mono.Xml;
 
 namespace Mono.Security.Cryptography
 {
-#if INSIDE_CORLIB 
-	internal 
-#else 
-	public  
-#endif 
-	partial class KeyPairPersistence
+	public partial class KeyPairPersistence
 	{
 		internal static bool _CanSecure (string root)
 		{
@@ -54,5 +49,3 @@ namespace Mono.Security.Cryptography
 
 	}
 }
-
-#endif

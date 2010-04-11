@@ -33,6 +33,7 @@
 //
 
 using System.Reflection;
+using System.Runtime.Remoting;
 using System.Runtime.Serialization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -45,13 +46,9 @@ namespace System
 		public string method_name;
 	}
 
-#if NET_1_1
 	[ClassInterface (ClassInterfaceType.AutoDual)]
-#endif
-#if NET_2_0
 	[System.Runtime.InteropServices.ComVisible (true)]
 	[Serializable]
-#endif
 	public abstract class Delegate : ICloneable, ISerializable
 	{
 		#region Sync with object-internals.h
@@ -127,7 +124,6 @@ namespace System
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal extern void SetMulticastInvoke ();
 
-#if NET_2_0
 		private static bool arg_type_match (Type delArgType, Type argType) {
 			bool match = delArgType == argType;
 
@@ -139,32 +135,23 @@ namespace System
 
 			return match;
 		}
-#endif		
 
 		private static bool return_type_match (Type delReturnType, Type returnType) {
 			bool returnMatch = returnType == delReturnType;
 
-#if NET_2_0
 			if (!returnMatch) {
 				// Delegate covariance
 				if (!returnType.IsValueType && delReturnType.IsAssignableFrom (returnType))
 					returnMatch = true;
 			}
-#endif
 
 			return returnMatch;
 		}
 
-#if NET_2_0
 		public static Delegate CreateDelegate (Type type, object firstArgument, MethodInfo method, bool throwOnBindFailure)
-#else
-		internal static Delegate CreateDelegate (Type type, object target, MethodInfo method, bool throwOnBindFailure)
-#endif
 		{
-#if NET_2_0
 			// The name of the parameter changed in 2.0
 			object target = firstArgument;
-#endif
 
 			if (type == null)
 				throw new ArgumentNullException ("type");
@@ -174,14 +161,6 @@ namespace System
 
 			if (!type.IsSubclassOf (typeof (MulticastDelegate)))
 				throw new ArgumentException ("type is not a subclass of Multicastdelegate");
-#if !NET_2_0
-			if ((target == null) && !method.IsStatic) {
-				if (throwOnBindFailure)
-					throw new ArgumentException ("The method should be static.", "method");
-				else
-					return null;
-			}
-#endif
 
 			MethodInfo invoke = type.GetMethod ("Invoke");
 
@@ -191,8 +170,6 @@ namespace System
 				else
 					return null;
 
-			// FIXME: Figure out how net 1.1 works
-#if NET_2_0
 			ParameterInfo[] delargs = invoke.GetParameters ();
 			ParameterInfo[] args = method.GetParameters ();
 
@@ -263,7 +240,6 @@ namespace System
 					throw new ArgumentException ("method arguments are incompatible");
 				else
 					return null;
-#endif
 
 			Delegate d = CreateDelegate_internal (type, target, method, throwOnBindFailure);
 			if (d != null)
@@ -271,22 +247,11 @@ namespace System
 			return d;
 		}
 
-#if NET_2_0
 		public static Delegate CreateDelegate (Type type, object firstArgument, MethodInfo method) {
 			return CreateDelegate (type, firstArgument, method, true);
 		}
-#else
-		internal static Delegate CreateDelegate (Type type, object target, MethodInfo method) {
-			return CreateDelegate (type, target, method, true);
-		}
-#endif
 
-#if NET_2_0
-		public
-#else
-		internal
-#endif
-		static Delegate CreateDelegate (Type type, MethodInfo method, bool throwOnBindFailure)
+		public static Delegate CreateDelegate (Type type, MethodInfo method, bool throwOnBindFailure)
 		{
 			return CreateDelegate (type, null, method, throwOnBindFailure);
 		}
@@ -356,12 +321,7 @@ namespace System
 			return info;
 		}
 
-#if NET_2_0
- 		public 
-#else
-		internal
-#endif
-		static Delegate CreateDelegate (Type type, Type target, string method, bool ignoreCase, bool throwOnBindFailure)
+ 		public static Delegate CreateDelegate (Type type, Type target, string method, bool ignoreCase, bool throwOnBindFailure)
 		{
 			if (target == null)
 				throw new ArgumentNullException ("target");
@@ -378,18 +338,11 @@ namespace System
 			return CreateDelegate (type, target, method, false, true);
 		}
 
-#if NET_2_0
  		public static Delegate CreateDelegate (Type type, Type target, string method, bool ignoreCase) {
 			return CreateDelegate (type, target, method, ignoreCase, true);
 		}
-#endif
 
-#if NET_2_0
-		public
-#else
-		internal
-#endif
-		static Delegate CreateDelegate (Type type, object target, string method, bool ignoreCase, bool throwOnBindFailure)
+		public static Delegate CreateDelegate (Type type, object target, string method, bool ignoreCase, bool throwOnBindFailure)
 		{
 			if (target == null)
 				throw new ArgumentNullException ("target");
@@ -406,11 +359,7 @@ namespace System
 			return CreateDelegate (type, target, method, ignoreCase, true);
 		}
 
-#if NET_2_0
 		public object DynamicInvoke (params object[] args)
-#else
-		public object DynamicInvoke (object[] args)
-#endif
 		{
 			return DynamicInvokeImpl (args);
 		}
@@ -425,7 +374,6 @@ namespace System
 				method_info = m_target.GetType ().GetMethod (data.method_name, mtypes);
 			}
 
-#if NET_2_0
 			if ((m_target != null) && Method.IsStatic) {
 				// The delegate is bound to m_target
 				if (args != null) {
@@ -438,7 +386,6 @@ namespace System
 				}
 				return Method.Invoke (null, args);
 			}
-#endif
 
 			return Method.Invoke (m_target, args);
 		}
@@ -515,12 +462,8 @@ namespace System
 		///   Returns a new MulticastDelegate holding the
 		///   concatenated invocation lists of an Array of MulticastDelegates
 		/// </symmary>
-#if NET_2_0
 		[System.Runtime.InteropServices.ComVisible (true)]
 		public static Delegate Combine (params Delegate[] delegates)
-#else
-		public static Delegate Combine (Delegate[] delegates)
-#endif
 		{
 			if (delegates == null)
 				return null;
@@ -553,7 +496,7 @@ namespace System
 
 			return this;
 		}
-#if NET_1_1
+
 		public static Delegate RemoveAll (Delegate source, Delegate value)
 		{
 			Delegate tmp = source;
@@ -562,7 +505,7 @@ namespace System
 
 			return tmp;
 		}
-#endif
+
 		public static bool operator == (Delegate d1, Delegate d2)
 		{
 			if ((object)d1 == null) {
@@ -578,6 +521,11 @@ namespace System
 		public static bool operator != (Delegate d1, Delegate d2)
 		{
 			return !(d1 == d2);
+		}
+
+		internal bool IsTransparentProxy ()
+		{
+			return RemotingServices.IsTransparentProxy (m_target);
 		}
 	}
 }

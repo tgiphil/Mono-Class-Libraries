@@ -100,14 +100,7 @@ using System.Runtime.InteropServices;
 namespace System {
   
 //	[CLSCompliant(false)]
-#if NET_2_0
 	public static partial class Convert {
-#else
-	public sealed partial class Convert {
-		private Convert ()
-		{
-		}
-#endif
 
 		// Fields
 		public static readonly object DBNull = System.DBNull.Value;
@@ -136,11 +129,7 @@ namespace System {
 				return new byte[0];
 			}
 
-#if NET_2_0
 			return InternalFromBase64String (s, true);
-#else
-			return InternalFromBase64String (s, false);
-#endif
 		}
 
 		public static TypeCode GetTypeCode (object value)
@@ -210,7 +199,6 @@ namespace System {
 			return (new ASCIIEncoding ().GetString (outArr));
 		}
 
-#if NET_2_0
 		[ComVisible (false)]
 		public static string ToBase64String (byte[] inArray, Base64FormattingOptions options)
 		{
@@ -298,7 +286,6 @@ namespace System {
 			}
 			return sb;
 		}
-#endif
 		
 		// ========== Boolean Conversions ========== //
 	
@@ -2843,14 +2830,7 @@ namespace System {
 		{
 			if (value == null) {
 				if ((conversionType != null) && conversionType.IsValueType){
-#if NET_2_0
 					throw new InvalidCastException ("Null object can not be converted to a value type.");
-#else
-					//
-					// Bug compatibility with 1.0
-					//
-					throw new NullReferenceException ("Null object can not be converted to a value type.");
-#endif
 				} else
 					return null;
 			}

@@ -26,11 +26,9 @@ using System.Security.Policy;
 using System.Security.Principal;
 using System.Configuration.Assemblies;
 
-#if NET_2_0
 using System.Collections.Generic;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
-#endif
 
 namespace System
 {

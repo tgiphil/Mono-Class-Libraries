@@ -13,10 +13,7 @@ using System.Reflection;
 using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Reflection.Emit;
-
-#if  NET_2_0
 using System.Collections.Generic;
-#endif
 
 namespace System
 {

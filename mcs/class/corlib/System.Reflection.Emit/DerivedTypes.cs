@@ -54,6 +54,12 @@ namespace System.Reflection.Emit
 
 		internal abstract String FormatName (string elementName);
 
+		internal override bool IsCompilerContext {
+			get {
+				return elementType.IsCompilerContext;
+			}
+		}
+
 		public override Type GetInterface (string name, bool ignoreCase)
 		{
 			throw new NotSupportedException ();
@@ -200,7 +206,6 @@ namespace System.Reflection.Emit
 			return false;
 		}
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
 		public override bool ContainsGenericParameters {
 			get { return elementType.ContainsGenericParameters; }
 		}
@@ -245,7 +250,6 @@ namespace System.Reflection.Emit
 		public override StructLayoutAttribute StructLayoutAttribute {
 			get { throw new NotSupportedException (); }
 		}
-#endif
 
 		public override Assembly Assembly {
 			get { return elementType.Assembly; }
@@ -321,6 +325,19 @@ namespace System.Reflection.Emit
 			this.rank = rank;
 		}
 
+		internal int GetEffectiveRank ()
+		{
+			return rank;
+		}
+
+		internal override Type InternalResolve ()
+		{
+			Type et = elementType.InternalResolve (); 
+			if (rank == 0)
+				return et.MakeArrayType ();			
+			return et.MakeArrayType (rank);
+		}
+
 		protected override bool IsArrayImpl ()
 		{
 			return true;
@@ -337,7 +354,7 @@ namespace System.Reflection.Emit
 
 		protected override TypeAttributes GetAttributeFlagsImpl ()
 		{
-			if (((ModuleBuilder)elementType.Module).assemblyb.IsCompilerContext)
+			if (IsCompilerContext)
 				return (elementType.Attributes & TypeAttributes.VisibilityMask) | TypeAttributes.Sealed | TypeAttributes.Serializable;
 			return elementType.Attributes;
 		}
@@ -363,6 +380,11 @@ namespace System.Reflection.Emit
 		{
 		}
 
+		internal override Type InternalResolve ()
+		{
+			return elementType.InternalResolve ().MakeByRefType (); 
+		}
+
 		protected override bool IsByRefImpl ()
 		{
 			return true;
@@ -379,7 +401,6 @@ namespace System.Reflection.Emit
 			return elementName + "&";
 		}
 
-#if NET_2_0
 		public override Type MakeArrayType ()
 		{
 			throw new ArgumentException ("Cannot create an array type of a byref type");
@@ -399,13 +420,17 @@ namespace System.Reflection.Emit
 		{
 			throw new ArgumentException ("Cannot create a pointer type of a byref type");
 		}
-#endif
 	}
 
 	internal class PointerType : DerivedType
 	{
 		internal PointerType (Type elementType) : base (elementType)
 		{
+		}
+
+		internal override Type InternalResolve ()
+		{
+			return elementType.InternalResolve ().MakePointerType (); 
 		}
 
 		protected override bool IsPointerImpl ()

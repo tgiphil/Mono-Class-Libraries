@@ -8,7 +8,7 @@
  *
  */
 
-#if (NET_2_0||BOOTSTRAP_NET_2_0) && !NET_2_1
+#if !NET_2_1
 using System.IO;
 using System.Runtime.CompilerServices;
 
@@ -39,5 +39,3 @@ namespace System
 
 	}
 }
-
-#endif
