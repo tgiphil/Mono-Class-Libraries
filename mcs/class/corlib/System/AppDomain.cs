@@ -831,18 +831,6 @@ namespace System {
 		}
 #endif
  
-		// Changes the active domain and returns the old domain
-
-		// Notifies the runtime that this thread references 'domain'.
-
-		// Undoes the effect of the last PushDomainRef call
-
-		// Changes the active context and returns the old context
-
-		// Returns the current context
-
-		// Returns the current context
-
 		// This method is handled specially by the runtime
 		// It is the only managed method which is allowed to set the current
 		// appdomain

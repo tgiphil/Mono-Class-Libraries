@@ -88,26 +88,32 @@ namespace System
 
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private static extern AppDomain InternalSetDomainByID (int domain_id);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
+
+		// Changes the active domain and returns the old domain
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		private static extern AppDomain InternalSetDomain (AppDomain context);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
+
+		// Notifies the runtime that this thread references 'domain'.
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		internal static extern void InternalPushDomainRef (AppDomain domain);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal static extern void InternalPushDomainRefByID (int domain_id);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
+
+		// Undoes the effect of the last PushDomainRef call
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		internal static extern void InternalPopDomainRef ();
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
+
+		// Changes the active context and returns the old context
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		internal static extern Context InternalSetContext (Context context);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
+
+		// Returns the current context
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		internal static extern Context InternalGetContext ();
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
+
+		// Returns the current context
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		internal static extern Context InternalGetDefaultContext ();
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
