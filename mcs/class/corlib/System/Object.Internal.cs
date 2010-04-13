@@ -39,10 +39,16 @@ namespace System
 {
 	public partial class Object
 	{
-		
+
+		// <summary>
+		//   Returns the Type associated with the object.
+		// </summary>
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public extern Type GetType ();
-		
+
+		// <summary>
+		//   Shallow copy of the object.
+		// </summary>
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		protected extern object MemberwiseClone ();
 		

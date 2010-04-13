@@ -55,7 +55,6 @@ namespace System
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private static extern Type get_underlying_type (Type enumType);
-#endif
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern int compare_value_to (object other);

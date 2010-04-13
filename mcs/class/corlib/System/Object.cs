@@ -91,14 +91,6 @@ namespace System {
 		}
 
 		// <summary>
-		//   Returns the Type associated with the object.
-		// </summary>
-
-		// <summary>
-		//   Shallow copy of the object.
-		// </summary>
-
-		// <summary>
 		//   Returns a stringified representation of the object.
 		//   This is not supposed to be used for user presentation,
 		//   use Format() for that and IFormattable.

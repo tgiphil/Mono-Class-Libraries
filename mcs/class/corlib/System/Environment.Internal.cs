@@ -78,7 +78,7 @@ namespace System
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal static extern string GetOSVersionString ();
-#endif
+
 		public extern static int TickCount {
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		get;
@@ -100,7 +100,6 @@ namespace System
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal extern static string internalGetEnvironmentVariable (string variable);
-#endif
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern static string GetWindowsFolderPath (int folder);
@@ -121,7 +120,7 @@ namespace System
 #pragma warning restore 169
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal extern static string internalGetGacPath ();
-#endif
+
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern static string [] GetLogicalDrivesInternal ();
 		

@@ -30,7 +30,6 @@
 
 // NumberFormatter is shared with Grasshopper and hence the #if TARGET_JVM for
 // marking the use of unsafe code that is not supported in Grasshopper.
-#endif
 
 using System.Globalization;
 using System.Text;

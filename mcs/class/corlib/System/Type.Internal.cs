@@ -42,7 +42,6 @@ namespace System
 {
 	public partial class Type
 	{
-#endif
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		internal extern bool EqualsInternal (Type type);

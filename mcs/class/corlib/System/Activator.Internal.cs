@@ -46,7 +46,6 @@ namespace System
 {
 	public partial class Activator
 	{
-#endif
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal static extern object CreateInstanceInternal (Type type);
 

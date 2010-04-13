@@ -61,11 +61,10 @@ namespace System
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern AppDomainSetup getSetup ();
-#endif
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern string getFriendlyName ();
-#endif
+
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private static extern AppDomain getCurDomain ();
 		
@@ -86,7 +85,7 @@ namespace System
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal extern Assembly LoadAssemblyRaw (byte[] rawAssembly, byte[] rawSymbolStore, Evidence securityEvidence, bool refonly);
-#endif
+
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private static extern AppDomain InternalSetDomainByID (int domain_id);
 		
@@ -116,7 +115,6 @@ namespace System
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private static extern AppDomain createDomain (string friendlyName, AppDomainSetup info);
-#endif // !NET_2_1
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private static extern bool InternalIsFinalizingForUnload (int domain_id);
