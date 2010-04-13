@@ -150,18 +150,6 @@ namespace System {
 			}
 		}
 
-		/// <summary>
-		/// Gets or sets the exit code of this process
-		/// </summary>
-
-		/// <summary>
-		/// Gets the name of the local computer
-		/// </summary>
-
-		/// <summary>
-		/// Gets the standard new line value
-		/// </summary>
-
 		//
 		// Support methods and fields for OSVersion property
 		//
@@ -201,9 +189,6 @@ namespace System {
 			}
 		}
 #endif
-		/// <summary>
-		/// Get the number of milliseconds that have elapsed since the system was booted
-		/// </summary>
 
 		/// <summary>
 		/// Get UserDomainName
@@ -225,10 +210,6 @@ namespace System {
 				return false;
 			}
 		}
-
-		/// <summary>
-		/// Get the user name of current process is running under
-		/// </summary>
 
 		/// <summary>
 		/// Get the version of the common language runtime 
@@ -313,10 +294,6 @@ namespace System {
 			return result.ToString ();
 
 		}
-
-		/// <summary>
-		/// Return an array of the command line arguments of the current process
-		/// </summary>
 
 		/// <summary>
 		/// Return a string containing the value of the environment
