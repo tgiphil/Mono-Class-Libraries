@@ -30,6 +30,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -134,7 +135,6 @@ namespace System
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public extern override int GetArrayRank ();
 		
-#if NET_2_0 || BOOTSTRAP_NET_2_0
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public extern override Type [] GetGenericArguments ();
 		
@@ -147,6 +147,8 @@ namespace System
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		get;
 		}
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		public extern int get_core_clr_security_level ();
 
 	}
 }

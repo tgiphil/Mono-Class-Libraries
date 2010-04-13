@@ -29,7 +29,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 
 using System.Collections;
 using System.Globalization;
@@ -57,9 +57,7 @@ namespace System.Security
 		set;
 		}
 		
-#if NET_2_0
 		[Obsolete ("The security manager cannot be turned off on MS runtime")]
-#endif
 		extern public static bool SecurityEnabled {
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		get;

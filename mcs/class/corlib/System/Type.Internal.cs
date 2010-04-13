@@ -42,6 +42,7 @@ namespace System
 {
 	public partial class Type
 	{
+#endif
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		internal extern bool EqualsInternal (Type type);
@@ -65,13 +66,11 @@ namespace System
 		internal static extern void GetInterfaceMapData (Type t, Type iface, out MethodInfo[] targets, out MethodInfo[] methods);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern virtual bool IsInstanceOfType (object o);
+		extern static bool IsInstanceOfType (Type type, object o);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		internal static extern bool IsArrayImpl (Type type);
-
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-
+		
 		public virtual extern bool IsGenericTypeDefinition {
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		get;
@@ -104,11 +103,10 @@ namespace System
 		extern Type make_byref_type ();
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		public extern virtual Type MakePointerType ();
+		static extern Type MakePointerType (Type type);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern void GetPacking (out int packing, out int size);		
-#endif
 
 	}
 }

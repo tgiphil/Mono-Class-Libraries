@@ -36,10 +36,7 @@ using System.Reflection;
 using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Reflection.Emit;
-
-#if  NET_2_0
 using System.Collections.Generic;
-#endif
 
 namespace System
 {
@@ -49,7 +46,6 @@ namespace System
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal static extern object[] GetCustomAttributesInternal (ICustomAttributeProvider obj, Type attributeType, bool pseudoAttrs);
 		
-#if NET_2_0
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		static extern CustomAttributeData [] GetCustomAttributesDataInternal (ICustomAttributeProvider obj);
 		

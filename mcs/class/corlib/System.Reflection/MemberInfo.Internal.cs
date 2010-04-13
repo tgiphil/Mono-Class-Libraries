@@ -30,18 +30,14 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
+using System.Collections.Generic;
 
 namespace System.Reflection
 {
 	public partial class MemberInfo
 	{
 		
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-		public
-#else
-		internal
-#endif
-		virtual extern int MetadataToken {
+		public virtual extern int MetadataToken {
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		get;
 		}

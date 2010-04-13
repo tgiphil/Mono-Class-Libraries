@@ -33,6 +33,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -55,7 +56,6 @@ namespace System.Reflection
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		private static extern void SetValueInternal (FieldInfo fi, object obj, object value);
 		
-#if NET_2_0
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public override extern object GetRawConstantValue ();
 

@@ -31,16 +31,14 @@
 //
 
 using System.Runtime.CompilerServices;
-
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
-#endif
+using System.Security.Permissions;
 
 namespace System
 {
 	public partial class GC
 	{
-	
+		
 		public extern static int MaxGeneration {
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		get;
@@ -48,7 +46,7 @@ namespace System
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		extern static void InternalCollect (int generation);
-
+		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		public extern static int GetGeneration (object obj);
 		
@@ -56,31 +54,26 @@ namespace System
 		public extern static long GetTotalMemory (bool forceFullCollection);
 		
 		/* this icall has weird semantics check the docs... */
-#if NET_2_0
 		[ReliabilityContract (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		public extern static void KeepAlive (object obj);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		public extern static void ReRegisterForFinalize (object obj);
 		
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		public extern static void SuppressFinalize (object obj);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		public extern static void WaitForPendingFinalizers ();
 		
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		public extern static int CollectionCount (int generation);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern static void RecordPressure (long bytesAllocated);
-#endif
+
 	}
 }

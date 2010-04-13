@@ -28,6 +28,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -41,6 +42,7 @@ namespace System.Reflection
 {
 	 partial struct MonoMethodInfo
 	{
+#pragma warning restore 649		
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		static extern void get_method_info (IntPtr handle, out MonoMethodInfo info);
@@ -59,7 +61,7 @@ namespace System.Reflection
 		internal static extern string get_name (MethodBase method);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		internal static extern MonoMethod get_base_definition (MonoMethod method);
+		internal static extern MonoMethod get_base_method (MonoMethod method, bool definition);
 		
 		/*
 		* InternalInvoke() receives the parameters correctly converted by the 

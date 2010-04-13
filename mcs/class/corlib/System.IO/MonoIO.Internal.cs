@@ -88,6 +88,15 @@ namespace System.IO
 		public extern static MonoFileType GetFileType (IntPtr handle, out MonoIOError error);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
+		public extern static string FindFirst (string path, string pattern, out FileAttributes result_attr, out MonoIOError error, out IntPtr handle);
+		
+		[MethodImplAttribute (MethodImplOptions.InternalCall)]
+		public extern static string FindNext (IntPtr handle, out FileAttributes result_attr, out MonoIOError error);
+		
+		[MethodImplAttribute (MethodImplOptions.InternalCall)]
+		public extern static int FindClose (IntPtr handle);
+		
+		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		public extern static bool GetFileStat (string path,
 		out MonoIOStat stat,
 		out MonoIOError error);

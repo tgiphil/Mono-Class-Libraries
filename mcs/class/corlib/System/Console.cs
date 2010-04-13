@@ -44,7 +44,6 @@ namespace System
 #if !NET_2_1
 		private partial class WindowsConsole
 		{
-
 			[MethodImpl (MethodImplOptions.NoInlining)]
 			public static int GetInputCodePage ()
 			{

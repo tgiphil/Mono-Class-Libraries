@@ -39,8 +39,6 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
 
-#if NET_2_0 || BOOTSTRAP_NET_2_0
-
 namespace System.Reflection
 {
 	 partial class MonoGenericClass
@@ -48,6 +46,9 @@ namespace System.Reflection
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		extern void initialize (MethodInfo[] methods, ConstructorInfo[] ctors, FieldInfo[] fields, PropertyInfo[] properties, EventInfo[] events);
+		
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		internal static extern void register_with_runtime (Type type);
 
 	}
 }

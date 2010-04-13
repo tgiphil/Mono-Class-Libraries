@@ -37,12 +37,10 @@ using System;
 using System.Globalization;
 using System.Text;
 using System.Runtime.CompilerServices;
+using System.Runtime.ConstrainedExecution;
+
 #if MSTEST
 using System.Runtime.InteropServices;
-#endif
-
-#if NET_2_0
-using System.Runtime.ConstrainedExecution;
 #endif
 
 namespace System
@@ -56,6 +54,9 @@ namespace System
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		private static extern int decimal2Int64 (ref Decimal val, out long result);
+		
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		private static extern int double2decimal (out Decimal erg, double val, int digits);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		private static extern int decimalIncr (ref Decimal d1, ref Decimal d2);
@@ -134,7 +135,6 @@ namespace System
 		
 		[DllImport("libdec", EntryPoint="decimalCompare")]
 		private static extern int decimalCompare (ref Decimal d1, ref Decimal d2);
-#endif
 
 	}
 }

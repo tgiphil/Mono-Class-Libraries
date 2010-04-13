@@ -28,6 +28,7 @@
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace System.Reflection
 {
@@ -36,8 +37,6 @@ namespace System.Reflection
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		extern int GetMetadataToken ();
-		
-#if NET_2_0 || BOOTSTRAP_NET_2_0
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		extern Type[] GetTypeModifiers (bool optional);

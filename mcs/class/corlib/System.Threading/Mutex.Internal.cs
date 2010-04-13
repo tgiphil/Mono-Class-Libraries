@@ -31,13 +31,11 @@
 using System.Runtime.CompilerServices;
 using System.Security.Permissions;
 
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
 using System.IO;
 using System.Runtime.InteropServices;
 #if !NET_2_1
 using System.Security.AccessControl;
-#endif
 #endif
 
 namespace System.Threading
@@ -53,7 +51,7 @@ namespace System.Threading
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		private static extern bool ReleaseMutex_internal(IntPtr handle);
 		
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private static extern IntPtr OpenMutex_internal (string name, MutexRights rights, out MonoIOError error);
 

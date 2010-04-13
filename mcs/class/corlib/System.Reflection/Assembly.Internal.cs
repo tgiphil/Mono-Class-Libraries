@@ -38,6 +38,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Collections;
+using System.Collections.Generic;
 using System.Configuration.Assemblies;
 
 using Mono.Security;
@@ -65,7 +66,7 @@ namespace System.Reflection
 		}
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern bool get_global_assembly_cache ();
+		internal extern bool get_global_assembly_cache ();
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern object GetFilesInternal (String name, bool getResourceModules);
@@ -110,7 +111,7 @@ namespace System.Reflection
 		public extern static Assembly GetCallingAssembly ();
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern AssemblyName[] GetReferencedAssemblies ();
+		internal static extern AssemblyName[] GetReferencedAssemblies (Assembly module);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern bool GetManifestResourceInfoInternal (String name, ManifestResourceInfo info);

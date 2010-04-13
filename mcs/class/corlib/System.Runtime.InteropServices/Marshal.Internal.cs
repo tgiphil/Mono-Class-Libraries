@@ -37,14 +37,12 @@ using System.Security;
 using System.Reflection;
 using System.Threading;
 
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 using System.Runtime.InteropServices.ComTypes;
 #endif
-#endif
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 using Mono.Interop;
 #endif
 
@@ -52,7 +50,6 @@ namespace System.Runtime.InteropServices
 {
 	public partial class Marshal
 	{
-#endif
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern static int AddRefInternal (IntPtr pUnk);
@@ -61,24 +58,20 @@ namespace System.Runtime.InteropServices
 		public extern static IntPtr AllocCoTaskMem (int cb);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
-#endif
 		public extern static IntPtr AllocHGlobal (IntPtr cb);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern static void copy_to_unmanaged (Array source, int startIndex,
+		internal extern static void copy_to_unmanaged (Array source, int startIndex,
 		IntPtr destination, int length);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		extern static void copy_from_unmanaged (IntPtr source, int startIndex,
+		internal extern static void copy_from_unmanaged (IntPtr source, int startIndex,
 		Array destination, int length);
 #endif
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public extern static void DestroyStructure (IntPtr ptr, Type structuretype);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -88,9 +81,7 @@ namespace System.Runtime.InteropServices
 		public extern static void FreeCoTaskMem (IntPtr ptr);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		public extern static void FreeHGlobal (IntPtr hglobal);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
@@ -98,7 +89,7 @@ namespace System.Runtime.InteropServices
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		private extern static int GetComSlotForMethodInfoInternal (MemberInfo m);
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern static IntPtr GetIDispatchForObjectInternal (object o);
 		
@@ -113,9 +104,7 @@ namespace System.Runtime.InteropServices
 #endif // !NET_2_1
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		public static extern int GetLastWin32Error();
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -143,15 +132,11 @@ namespace System.Runtime.InteropServices
 		public extern static string PtrToStringBSTR (IntPtr ptr);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public extern static void PtrToStructure (IntPtr ptr, object structure);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-#if NET_2_0
 		[ComVisible (true)]
-#endif
 		public extern static object PtrToStructure (IntPtr ptr, Type structureType);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
@@ -163,21 +148,15 @@ namespace System.Runtime.InteropServices
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public extern static short ReadInt16 (IntPtr ptr, int ofs);
 		
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public extern static int ReadInt32 (IntPtr ptr, int ofs);
 		
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public extern static long ReadInt64 (IntPtr ptr, int ofs);
 		
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public extern static IntPtr ReadIntPtr (IntPtr ptr, int ofs);
 		
@@ -187,13 +166,11 @@ namespace System.Runtime.InteropServices
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public extern static IntPtr ReAllocHGlobal (IntPtr pv, IntPtr cb);
 		
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern static int ReleaseInternal (IntPtr pUnk);
 		
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern static int ReleaseComObjectInternal (object co);
 		
@@ -210,10 +187,8 @@ namespace System.Runtime.InteropServices
 		public extern static IntPtr StringToHGlobalUni (string s);
 #endif
 		
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.MayFail)]
 		[ComVisible (true)]
-#endif
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public extern static void StructureToPtr (object structure, IntPtr ptr, bool fDeleteOld);
 		
@@ -239,7 +214,7 @@ namespace System.Runtime.InteropServices
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public extern static void WriteIntPtr (IntPtr ptr, int ofs, IntPtr val);
 #endif
-#if NET_2_0
+		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		private static extern Delegate GetDelegateForFunctionPointerInternal (IntPtr ptr, Type t);
 		

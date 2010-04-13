@@ -53,10 +53,7 @@ namespace System
 		set;
 		}
 		
-#if NET_1_1
-		static
-#endif
-		public extern bool HasShutdownStarted
+		static public extern bool HasShutdownStarted
 		{
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		get;
@@ -108,14 +105,14 @@ namespace System
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern static string GetWindowsFolderPath (int folder);
 		
-#if NET_2_0 && !NET_2_1
+#if !NET_2_1
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private static extern void internalBroadcastSettingChange ();
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal static extern void InternalSetEnvironmentVariable (string variable, string value);
 #endif
-#if NET_2_0
+		
 		public static extern int ProcessorCount {
 		[EnvironmentPermission (SecurityAction.Demand, Read="NUMBER_OF_PROCESSORS")]
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
@@ -136,6 +133,9 @@ namespace System
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal extern static string internalGetHome ();
+		
+		[MethodImplAttribute (MethodImplOptions.InternalCall)]
+		internal extern static int GetPageSize ();
 
 	}
 }

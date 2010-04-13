@@ -39,19 +39,38 @@ using System.IO;
 using System.Collections;
 using System.Reflection;
 using System.Security;
-
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
-#endif
 
 namespace System.Threading
 {
+	 partial class InternalThread
+	{
+		
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		private extern void Thread_free_internal(IntPtr handle);
+
+	}
 	public partial class Thread
 	{
+		
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		private extern void ConstructInternalThread ();
+		
+		/*
+		* These two methods return an array in the target
+		* domain with the same content as the argument.  If
+		* the argument is already in the target domain, then
+		* the argument is returned, otherwise a copy.
+		*/
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		private extern static byte[] ByteArrayToRootDomain (byte[] arr);
+		
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		private extern static byte[] ByteArrayToCurrentDomain (byte[] arr);
 #endif
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern static Thread CurrentThread_internal();
+		private extern static InternalThread CurrentInternalThread_internal();
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal extern static void FreeLocalSlotValues (int slot, bool thread_local);
@@ -68,51 +87,36 @@ namespace System.Threading
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		private extern IntPtr Thread_internal (MulticastDelegate start);
 		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void Thread_init ();
-		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern CultureInfo GetCachedCurrentCulture ();
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern byte[] GetSerializedCurrentCulture ();
+		private extern static CultureInfo GetCachedCurrentCulture (InternalThread thread);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern void SetCachedCurrentCulture (CultureInfo culture);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern void SetSerializedCurrentCulture (byte[] culture);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern CultureInfo GetCachedCurrentUICulture ();
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern byte[] GetSerializedCurrentUICulture ();
+		private extern static CultureInfo GetCachedCurrentUICulture (InternalThread thread);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern void SetCachedCurrentUICulture (CultureInfo culture);
 		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern void SetSerializedCurrentUICulture (byte[] culture);
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		private extern static string GetName_internal (InternalThread thread);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern string GetName_internal ();
+		private extern static void SetName_internal (InternalThread thread, String name);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void SetName_internal (String name);
-		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void Abort_internal (object stateInfo);
+		private extern static void Abort_internal (InternalThread thread, object stateInfo);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		internal extern object GetAbortExceptionState ();
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		private extern void Interrupt_internal ();
+		private extern static void Interrupt_internal (InternalThread thread);
 #endif
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern bool Join_internal(int ms, IntPtr handle);
+		private extern static bool Join_internal(InternalThread thread, int ms, IntPtr handle);
 #endif
 		
 #if NET_1_1
@@ -120,7 +124,7 @@ namespace System.Threading
 		public extern static void MemoryBarrier ();
 #endif
 		
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		private extern void Resume_internal();
 #endif // !NET_2_1
@@ -128,22 +132,19 @@ namespace System.Threading
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		private extern static void SpinWait_nop ();
 		
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void Suspend_internal();
+		private extern static void Suspend_internal(InternalThread thread);
 #endif // !NET_2_1
 		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern void Thread_free_internal(IntPtr handle);
+		[MethodImplAttribute (MethodImplOptions.InternalCall)]
+		extern private static void SetState (InternalThread thread, ThreadState set);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern private void SetState (ThreadState set);
+		extern private static void ClrState (InternalThread thread, ThreadState clr);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern private void ClrState (ThreadState clr);
-		
-		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		extern private ThreadState GetState ();
+		extern private static ThreadState GetState (InternalThread thread);
 		
 #if NET_1_1
 		

@@ -34,35 +34,29 @@ using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-#if NET_2_0
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.ConstrainedExecution;
-#endif
+using System.Reflection.Emit;
 
 namespace System
 {
 	public partial class Array
 	{
 		
-#if NET_2_0
-		// CAUTION! No bounds checking!
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal extern void GetGenericValueImpl<T> (int pos, out T value);
 		
-		// CAUTION! No bounds checking!
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal extern void SetGenericValueImpl<T> (int pos, ref T value);
-#endif
-
+		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		extern int GetRank ();
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public extern int GetLength (int dimension);		
-#if NET_2_0
+		public extern int GetLength (int dimension);
+		
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		public extern int GetLowerBound (int dimension);
 		
@@ -88,11 +82,7 @@ namespace System
 		static extern void ClearInternal (Array a, int index, int count);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-		public
-#if !NET_2_0
-		virtual
-#endif
-		extern object Clone ();
+		public extern object Clone ();
 
 	}
 }

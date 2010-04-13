@@ -33,12 +33,9 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Contexts;
 using System.Security.Permissions;
-
-#if NET_2_0
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 using System.Runtime.ConstrainedExecution;
-#endif
 
 namespace System.Threading
 {
@@ -55,9 +52,6 @@ namespace System.Threading
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		static extern bool SignalAndWait_Internal (IntPtr toSignal, IntPtr toWaitOn, int ms, bool exitContext);
-		
-		[MethodImplAttribute(MethodImplOptions.InternalCall)]
-		private extern bool WaitOne_internal(IntPtr handle, int ms, bool exitContext);
 
 	}
 }

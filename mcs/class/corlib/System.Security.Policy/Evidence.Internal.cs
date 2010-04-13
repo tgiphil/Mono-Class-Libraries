@@ -39,7 +39,7 @@ using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Security.Cryptography.X509Certificates;
 
-#if !NET_2_1 || MONOTOUCH
+#if !MOONLIGHT
 using Mono.Security.Authenticode;
 #endif
 
@@ -47,7 +47,6 @@ namespace System.Security.Policy
 {
 	public partial class Evidence
 	{
-#endif
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		static extern bool IsAuthenticodePresent (Assembly a);

@@ -46,11 +46,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Runtime.Remoting.Services;
 using System.Security.Permissions;
-
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.Serialization.Formatters;
-#endif
 
 namespace System.Runtime.Remoting
 {
@@ -64,9 +61,7 @@ namespace System.Runtime.Remoting
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		internal extern static MethodBase GetVirtualMethod (Type type, MethodBase method);
 		
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public extern static bool IsTransparentProxy (object proxy);
 

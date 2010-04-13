@@ -48,7 +48,6 @@ namespace System.Reflection
 	public partial class AssemblyName
 	{
 		
-#if NET_2_0 || BOOTSTRAP_NET_2_0
 		[MethodImpl (MethodImplOptions.InternalCall)]
 		static extern bool ParseName (AssemblyName aname, string assemblyName);
 

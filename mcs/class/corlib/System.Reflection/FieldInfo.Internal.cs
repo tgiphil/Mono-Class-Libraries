@@ -43,7 +43,6 @@ namespace System.Reflection
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		private extern UnmanagedMarshal GetUnmanagedMarshal ();
 		
-#if NET_2_0 || BOOTSTRAP_NET_2_0
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		extern Type[] GetTypeModifiers (bool optional);
 

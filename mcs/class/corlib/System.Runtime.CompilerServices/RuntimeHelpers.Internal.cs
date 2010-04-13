@@ -28,16 +28,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
 using System.Reflection;
-#endif
 
 namespace System.Runtime.CompilerServices
 {
 	public partial class RuntimeHelpers
 	{
-#endif
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		static extern void InitializeArray (Array array, IntPtr fldHandle);
@@ -46,13 +43,16 @@ namespace System.Runtime.CompilerServices
 		[MethodImpl (MethodImplOptions.InternalCall)]
 		get;
 		}
-#endif
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public static extern object GetObjectValue (object obj);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		static extern void RunClassConstructor (IntPtr type);
+		
+#if NET_4_0
+		[MethodImplAttribute (MethodImplOptions.InternalCall)]
+		static extern bool SufficientExecutionStack ();
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		public static extern void RunModuleConstructor (IntPtr module);

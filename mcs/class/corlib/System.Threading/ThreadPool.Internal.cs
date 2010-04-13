@@ -40,7 +40,6 @@ namespace System.Threading
 {
 	public partial class ThreadPool
 	{
-#endif
 		
 #if !NET_2_1		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
@@ -57,11 +56,12 @@ namespace System.Threading
 		[SecurityPermission (SecurityAction.Demand, ControlThread=true)]
 		public static extern bool SetMinThreads (int workerThreads, int completionPortThreads);
 		
-#if NET_2_0
-		[MonoTODO("The max number of threads cannot be decremented.")]
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		[SecurityPermission (SecurityAction.Demand, ControlThread=true)]
 		public static extern bool SetMaxThreads (int workerThreads, int completionPortThreads);
+		
+		[MethodImplAttribute(MethodImplOptions.InternalCall)]
+		static extern void pool_queue (AsyncResult ares);
 
 	}
 }

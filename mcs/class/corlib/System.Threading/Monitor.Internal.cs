@@ -32,27 +32,20 @@
 
 using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Contexts;
-
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
-#endif
 
 namespace System.Threading
 {
 	public partial class Monitor
 	{
-#endif
-		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		private extern static bool Monitor_try_enter(object obj, int ms);
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public extern static void Enter(object obj);
 		
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		public extern static void Exit(object obj);
 		

@@ -29,6 +29,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -46,6 +47,9 @@ namespace System.Reflection
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		internal static extern Type[] GetTypeModifiers (MonoProperty prop, bool optional);
+		
+		[MethodImplAttribute (MethodImplOptions.InternalCall)]
+		internal static extern object get_default_value (MonoProperty prop);
 
 	}
 }

@@ -32,16 +32,13 @@
 //
 
 using System.Runtime.CompilerServices;
-
-#if NET_2_0
 using System.Runtime.ConstrainedExecution;
-#endif
 
 namespace System
 {
 	public partial class Math
 	{
-
+		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
 		public extern static double Floor (double d);
 		
@@ -94,9 +91,7 @@ namespace System
 		public extern static double Pow (double x, double y);
 		
 		[MethodImplAttribute (MethodImplOptions.InternalCall)]
-#if NET_2_0
 		[ReliabilityContractAttribute (Consistency.WillNotCorruptState, Cer.Success)]
-#endif
 		public extern static double Sqrt (double d);
 
 	}

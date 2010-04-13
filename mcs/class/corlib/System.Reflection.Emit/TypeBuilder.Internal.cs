@@ -54,10 +54,8 @@ namespace System.Reflection.Emit
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		private extern void create_internal_class (TypeBuilder tb);
 		
-#if NET_2_0 || BOOTSTRAP_NET_2_0
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		private extern void setup_generic_class ();
-#endif
 		
 		[MethodImplAttribute(MethodImplOptions.InternalCall)]
 		private extern void create_generic_class ();
