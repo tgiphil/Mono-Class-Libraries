@@ -1200,7 +1200,9 @@ namespace System {
 					"Value is greater than Int32.MaxValue or less than Int32.MinValue"));
 	  
 			// Returned Even-Rounded
-			return (int)(Math.Round (value));	  
+			checked {
+				return (int)(Math.Round (value));
+			}
 		}
  
 		public static int ToInt32 (float value) 
@@ -1211,7 +1213,9 @@ namespace System {
 	  
 			// Returned Even-Rounded, pass as a double, could just call
 			// Convert.ToInt32 ( (double)value);
-			return (int)(Math.Round ( (double)value));
+			checked {
+				return (int)(Math.Round ( (double)value));
+			}
 		}
 
 		public static int ToInt32 (int value) 
